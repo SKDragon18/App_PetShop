@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--All-->
+    <item android:id="@+id/home_screen" android:title="Home" android:icon="@drawable/eye"/>
+    <!--Customer-->
+    <item android:id="@+id/cart_screen" android:title="Cart" android:icon="@drawable/eye"/>
+    <!--Employee-->
+    <item android:id="@+id/manage" android:title="Manage" android:icon="@drawable/eye"/>
+    <!--Admin-->
+    <item android:id="@+id/manage_account" android:title="Mange Account" android:icon="@drawable/eye"/>
+    <!--All-->
+    <item android:id="@+id/user_screen" android:title="User" android:icon="@drawable/eye"/>
+</menu>
