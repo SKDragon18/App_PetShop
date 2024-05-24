@@ -6,6 +6,7 @@ import com.example.petshopapp.R;
 import com.example.petshopapp.fragment.CartScreen;
 import com.example.petshopapp.fragment.HomeScreen;
 import com.example.petshopapp.fragment.ManageScreen;
+import com.example.petshopapp.fragment.ManageScreenEmployee;
 import com.example.petshopapp.fragment.UserScreen;
 
 import java.util.ArrayList;
@@ -19,12 +20,12 @@ public class FragmentFactoryCustom {
     private static final Integer []idRoleCustomer=new Integer[]{R.id.home_screen,R.id.cart_screen,R.id.user_screen};
 
     //Role employee
-    private static final String []tagRoleEmployee= new String[]{"home","manage","user"};
-    private static final Integer []idRoleEmployee=new Integer[]{R.id.home_screen,R.id.manage,R.id.user_screen};
+    private static final String []tagRoleEmployee= new String[]{"home","user"};
+    private static final Integer []idRoleEmployee=new Integer[]{R.id.home_screen,R.id.user_screen};
 
     //Role manager
-    private static final String []tagRoleManager= new String[]{"home","manage","user"};
-    private static final Integer []idRoleManager=new Integer[]{R.id.home_screen,R.id.manage,R.id.user_screen};
+    private static final String []tagRoleManager= new String[]{"home","manage","manage_employee","user"};
+    private static final Integer []idRoleManager=new Integer[]{R.id.home_screen,R.id.manage, R.id.manage_employee,R.id.user_screen};
 
     //Role admin
     private static final String []tagRoleAdmin= new String[]{"home","manage_account","user"};
@@ -79,6 +80,8 @@ public class FragmentFactoryCustom {
                 return new ManageScreen();
             case "manage_account":
                 return new CartScreen();
+            case "manage_employee":
+                return new ManageScreenEmployee();
             default:
                 return new Fragment();
         }

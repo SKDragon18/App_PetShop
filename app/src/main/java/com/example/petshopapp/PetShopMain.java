@@ -64,17 +64,13 @@ public class PetShopMain extends AppCompatActivity{
 
 
 
-        //SharedPreferences
+        //SharedPreferences: Lưu trữ thông tin bằng file trong điện thoại
         SharedPreferences sharedPreferences =
                 getSharedPreferences(getString(R.string.preference_file_key),MODE_PRIVATE);
-
 
         //Lấy thông tin
         name= sharedPreferences.getString("username","");
         role=sharedPreferences.getString("role","");
-
-
-
 
         //factory
         fragmentFactoryCustom=new FragmentFactoryCustom();
@@ -95,44 +91,31 @@ public class PetShopMain extends AppCompatActivity{
         viewPager =findViewById(R.id.view_pager);
         bottomNavigationView=findViewById(R.id.bottom_navigation);
 
-
         //menu
         MenuItem menuItem;
 
         //for navigation bottom
+        //Phân menu navigation bottom theo role
+        if(role.equals("manager")){
+            bottomNavigationView.getMenu().clear();
+            bottomNavigationView.inflateMenu(R.menu.menu_bottom_navigation2);
+        }
+
+        //Duyệt menu bật những item trong danh sách của role
+        //và tắt những item không trong danh sách
+        //Tác dụng: giúp tránh tình trạng hiển thị các chức năng không được khai báo
+        //trong factory mà xuất hiện trong xml menu
         menu=bottomNavigationView.getMenu();
-        if(role.equals("customer")){
-            menuItem=menu.findItem(R.id.cart_screen);
-            menuItem.setVisible(true);
-            menuItem=menu.findItem(R.id.manage);
-            menuItem.setVisible(false);
-            menuItem=menu.findItem(R.id.manage_account);
-            menuItem.setVisible(false);
+        for(int i =0;i<menu.size();i++){
+            menuItem=menu.getItem(i);
+            if(idList.contains(menuItem.getItemId())){
+                menuItem.setVisible(true);
+            }
+            else{
+                menuItem.setVisible(false);
+            }
         }
-        else if(role.equals("admin")){
-            menuItem=menu.findItem(R.id.cart_screen);
-            menuItem.setVisible(false);
-            menuItem=menu.findItem(R.id.manage);
-            menuItem.setVisible(false);
-            menuItem=menu.findItem(R.id.manage_account);
-            menuItem.setVisible(true);
-        }
-        else if(role.equals("employee")){
-            menuItem=menu.findItem(R.id.cart_screen);
-            menuItem.setVisible(false);
-            menuItem=menu.findItem(R.id.manage);
-            menuItem.setVisible(true);
-            menuItem=menu.findItem(R.id.manage_account);
-            menuItem.setVisible(false);
-        }
-        else if(role.equals("manager")){
-            menuItem=menu.findItem(R.id.cart_screen);
-            menuItem.setVisible(false);
-            menuItem=menu.findItem(R.id.manage);
-            menuItem.setVisible(true);
-            menuItem=menu.findItem(R.id.manage_account);
-            menuItem.setVisible(false);
-        }
+
         //for navigation tool
         menu = navigationView.getMenu();
 

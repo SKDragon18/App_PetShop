@@ -36,7 +36,7 @@ public class ManageAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 4; // trả về 2 item
+        return 4; // trả về số item
     }
 
     @Nullable
