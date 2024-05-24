@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import com.example.petshopapp.tabView.manage.GiongTab;
+import com.example.petshopapp.tabView.manage.LoaiSanPhamTab;
 import com.example.petshopapp.tabView.manage.LoaiThuCungTab;
 import com.example.petshopapp.tabView.manage.ThuCungTab;
 
@@ -26,6 +27,8 @@ public class ManageAdapter extends FragmentStatePagerAdapter {
                 return new LoaiThuCungTab();
             case 2:
                 return new GiongTab();
+            case 3:
+                return new LoaiSanPhamTab();
             default:
                 return new Fragment();
         }
@@ -33,7 +36,7 @@ public class ManageAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 3; // trả về 2 item
+        return 4; // trả về 2 item
     }
 
     @Nullable
@@ -47,6 +50,8 @@ public class ManageAdapter extends FragmentStatePagerAdapter {
                 return "LoaiThuCung";
             case 2:
                 return "Giong";
+            case 3:
+                return "LoaiSanPham";
             default:
                 return "ThuCung";
         }

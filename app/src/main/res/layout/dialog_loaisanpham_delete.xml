@@ -28,26 +28,14 @@
             android:textSize="14sp"
             android:textColor="@color/text_color"
             android:text="Mời kiểm tra trước khi xóa"/>
-
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="12dp"
             android:background="@drawable/bg_white_corner_10_border_gray"
-            android:id="@+id/edtTenGiong"
-            android:hint="Tên giống thú cưng"
+            android:id="@+id/edtTenLoaiSanPham"
+            android:hint="Tên loại sản phẩm"
             android:enabled="false"/>
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/bg_white_corner_10_border_gray"
-            android:id="@+id/edtTenLoaiThuCung"
-            android:hint="Tên loài"
-            android:enabled="false"/>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

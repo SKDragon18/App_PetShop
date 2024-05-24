@@ -14,7 +14,7 @@
         android:textSize="16sp"
         android:gravity="center"
         android:background="@drawable/bg_white_corner_16_top_left_top_right"
-        android:text="Xóa"/>
+        android:text="Sửa"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,27 +27,14 @@
             android:gravity="center"
             android:textSize="14sp"
             android:textColor="@color/text_color"
-            android:text="Mời kiểm tra trước khi xóa"/>
-
+            android:text="Mời nhập đầy đủ thông tin"/>
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="12dp"
             android:background="@drawable/bg_white_corner_10_border_gray"
-            android:id="@+id/edtTenGiong"
-            android:hint="Tên giống thú cưng"
-            android:enabled="false"/>
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:layout_marginTop="12dp"
-            android:background="@drawable/bg_white_corner_10_border_gray"
-            android:id="@+id/edtTenLoaiThuCung"
-            android:hint="Tên loài"
-            android:enabled="false"/>
-
+            android:id="@+id/edtTenLoaiSanPham"
+            android:hint="Tên loại sản phẩm"/>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -70,8 +57,8 @@
                 android:layout_weight="1"
                 android:textSize="14sp"
                 android:background="@drawable/bg_shop_color_corner_10"
-                android:text="Confirm"
-                android:id="@+id/btnConfirm"/>
+                android:text="Update"
+                android:id="@+id/btnUpdate"/>
         </LinearLayout>
     </LinearLayout>
 

@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -65,6 +67,7 @@ public class GiongTab extends Fragment {
 
     GiongManageAdapter giongManageAdapter;
 
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -97,6 +100,7 @@ public class GiongTab extends Fragment {
     }
 
     protected void DocDLLoaiThuCung(){
+        System.out.println("DocDLLoaiThuCungCombobox");
         loaiThuCungService.getAll().enqueue(new Callback<List<LoaiThuCung>>() {
             @Override
             public void onResponse(Call<List<LoaiThuCung>> call, Response<List<LoaiThuCung>> response) {
@@ -156,6 +160,8 @@ public class GiongTab extends Fragment {
 
         Button btnAdd = dialog.findViewById(R.id.btnAdd);
         Button btnCancel= dialog.findViewById(R.id.btnCancel);
+
+        DocDLLoaiThuCung();
 
         //Event
 
@@ -222,6 +228,7 @@ public class GiongTab extends Fragment {
     }
 
     public void DocDL(){
+        System.out.println("DocDLGiong");
         giongService.getAll().enqueue(new Callback<List<Giong>>() {
             @Override
             public void onResponse(Call<List<Giong>> call, Response<List<Giong>> response) {
@@ -253,11 +260,9 @@ public class GiongTab extends Fragment {
 
     public void setEvent(){
 
-        DocDLLoaiThuCung();
+
         giongManageAdapter=new GiongManageAdapter(mView.getContext(),R.layout.item_giong_manage,data);
         lvGiong.setAdapter(giongManageAdapter);
-
-        DocDL();
         btnThem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -269,7 +274,10 @@ public class GiongTab extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        DocDL();
+        if(isVisible()){
+            DocDL();
+        }
+
     }
 
     @Override
@@ -295,4 +303,6 @@ public class GiongTab extends Fragment {
         setEvent();
         return mView;
     }
+
+
 }

@@ -2,6 +2,8 @@ package com.example.petshopapp.tabView.manage;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -68,28 +70,28 @@ public class ThuCungTab extends Fragment {
     public void setEvent(){
         thuCungManageAdapter=new ThuCungManageAdapter(mView.getContext(),R.layout.item_thucung_manage,data);
         gvThuCung.setAdapter(thuCungManageAdapter);
-        DocDL();
     }
 
     public void DocDL(){
+        System.out.println("DocDLThuCung");
         thuCungService.getAll().enqueue(new Callback<List<ThuCung>>() {
             @Override
             public void onResponse(Call<List<ThuCung>> call, Response<List<ThuCung>> response) {
-                if(response.code()== 200){
+                if (response.code() == 200) {
                     data.clear();
-                    for(ThuCung x: response.body()){
+                    for (ThuCung x : response.body()) {
                         data.add(x);
                     }
-                    thuCungManageAdapter.notifyDataSetChanged();}
-                else{
-                    Toast.makeText(mView.getContext(),"Lỗi: "+String.valueOf(response.code()),Toast.LENGTH_SHORT).show();
+                    thuCungManageAdapter.notifyDataSetChanged();
+                } else {
+                    Toast.makeText(mView.getContext(), "Lỗi: " + String.valueOf(response.code()), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(Call<List<ThuCung>> call, Throwable throwable) {
-                Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
-                Toast.makeText(mView.getContext(),"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
+                Log.e("ERROR_API", "Call api fail: " + throwable.getMessage());
+                Toast.makeText(mView.getContext(), "Call api fail: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -127,7 +129,9 @@ public class ThuCungTab extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
+        if(isVisible()){
+            DocDL();
+        }
     }
-
+    //sau khi create view
 }

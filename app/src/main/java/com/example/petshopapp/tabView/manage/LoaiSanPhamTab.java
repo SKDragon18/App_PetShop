@@ -22,9 +22,12 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.petshopapp.R;
+import com.example.petshopapp.adapter.LoaiSanPhamManageAdapter;
 import com.example.petshopapp.adapter.LoaiThuCungManageAdapter;
 import com.example.petshopapp.api.ApiClient;
+import com.example.petshopapp.api.apiservice.LoaiSanPhamService;
 import com.example.petshopapp.api.apiservice.LoaiThuCungService;
+import com.example.petshopapp.model.LoaiSanPham;
 import com.example.petshopapp.model.LoaiThuCung;
 
 import java.util.ArrayList;
@@ -39,37 +42,46 @@ import retrofit2.Retrofit;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link LoaiThuCungTab#newInstance} factory method to
+ * Use the {@link LoaiSanPhamTab#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class LoaiThuCungTab extends Fragment {
-
+public class LoaiSanPhamTab extends Fragment {
     private View mView;
 
     private Button btnThem;
 
-    private ListView lvLoaiThuCung;
+    private ListView lvLoaiSanPham;
 
-    LoaiThuCungService loaiThuCungService;
+    LoaiSanPhamService loaiSanPhamService;
 
-    List<LoaiThuCung> data = new ArrayList<>();
+    List<LoaiSanPham> data = new ArrayList<>();
 
-    LoaiThuCungManageAdapter loaiThuCungManageAdapter;
-
+    LoaiSanPhamManageAdapter loaiSanPhamManageAdapter;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
+    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
-    public LoaiThuCungTab() {
+    public LoaiSanPhamTab() {
         // Required empty public constructor
     }
-    public static LoaiThuCungTab newInstance(String param1, String param2) {
-        LoaiThuCungTab fragment = new LoaiThuCungTab();
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment LoaiSanPhamTab.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static LoaiSanPhamTab newInstance(String param1, String param2) {
+        LoaiSanPhamTab fragment = new LoaiSanPhamTab();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -77,19 +89,10 @@ public class LoaiThuCungTab extends Fragment {
         return fragment;
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
     private void openAddDialog(int gravity){
         final Dialog dialog = new Dialog(mView.getContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_loaithucung_add);
+        dialog.setContentView(R.layout.dialog_loaisanpham_add);
 
         Window window = dialog.getWindow();
         if(window == null)return;
@@ -109,18 +112,18 @@ public class LoaiThuCungTab extends Fragment {
             dialog.setCancelable(true);
         }
 
-        EditText edtTenLoaiThucCung = dialog.findViewById(R.id.edtTenLoaiThuCung);
+        EditText edtTenLoaiSanPham = dialog.findViewById(R.id.edtTenLoaiSanPham);
         Button btnAdd = dialog.findViewById(R.id.btnAdd);
         Button btnCancel= dialog.findViewById(R.id.btnCancel);
 
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                RequestBody requestBody = RequestBody.create(MediaType.parse("text/plain"),edtTenLoaiThucCung.getText().toString());
+                RequestBody requestBody = RequestBody.create(MediaType.parse("text/plain"),edtTenLoaiSanPham.getText().toString());
 
-                loaiThuCungService.insert(requestBody).enqueue(new Callback<LoaiThuCung>() {
+                loaiSanPhamService.insert(requestBody).enqueue(new Callback<LoaiSanPham>() {
                     @Override
-                    public void onResponse(Call<LoaiThuCung> call, Response<LoaiThuCung> response) {
+                    public void onResponse(Call<LoaiSanPham> call, Response<LoaiSanPham> response) {
                         if(response.code()== 200){
                             DocDL();
                             Toast.makeText(mView.getContext(),"Thêm thành công",Toast.LENGTH_SHORT).show();
@@ -128,11 +131,10 @@ public class LoaiThuCungTab extends Fragment {
                         else{
                             Toast.makeText(mView.getContext(),"Lỗi: "+String.valueOf(response.code()),Toast.LENGTH_SHORT).show();
                         }
-
                     }
 
                     @Override
-                    public void onFailure(Call<LoaiThuCung> call, Throwable throwable) {
+                    public void onFailure(Call<LoaiSanPham> call, Throwable throwable) {
                         Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
                         Toast.makeText(mView.getContext(),"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
                     }
@@ -153,38 +155,38 @@ public class LoaiThuCungTab extends Fragment {
     }
 
     public void DocDL(){
-        System.out.println("DocDLLoaiThuCung");
-        loaiThuCungService.getAll().enqueue(new Callback<List<LoaiThuCung>>() {
+        System.out.println("DocDLLoaiSP");
+        loaiSanPhamService.getAll().enqueue(new Callback<List<LoaiSanPham>>() {
             @Override
-            public void onResponse(Call<List<LoaiThuCung>> call, Response<List<LoaiThuCung>> response) {
+            public void onResponse(Call<List<LoaiSanPham>> call, Response<List<LoaiSanPham>> response) {
                 if (response.code() == 200) {
                     data.clear();
-                    for (LoaiThuCung x : response.body()) {
+                    for (LoaiSanPham x : response.body()) {
                         data.add(x);
                     }
-                    loaiThuCungManageAdapter.notifyDataSetChanged();
+                    loaiSanPhamManageAdapter.notifyDataSetChanged();
                 } else {
                     Toast.makeText(mView.getContext(), "Lỗi: " + String.valueOf(response.code()), Toast.LENGTH_SHORT).show();
                 }
-
             }
 
             @Override
-            public void onFailure(Call<List<LoaiThuCung>> call, Throwable throwable) {
+            public void onFailure(Call<List<LoaiSanPham>> call, Throwable throwable) {
                 Log.e("ERROR_API", "Call api fail: " + throwable.getMessage());
                 Toast.makeText(mView.getContext(), "Call api fail: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+
     public void setInit(){
         btnThem=mView.findViewById(R.id.btnThem);
-        lvLoaiThuCung=mView.findViewById(R.id.lvLoaiThuCung);
+        lvLoaiSanPham=mView.findViewById(R.id.lvLoaiSanPham);
     }
 
     public void setEvent(){
-        loaiThuCungManageAdapter=new LoaiThuCungManageAdapter(mView.getContext(),R.layout.item_loaithucung_manage,data);
-        lvLoaiThuCung.setAdapter(loaiThuCungManageAdapter);
+        loaiSanPhamManageAdapter=new LoaiSanPhamManageAdapter(mView.getContext(),R.layout.item_loaisanpham_manage,data);
+        lvLoaiSanPham.setAdapter(loaiSanPhamManageAdapter);
         btnThem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -199,21 +201,30 @@ public class LoaiThuCungTab extends Fragment {
         if(isVisible()){
             DocDL();
         }
+    }
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mView =  inflater.inflate(R.layout.fragment_loai_thu_cung_tab, container, false);
+        mView =  inflater.inflate(R.layout.fragment_loai_san_pham_tab, container, false);
 
         Retrofit retrofit = ApiClient.getClient();
-        loaiThuCungService =retrofit.create(LoaiThuCungService.class);
+        loaiSanPhamService =retrofit.create(LoaiSanPhamService.class);
 
         setInit();
         setEvent();
         return mView;
     }
+
 
 }
