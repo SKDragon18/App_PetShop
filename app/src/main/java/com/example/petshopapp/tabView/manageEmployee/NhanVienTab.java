@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -22,16 +21,16 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 
 import com.example.petshopapp.R;
-import com.example.petshopapp.adapter.GiongManageAdapter;
+import com.example.petshopapp.adapter.NhanVienManageAdapter;
 import com.example.petshopapp.api.ApiClient;
-import com.example.petshopapp.api.apiservice.GiongService;
-import com.example.petshopapp.api.apiservice.LoaiThuCungService;
-import com.example.petshopapp.model.Giong;
-import com.example.petshopapp.model.LoaiThuCung;
+import com.example.petshopapp.api.apiservice.NhanVienService;
+import com.example.petshopapp.model.NhanVien;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -44,23 +43,17 @@ import retrofit2.Retrofit;
  */
 public class NhanVienTab extends Fragment {
 
-
     private View mView;
 
     private Button btnThem;
 
-    private ListView lvGiong;
+    private ListView lvNhanVien;
 
-    GiongService giongService;
-    LoaiThuCungService loaiThuCungService;
+    NhanVienService nhanVienService;
 
-    List<Giong> data = new ArrayList<>();
+    List<NhanVien> data = new ArrayList<>();
 
-    List<LoaiThuCung> loaiThuCungList= new ArrayList<>();
-
-    List<String> tenLoaiThuCungList=new ArrayList<>();
-
-    GiongManageAdapter giongManageAdapter;
+    NhanVienManageAdapter nhanVienManageAdapter;
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -68,23 +61,12 @@ public class NhanVienTab extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     public NhanVienTab() {
         // Required empty public constructor
     }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment GiongTab.
-     */
-    // TODO: Rename and change types and number of parameters
     public static NhanVienTab newInstance(String param1, String param2) {
         NhanVienTab fragment = new NhanVienTab();
         Bundle args = new Bundle();
@@ -94,37 +76,19 @@ public class NhanVienTab extends Fragment {
         return fragment;
     }
 
-    protected void DocDLLoaiThuCung(){
-        System.out.println("DocDLLoaiThuCungCombobox");
-        loaiThuCungService.getAll().enqueue(new Callback<List<LoaiThuCung>>() {
-            @Override
-            public void onResponse(Call<List<LoaiThuCung>> call, Response<List<LoaiThuCung>> response) {
-                if(response.code()==200){
-                    loaiThuCungList.clear();
-                    tenLoaiThuCungList.clear();
-                    for(LoaiThuCung x: response.body()){
-                        loaiThuCungList.add(x);
-                        tenLoaiThuCungList.add(x.getTenLoaiThuCung());
-                    }
-                }
-                else{
-                    Toast.makeText(mView.getContext(),"Lỗi: "+String.valueOf(response.code()),Toast.LENGTH_SHORT).show();
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<List<LoaiThuCung>> call, Throwable throwable) {
-                Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
-                Toast.makeText(mView.getContext(),"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
-            }
-        });
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
     }
 
     private void openAddDialog(int gravity){
         final Dialog dialog = new Dialog(mView.getContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_giong_add);
+        dialog.setContentView(R.layout.dialog_nhanvien_add);
 
         Window window = dialog.getWindow();
         if(window == null)return;
@@ -144,32 +108,20 @@ public class NhanVienTab extends Fragment {
             dialog.setCancelable(true);
         }
 
-        //Init
-        Giong giong = new Giong();
-
-        EditText edtTenGiong=dialog.findViewById(R.id.edtTenGiong);
-        Spinner spLoaiThuCung=dialog.findViewById(R.id.spLoaiThuCung);
-
-        ArrayAdapter adapterDSLoaiThuCung = new ArrayAdapter<>(mView.getContext(), android.R.layout.simple_list_item_1, tenLoaiThuCungList);
-        spLoaiThuCung.setAdapter(adapterDSLoaiThuCung);
-
         Button btnAdd = dialog.findViewById(R.id.btnAdd);
         Button btnCancel= dialog.findViewById(R.id.btnCancel);
+        EditText edtMaNhanVien = dialog.findViewById(R.id.edtMaNhanVien);
+        EditText edtHo=dialog.findViewById(R.id.edtHo);
+        EditText edtTen= dialog.findViewById(R.id.edtTen);
+        EditText edtCCCD = dialog.findViewById(R.id.edtCCCD);
+        EditText edtEmail=dialog.findViewById(R.id.edtEmail);
+        EditText edtSDT= dialog.findViewById(R.id.edtSDT);
+        Spinner spChiNhanh=dialog.findViewById(R.id.spChiNhanh);
 
-        DocDLLoaiThuCung();
-
-        //Event
-
-        spLoaiThuCung.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spChiNhanh.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String tenLoaiThuCung = spLoaiThuCung.getSelectedItem().toString();
-                for(LoaiThuCung x: loaiThuCungList){
-                    if(x.getTenLoaiThuCung().equals(tenLoaiThuCung)){
-                        giong.setLoaiThuCung(x);
-                        break;
-                    }
-                }
+
             }
 
             @Override
@@ -181,34 +133,36 @@ public class NhanVienTab extends Fragment {
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try{
-                    giong.setTengiong(edtTenGiong.getText().toString());
-                    System.out.println(giong.getTengiong());
-                    giongService.insert(giong).enqueue(new Callback<Giong>() {
-                        @Override
-                        public void onResponse(Call<Giong> call, Response<Giong> response) {
-                            if(response.code()== 200){
-                                DocDL();
-                                Toast.makeText(mView.getContext(),"Thêm thành công",Toast.LENGTH_SHORT).show();
-                            }
-                            else{
-                                Toast.makeText(mView.getContext(),"Lỗi: "+String.valueOf(response.code()),Toast.LENGTH_SHORT).show();
-                            }
+                NhanVien nhanVien = new NhanVien();
+                nhanVien.setMaNhanVien(edtMaNhanVien.getText().toString());
+                nhanVien.setHo(edtHo.getText().toString());
+                nhanVien.setTen(edtTen.getText().toString());
+                nhanVien.setCccd(edtCCCD.getText().toString());
+                nhanVien.setSoDienThoai(edtSDT.getText().toString());
+                nhanVien.setEmail(edtEmail.getText().toString());
+                nhanVien.setHinhAnh(null);
+                nhanVien.setChiNhanh(null);
+                nhanVienService.insert(nhanVien).enqueue(new Callback<NhanVien>() {
+                    @Override
+                    public void onResponse(Call<NhanVien> call, Response<NhanVien> response) {
+                        if(response.code()== 200){
+                            DocDL();
+                            Toast.makeText(mView.getContext(),"Thêm thành công",Toast.LENGTH_SHORT).show();
+                        }
+                        else{
+                            Toast.makeText(mView.getContext(),"Lỗi: "+String.valueOf(response.code()),Toast.LENGTH_SHORT).show();
                         }
 
-                        @Override
-                        public void onFailure(Call<Giong> call, Throwable throwable) {
-                            Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
-                            Toast.makeText(mView.getContext(),"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    }
 
-                    dialog.dismiss();
-                }
-                catch (Exception e){
-                    System.out.println(e.getMessage());
-                }
+                    @Override
+                    public void onFailure(Call<NhanVien> call, Throwable throwable) {
+                        Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
+                        Toast.makeText(mView.getContext(),"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
+                    }
+                });
 
+                dialog.dismiss();
             }
         });
 
@@ -223,41 +177,38 @@ public class NhanVienTab extends Fragment {
     }
 
     public void DocDL(){
-        System.out.println("DocDLGiong");
-        giongService.getAll().enqueue(new Callback<List<Giong>>() {
+        System.out.println("DocDLNhanVien");
+        nhanVienService.getAll().enqueue(new Callback<List<NhanVien>>() {
             @Override
-            public void onResponse(Call<List<Giong>> call, Response<List<Giong>> response) {
-                if(response.code()==200){
+            public void onResponse(Call<List<NhanVien>> call, Response<List<NhanVien>> response) {
+                if (response.code() == 200) {
                     data.clear();
-                    for(Giong x: response.body()){
+                    for (NhanVien x : response.body()) {
                         data.add(x);
                     }
-                    giongManageAdapter.notifyDataSetChanged();
-                }
-                else{
-                    Toast.makeText(mView.getContext(),"Lỗi: "+String.valueOf(response.code()),Toast.LENGTH_SHORT).show();
+                    nhanVienManageAdapter.notifyDataSetChanged();
+                } else {
+                    Toast.makeText(mView.getContext(), "Lỗi: " + String.valueOf(response.code()), Toast.LENGTH_SHORT).show();
                 }
 
             }
 
             @Override
-            public void onFailure(Call<List<Giong>> call, Throwable throwable) {
-                Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
-                Toast.makeText(mView.getContext(),"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
+            public void onFailure(Call<List<NhanVien>> call, Throwable throwable) {
+                Log.e("ERROR_API", "Call api fail: " + throwable.getMessage());
+                Toast.makeText(mView.getContext(), "Call api fail: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     public void setInit(){
         btnThem=mView.findViewById(R.id.btnThem);
-        lvGiong=mView.findViewById(R.id.lvGiong);
+        lvNhanVien=mView.findViewById(R.id.lvNhanVien);
     }
 
     public void setEvent(){
-
-
-        giongManageAdapter=new GiongManageAdapter(mView.getContext(),R.layout.item_giong_manage,data);
-        lvGiong.setAdapter(giongManageAdapter);
+        nhanVienManageAdapter=new NhanVienManageAdapter(mView.getContext(),R.layout.item_nhanvien_manage,data);
+        lvNhanVien.setAdapter(nhanVienManageAdapter);
         btnThem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -276,28 +227,17 @@ public class NhanVienTab extends Fragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mView =  inflater.inflate(R.layout.fragment_giong_tab, container, false);
+        mView =  inflater.inflate(R.layout.fragment_nhan_vien_tab, container, false);
 
         Retrofit retrofit = ApiClient.getClient();
-        giongService =retrofit.create(GiongService.class);
-        loaiThuCungService=retrofit.create(LoaiThuCungService.class);
+        nhanVienService =retrofit.create(NhanVienService.class);
 
         setInit();
         setEvent();
         return mView;
     }
-
 
 }

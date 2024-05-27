@@ -151,7 +151,7 @@ public class ChiNhanhTab extends Fragment {
     }
 
     public void DocDL(){
-        System.out.println("DocDLLoaiSP");
+        System.out.println("DocDLChiNhanh");
         chiNhanhService.getAll().enqueue(new Callback<List<ChiNhanh>>() {
             @Override
             public void onResponse(Call<List<ChiNhanh>> call, Response<List<ChiNhanh>> response) {

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <!--All-->
-    <item android:id="@+id/home_screen" android:title="Home" android:icon="@drawable/eye"/>
+    <item android:id="@+id/home_screen" android:title="Home" android:icon="@drawable/home"/>
     <!--Manager-->
-    <item android:id="@+id/manage" android:title="Manage" android:icon="@drawable/eye"/>
+    <item android:id="@+id/manage" android:title="Manage" android:icon="@drawable/planning"/>
 
-    <item android:id="@+id/manage_employee" android:title="Manage Employee" android:icon="@drawable/eye"/>
+    <item android:id="@+id/manage_employee" android:title="Manage Employee" android:icon="@drawable/management"/>
     <!--All-->
-    <item android:id="@+id/user_screen" android:title="User" android:icon="@drawable/eye"/>
+    <item android:id="@+id/user_screen" android:title="User" android:icon="@drawable/user"/>
 </menu>

@@ -12,35 +12,42 @@
             android:orientation="horizontal"
             android:layout_marginVertical="5dp">
             <TextView
-                android:id="@+id/tvMaGiong"
+                android:id="@+id/tvMaNhanVien"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:paddingVertical="10dp"
+                android:textIsSelectable="true"
+                android:text="Mã"/>
+            <TextView
+                android:id="@+id/tvHoTen"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center"
+                android:paddingVertical="10dp"
+                android:text="Họ và tên"/>
+            <TextView
+                android:id="@+id/tvSDT"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="2"
                 android:gravity="center"
                 android:paddingVertical="10dp"
-
-                android:text="Mã"/>
+                android:text="SĐT"
+                android:textIsSelectable="true"
+                />
             <TextView
-                android:id="@+id/tvTenGiong"
+                android:id="@+id/tvEmail"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="3"
+                android:layout_weight="2"
                 android:gravity="center"
                 android:paddingVertical="10dp"
-                android:layout_marginEnd="5dp"
-
-                android:text="Tên"/>
-
-            <TextView
-                android:id="@+id/tvLoaiThuCung"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="3"
-                android:gravity="center"
-                android:paddingVertical="10dp"
-                android:layout_marginEnd="5dp"
-                android:text="Loại"/>
-
+                android:text="Email"
+                android:textIsSelectable="true"
+                />
             <Button
                 android:id="@+id/btnUpdate"
                 android:layout_width="0dp"

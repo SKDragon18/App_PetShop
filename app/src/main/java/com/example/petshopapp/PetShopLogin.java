@@ -77,6 +77,13 @@ public class PetShopLogin extends AppCompatActivity {
                 startActivity(newIntent);
             }
         });
+        btnRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent newIntent=new Intent(PetShopLogin.this, PetShopRegister.class);
+                startActivity(newIntent);
+            }
+        });
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
