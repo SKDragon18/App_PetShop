@@ -27,7 +27,6 @@ import com.example.petshopapp.fragment.adapter.ViewPagerAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class PetShopMain extends AppCompatActivity{
@@ -54,6 +53,7 @@ public class PetShopMain extends AppCompatActivity{
     FragmentFactoryCustom fragmentFactoryCustom;
 
     //Info
+    SharedPreferences sharedPreferences;
     String name;
     String role;
     //Hỗ trợ giao diện
@@ -62,15 +62,12 @@ public class PetShopMain extends AppCompatActivity{
 
     void setInit(){
 
-
-
         //SharedPreferences: Lưu trữ thông tin bằng file trong điện thoại
-        SharedPreferences sharedPreferences =
-                getSharedPreferences(getString(R.string.preference_file_key),MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences(getString(R.string.preference_file_key),MODE_PRIVATE);
 
         //Lấy thông tin
         name= sharedPreferences.getString("username","");
-        role=sharedPreferences.getString("role","");
+        role= sharedPreferences.getString("role","");
 
         //factory
         fragmentFactoryCustom=new FragmentFactoryCustom();
@@ -98,7 +95,15 @@ public class PetShopMain extends AppCompatActivity{
         //Phân menu navigation bottom theo role
         if(role.equals("manager")){
             bottomNavigationView.getMenu().clear();
-            bottomNavigationView.inflateMenu(R.menu.menu_bottom_navigation2);
+            bottomNavigationView.inflateMenu(R.menu.menu_bottom_navigation_manager);
+        }
+        else if(role.equals("admin")){
+            bottomNavigationView.getMenu().clear();
+            bottomNavigationView.inflateMenu(R.menu.menu_bottom_navigation_admin);
+        }
+        else if(role.equals("employee")){
+            bottomNavigationView.getMenu().clear();
+            bottomNavigationView.inflateMenu(R.menu.menu_bottom_navigation_employee);
         }
 
         //Duyệt menu bật những item trong danh sách của role
@@ -119,7 +124,7 @@ public class PetShopMain extends AppCompatActivity{
         //for navigation tool
         menu = navigationView.getMenu();
 
-        if(name.equals("admin")){
+        if(role.equals("admin")){
             int groupId= R.id.groupAdmin;
             for(int i =0;i<menu.size();i++){
                 menuItem=menu.getItem(i);
@@ -166,17 +171,6 @@ public class PetShopMain extends AppCompatActivity{
             @Override
             public void onPageSelected(int position) {
                 bottomNavigationView.getMenu().findItem(idList.get(position)).setChecked(true);
-//                switch (position){
-//                    case 0:
-//                        bottomNavigationView.getMenu().findItem(R.id.home_screen).setChecked(true);
-//                        break;
-//                    case 1:
-//                        bottomNavigationView.getMenu().findItem(R.id.cart_screen).setChecked(true);
-//                        break;
-//                    case 2:
-//                        bottomNavigationView.getMenu().findItem(R.id.user_screen).setChecked(true);
-//                        break;
-//                }
             }
 
             @Override
@@ -191,22 +185,6 @@ public class PetShopMain extends AppCompatActivity{
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id=item.getItemId();
                 viewPager.setCurrentItem(idList.indexOf(id));
-//                for (int i =0;i<idList.size();i++){
-//                    if(idArray[i]==id){
-//                        viewPager.setCurrentItem(i);
-//                        break;
-//                    }
-//                }
-
-//                if(id==R.id.home_screen){
-//                    viewPager.setCurrentItem(0);
-//                }
-//                else if(id==R.id.cart_screen){
-//                    viewPager.setCurrentItem(1);
-//                }
-//                else if(id==R.id.user_screen){
-//                    viewPager.setCurrentItem(2);
-//                }
                 return true;
             }
         });
@@ -218,11 +196,8 @@ public class PetShopMain extends AppCompatActivity{
                 llFragment.setVisibility(View.GONE);
                 if(id==R.id.nav_home){
                     viewPager.setCurrentItem(tagList.indexOf("home"));
-//                    viewPager.setCurrentItem(0);
                 }
                 else if(id==R.id.nav_cart){
-//                    viewPager.setCurrentItem(1);
-
                     llNavigation.setVisibility(View.GONE);
                     llFragment.setVisibility(View.VISIBLE);
                     Fragment fragment=new HomeScreen();
@@ -233,8 +208,17 @@ public class PetShopMain extends AppCompatActivity{
                 }
                 else if(id==R.id.nav_user){
                     viewPager.setCurrentItem(tagList.indexOf("user"));
-//                    viewPager.setCurrentItem(2);
                 }
+                else if(id==R.id.log_out){
+                    if (!sharedPreferences.getBoolean("saveStatus",false)){
+                        sharedPreferences.edit().remove("username").apply();
+                        sharedPreferences.edit().remove("password").apply();
+                        sharedPreferences.edit().remove("role").apply();
+                    }
+                    finish();
+                }
+
+                //Tắt toolbar khi chọn xong trên menu
                 if(drawer.isDrawerOpen(GravityCompat.START)){
                     drawer.closeDrawer(GravityCompat.START);
                 }
@@ -254,6 +238,7 @@ public class PetShopMain extends AppCompatActivity{
 
     @Override
     public void onBackPressed(){
+        //Tắt toolbar khi nhẩn phím trả về mặc định
         if(drawer.isDrawerOpen(GravityCompat.START)){
             drawer.closeDrawer(GravityCompat.START);
         }

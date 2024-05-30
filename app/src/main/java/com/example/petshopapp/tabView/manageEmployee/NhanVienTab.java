@@ -1,9 +1,21 @@
 package com.example.petshopapp.tabView.manageEmployee;
 
+import static android.companion.CompanionDeviceManager.RESULT_OK;
+import static androidx.core.content.PermissionChecker.checkSelfPermission;
+
+import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -12,25 +24,54 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.petshopapp.R;
 import com.example.petshopapp.adapter.NhanVienManageAdapter;
 import com.example.petshopapp.api.ApiClient;
+import com.example.petshopapp.api.Const;
+import com.example.petshopapp.api.apiservice.ChiNhanhService;
+import com.example.petshopapp.api.apiservice.HinhAnhService;
 import com.example.petshopapp.api.apiservice.NhanVienService;
+import com.example.petshopapp.model.ChiNhanh;
+import com.example.petshopapp.model.HinhAnh;
+import com.example.petshopapp.model.LoaiThuCung;
 import com.example.petshopapp.model.NhanVien;
+import com.example.petshopapp.tools.ImageInteract;
+import com.example.petshopapp.tools.MultipartParser;
+import com.example.petshopapp.tools.RealPathUtil;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -42,18 +83,61 @@ import retrofit2.Retrofit;
  * create an instance of this fragment.
  */
 public class NhanVienTab extends Fragment {
-
+    //Đối tượng view
     private View mView;
-
     private Button btnThem;
-
     private ListView lvNhanVien;
 
+    //API
     NhanVienService nhanVienService;
+    ChiNhanhService chiNhanhService;
+    HinhAnhService hinhAnhService;
 
+    //Data
     List<NhanVien> data = new ArrayList<>();
+    List<ChiNhanh> chiNhanhList= new ArrayList<>();
+    List<String> tenChiNhanhList=new ArrayList<>();
 
+    //Adapter
     NhanVienManageAdapter nhanVienManageAdapter;
+    ArrayAdapter adapterDSChiNhanh;
+
+    //Avatar
+    private static final int MY_REQUEST_CODE = 123;
+    ImageView ivAvatar;
+    Bitmap bitmap;
+    Uri mUri;
+    private ActivityResultLauncher<Intent> mActivityResultLancher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    Log.e(NhanVienTab.class.getName(),"onActivityResult");
+                    if(result.getResultCode() == Activity.RESULT_OK){
+                        Intent data = result.getData();
+                        if(data == null ){
+                            return;
+                        }
+                        Uri uri = data.getData();
+                        mUri=uri;
+                        try{
+                            bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(),uri);
+                            ivAvatar.setImageBitmap(bitmap);
+                        } catch (FileNotFoundException e) {
+                            Log.e("FileNotFoundException", e.getMessage());
+                            Toast.makeText(getContext(),"FileNotFoundException" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            bitmap=null;
+                            ivAvatar.setImageResource(R.mipmap.ic_launcher);
+                        } catch (IOException e) {
+                            Log.e("IOException", e.getMessage());
+                            Toast.makeText(getContext(),"IOException" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            bitmap=null;
+                            ivAvatar.setImageResource(R.mipmap.ic_launcher);
+                        }
+                    }
+                }
+            }
+    );
 
 
     // TODO: Rename parameter arguments, choose names that match
@@ -108,6 +192,7 @@ public class NhanVienTab extends Fragment {
             dialog.setCancelable(true);
         }
 
+        Button btnUpload=dialog.findViewById(R.id.btnUpload);
         Button btnAdd = dialog.findViewById(R.id.btnAdd);
         Button btnCancel= dialog.findViewById(R.id.btnCancel);
         EditText edtMaNhanVien = dialog.findViewById(R.id.edtMaNhanVien);
@@ -117,11 +202,23 @@ public class NhanVienTab extends Fragment {
         EditText edtEmail=dialog.findViewById(R.id.edtEmail);
         EditText edtSDT= dialog.findViewById(R.id.edtSDT);
         Spinner spChiNhanh=dialog.findViewById(R.id.spChiNhanh);
+        ivAvatar = dialog.findViewById(R.id.ivAvatar);
+
+        adapterDSChiNhanh = new ArrayAdapter<>(mView.getContext(), android.R.layout.simple_list_item_1, tenChiNhanhList);
+        spChiNhanh.setAdapter(adapterDSChiNhanh);
+        DocDLChiNhanh();
+        NhanVien nhanVien = new NhanVien();
 
         spChiNhanh.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
+                String ten = spChiNhanh.getSelectedItem().toString();
+                for(ChiNhanh x: chiNhanhList){
+                    if(x.getTenChiNhanh().equals(ten)){
+                        nhanVien.setChiNhanh(x);
+                        break;
+                    }
+                }
             }
 
             @Override
@@ -130,10 +227,17 @@ public class NhanVienTab extends Fragment {
             }
         });
 
+        btnUpload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickRequestPermission();
+            }
+        });
+
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NhanVien nhanVien = new NhanVien();
+
                 nhanVien.setMaNhanVien(edtMaNhanVien.getText().toString());
                 nhanVien.setHo(edtHo.getText().toString());
                 nhanVien.setTen(edtTen.getText().toString());
@@ -141,11 +245,12 @@ public class NhanVienTab extends Fragment {
                 nhanVien.setSoDienThoai(edtSDT.getText().toString());
                 nhanVien.setEmail(edtEmail.getText().toString());
                 nhanVien.setHinhAnh(null);
-                nhanVien.setChiNhanh(null);
                 nhanVienService.insert(nhanVien).enqueue(new Callback<NhanVien>() {
                     @Override
                     public void onResponse(Call<NhanVien> call, Response<NhanVien> response) {
                         if(response.code()== 200){
+                            NhanVien nhanVienMoi = response.body();
+                            sendImage(nhanVienMoi.getMaNhanVien(), "", "","");
                             DocDL();
                             Toast.makeText(mView.getContext(),"Thêm thành công",Toast.LENGTH_SHORT).show();
                         }
@@ -169,13 +274,37 @@ public class NhanVienTab extends Fragment {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog.dismiss();
+                getImage();
+//                dialog.dismiss();
             }
         });
 
         dialog.show();
     }
+    public void DocDLChiNhanh(){
+        chiNhanhService.getAll().enqueue(new Callback<List<ChiNhanh>>() {
+            @Override
+            public void onResponse(Call<List<ChiNhanh>> call, Response<List<ChiNhanh>> response) {
+                if (response.code() == 200) {
+                    chiNhanhList.clear();
+                    tenChiNhanhList.clear();
+                    for (ChiNhanh x : response.body()) {
+                        chiNhanhList.add(x);
+                        tenChiNhanhList.add(x.getTenChiNhanh());
+                    }
+                    adapterDSChiNhanh.notifyDataSetChanged();
+                } else {
+                    Toast.makeText(mView.getContext(), "Lỗi: " + String.valueOf(response.code()), Toast.LENGTH_SHORT).show();
+                }
+            }
 
+            @Override
+            public void onFailure(Call<List<ChiNhanh>> call, Throwable throwable) {
+                Log.e("ERROR_API", "Call api fail: " + throwable.getMessage());
+                Toast.makeText(mView.getContext(), "Call api fail: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     public void DocDL(){
         System.out.println("DocDLNhanVien");
         nhanVienService.getAll().enqueue(new Callback<List<NhanVien>>() {
@@ -223,7 +352,157 @@ public class NhanVienTab extends Fragment {
         if(isVisible()){
             DocDL();
         }
+    }
+    private void sendImage(String maNhanVien, String maKhachHang, String maThuCung, String maSanPham){
+        RequestBody requestBodyMaNhanVien = RequestBody.create(MediaType.parse("multipart/form-data"), maNhanVien);
+        RequestBody requestBodyMaKhachHang = RequestBody.create(MediaType.parse("multipart/form-data"), maKhachHang);
+        RequestBody requestBodyMaThuCung = RequestBody.create(MediaType.parse("multipart/form-data"), maThuCung);
+        RequestBody requestBodyMaSanPham = RequestBody.create(MediaType.parse("multipart/form-data"), maSanPham);
 
+        String imgRealPath = RealPathUtil.getRealPath(this.getContext(), mUri);
+        File file = new File(imgRealPath);
+        RequestBody requestBodyAvatar = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        MultipartBody.Part multipartBodyAvatar = MultipartBody.Part.createFormData(Const.KEY_IMAGE, file.getName(), requestBodyAvatar);
+
+        hinhAnhService.saveImage(multipartBodyAvatar, requestBodyMaNhanVien, requestBodyMaKhachHang,
+                requestBodyMaThuCung, requestBodyMaSanPham).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try{
+                    if(response.code() == 200){
+                        String result = response.body().string();
+                        Toast.makeText(mView.getContext(),result,Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        String message="Lỗi: "+String.valueOf(response.code())
+                                +"\n"+"Chi tiết: "+ response.errorBody().string();
+                        Log.e("ERROR","Call api fail: "+message);
+                    }
+                }
+                catch (Exception e){
+                    System.out.println(e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
+                Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
+                Toast.makeText(mView.getContext(),"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void getImage(){
+        hinhAnhService.getImage(new long[]{13,14}).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try{
+                    if(response.code() == 200){
+                        ResponseBody responseBody = response.body();
+                        InputStream inputStream = responseBody.byteStream();
+                        String contentType= response.headers().get("Content-Type");
+                        String boundary= contentType.substring(contentType.indexOf("boundary=")+9);
+                        System.out.println(contentType);
+                        System.out.println(boundary);
+                        List<byte[]> list = MultipartParser.parseMultipartResponse(inputStream,boundary);
+                        bitmap = ImageInteract.convertByteArrayToBitmap(list.get(0));
+
+//                        System.out.println(responseBody.string());
+//                        Toast.makeText(getContext(), responseBody.string(),Toast.LENGTH_SHORT).show();
+//                        InputStream inputStream = responseBody.byteStream();
+//                        List<Bitmap> bitmaps = new ArrayList<>();
+//                        Bitmap bitmapTemp;
+//                        while((bitmapTemp=BitmapFactory.decodeStream(inputStream))!=null){
+//                            bitmaps.add(bitmapTemp);
+//                        }
+//                        System.out.println(bitmaps.size());
+//                        bitmap=bitmaps.get(0);
+//                        System.out.println(bitmap);
+                        if(bitmap == null){
+                            Toast.makeText(getContext(),"Bitmap null",Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        ivAvatar.setImageBitmap(bitmap);
+                    }
+                    else{
+                        String message="Lỗi: "+String.valueOf(response.code())
+                                +"\n"+"Chi tiết: "+ response.errorBody().string();
+                        Log.e("ERROR","Call api fail: "+message);
+                    }
+                }
+                catch (Exception e){
+                    System.out.println(e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
+                System.out.println(throwable.getMessage());
+            }
+        });
+    }
+
+//    private void getImage(){
+//        hinhAnhService.getImage(new long[]{13}).enqueue(new Callback<List<HinhAnh>>() {
+//            @Override
+//            public void onResponse(Call<List<HinhAnh>> call, Response<List<HinhAnh>> response) {
+//                try{
+//                    if(response.code() == 200){
+//                        List<HinhAnh> list = response.body();
+//                        String source = list.get(0).getSource();
+//                        bitmap= ImageInteract.convertStringToBitmap(source);
+//                        if(bitmap == null){
+//                            Toast.makeText(getContext(),"Bitmap null",Toast.LENGTH_SHORT).show();
+//                            return;
+//                        }
+//                        ivAvatar.setImageBitmap(bitmap);
+//                    }
+//                    else{
+//                        String message="Lỗi: "+String.valueOf(response.code())
+//                                +"\n"+"Chi tiết: "+ response.errorBody().string();
+//                        Log.e("ERROR","Call api fail: "+message);
+//                    }
+//                }
+//                catch (Exception e){
+//                    System.out.println(e.getMessage());
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call<List<HinhAnh>> call, Throwable throwable) {
+//                System.out.println(throwable.getMessage());
+//            }
+//        });
+//    }
+
+    private void getGallery(){
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        mActivityResultLancher.launch(Intent.createChooser(intent, "Select picture"));
+    }
+
+    private void onClickRequestPermission(){
+        if(Build.VERSION.SDK_INT< Build.VERSION_CODES.M){
+            getGallery();
+            return;
+        }
+        if(this.getContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)==PackageManager.PERMISSION_GRANTED){
+            getGallery();
+        }
+        else{
+            String [] permission = {Manifest.permission.READ_EXTERNAL_STORAGE};
+            this.requestPermissions(permission,MY_REQUEST_CODE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode==MY_REQUEST_CODE){
+            if(grantResults.length>0&&grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                getGallery();
+            }
+        }
     }
 
     @Override
@@ -234,6 +513,8 @@ public class NhanVienTab extends Fragment {
 
         Retrofit retrofit = ApiClient.getClient();
         nhanVienService =retrofit.create(NhanVienService.class);
+        chiNhanhService=retrofit.create(ChiNhanhService.class);
+        hinhAnhService=retrofit.create(HinhAnhService.class);
 
         setInit();
         setEvent();

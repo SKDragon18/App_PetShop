@@ -9,17 +9,16 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import com.example.petshopapp.R;
-import com.example.petshopapp.tabView.manage.adapter.ManageAdapter;
 import com.example.petshopapp.tabView.manageEmployee.adapter.ManageEmployeeAdapter;
 import com.example.petshopapp.widget.CustomViewPager;
 import com.google.android.material.tabs.TabLayout;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link ManageScreenEmployee#newInstance} factory method to
+ * Use the {@link ManageEmployeeScreen#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ManageScreenEmployee extends Fragment {
+public class ManageEmployeeScreen extends Fragment {
 
     private TabLayout tabLayout;
     private CustomViewPager viewPager;
@@ -31,7 +30,7 @@ public class ManageScreenEmployee extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public ManageScreenEmployee() {
+    public ManageEmployeeScreen() {
         // Required empty public constructor
     }
 
@@ -44,8 +43,8 @@ public class ManageScreenEmployee extends Fragment {
      * @return A new instance of fragment manageScreen.
      */
     // TODO: Rename and change types and number of parameters
-    public static ManageScreenEmployee newInstance(String param1, String param2) {
-        ManageScreenEmployee fragment = new ManageScreenEmployee();
+    public static ManageEmployeeScreen newInstance(String param1, String param2) {
+        ManageEmployeeScreen fragment = new ManageEmployeeScreen();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);

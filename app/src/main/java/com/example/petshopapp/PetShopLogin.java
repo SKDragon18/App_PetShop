@@ -33,12 +33,6 @@ public class PetShopLogin extends AppCompatActivity {
                 getString(R.string.preference_file_key),MODE_PRIVATE);
         editor =  sharedPreferences.edit();
         
-        cbGhiNho.setChecked(sharedPreferences.getBoolean("saveStatus",false));
-        if (sharedPreferences.getBoolean("saveStatus",false)){
-            edtUsername.setText(sharedPreferences.getString("username",""));
-            edtPassword.setText(sharedPreferences.getString("password",""));
-        }
-
 
     }
     public void setEvent(){
@@ -85,6 +79,15 @@ public class PetShopLogin extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cbGhiNho.setChecked(sharedPreferences.getBoolean("saveStatus",false));
+        edtUsername.setText(sharedPreferences.getString("username",""));
+        edtPassword.setText(sharedPreferences.getString("password",""));
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

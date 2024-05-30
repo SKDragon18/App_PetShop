@@ -12,13 +12,14 @@ public class NhanVien {
     private String email;
     private ChiNhanh chiNhanh;
     private List<Long> hinhAnh;
+    private boolean trangThai;
 
     public NhanVien() {
     }
 
     public NhanVien(String maNhanVien, String ho, String ten, String cccd,
                     String chucVu, String soDienThoai, String email, ChiNhanh chiNhanh,
-                    List<Long> hinhAnh) {
+                    List<Long> hinhAnh, boolean trangThai) {
         this.maNhanVien = maNhanVien;
         this.ho = ho;
         this.ten = ten;
@@ -28,6 +29,7 @@ public class NhanVien {
         this.email = email;
         this.chiNhanh = chiNhanh;
         this.hinhAnh = hinhAnh;
+        this.trangThai=trangThai;
     }
 
     public String getMaNhanVien() {
@@ -100,5 +102,13 @@ public class NhanVien {
 
     public void setHinhAnh(List<Long> hinhAnh) {
         this.hinhAnh = hinhAnh;
+    }
+
+    public boolean isTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(boolean trangThai) {
+        this.trangThai = trangThai;
     }
 }

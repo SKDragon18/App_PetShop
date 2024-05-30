@@ -6,7 +6,8 @@ import com.example.petshopapp.R;
 import com.example.petshopapp.fragment.CartScreen;
 import com.example.petshopapp.fragment.HomeScreen;
 import com.example.petshopapp.fragment.ManageScreen;
-import com.example.petshopapp.fragment.ManageScreenEmployee;
+import com.example.petshopapp.fragment.ManageEmployeeScreen;
+import com.example.petshopapp.fragment.ManageUserScreen;
 import com.example.petshopapp.fragment.UserScreen;
 
 import java.util.ArrayList;
@@ -20,8 +21,8 @@ public class FragmentFactoryCustom {
     private static final Integer []idRoleCustomer=new Integer[]{R.id.home_screen,R.id.cart_screen,R.id.user_screen};
 
     //Role employee
-    private static final String []tagRoleEmployee= new String[]{"home","user"};
-    private static final Integer []idRoleEmployee=new Integer[]{R.id.home_screen,R.id.user_screen};
+    private static final String []tagRoleEmployee= new String[]{"home","product_import","user"};
+    private static final Integer []idRoleEmployee=new Integer[]{R.id.home_screen,R.id.product_import,R.id.user_screen};
 
     //Role manager
     private static final String []tagRoleManager= new String[]{"home","manage","manage_employee","user"};
@@ -79,9 +80,11 @@ public class FragmentFactoryCustom {
             case "manage":
                 return new ManageScreen();
             case "manage_account":
-                return new CartScreen();
+                return new ManageUserScreen();
             case "manage_employee":
-                return new ManageScreenEmployee();
+                return new ManageEmployeeScreen();
+            case "product_import":
+                return new Fragment();
             default:
                 return new Fragment();
         }

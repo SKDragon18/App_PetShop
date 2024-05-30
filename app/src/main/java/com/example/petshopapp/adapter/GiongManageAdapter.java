@@ -145,9 +145,6 @@ public class GiongManageAdapter extends ArrayAdapter {
             });
 
             spLoaiThuCung.setSelection(tenLoaiThuCungList.indexOf(giong.getLoaiThuCung().getTenLoaiThuCung()));
-            for(String x: tenLoaiThuCungList){
-                System.out.println(x);
-            }
             btnUpdate.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

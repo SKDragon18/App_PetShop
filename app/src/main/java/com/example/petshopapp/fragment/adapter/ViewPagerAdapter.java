@@ -25,17 +25,7 @@ public class ViewPagerAdapter extends FragmentStatePagerAdapter {
     @NonNull
     @Override
     public Fragment getItem(int position) {
-        return fragmentFactory.createFragment(fragmentNameList.get(position));
-//        switch (position){
-//            case 0:
-//                return new HomeScreen();
-//            case 1:
-//                return new CartScreen();
-//            case 2:
-//                return new UserScreen();
-//            default:
-//                return new HomeScreen();
-//        }
+        return fragmentFactory.createFragment(fragmentNameList.get(position));//Trả về fragment screen
     }
 
     @Override

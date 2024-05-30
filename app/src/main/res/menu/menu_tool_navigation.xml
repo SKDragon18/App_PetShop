@@ -28,5 +28,8 @@
             android:icon="@drawable/ic_menu_slideshow"
             android:title="@string/menu_user" />
     </group>
+    <item android:id="@+id/log_out"
+        android:icon="@drawable/logout"
+        android:title="@string/menu_logout"/>
 
 </menu>
