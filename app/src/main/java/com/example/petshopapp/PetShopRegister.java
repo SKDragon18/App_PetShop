@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.petshopapp.api.ApiClient;
 import com.example.petshopapp.api.apiservice.DangKyService;
+import com.example.petshopapp.message.SendMessage;
 import com.example.petshopapp.model.ThongTinDangKy;
 import com.example.petshopapp.model.ThongTinXacNhan;
 
@@ -48,7 +49,6 @@ public class PetShopRegister extends AppCompatActivity {
                 if(response.code()==200){
                     try {
                         String result = response.body().string();
-
                         Toast.makeText(PetShopRegister.this,result, Toast.LENGTH_SHORT).show();
                         if(result.equals("Xác nhận thành công, đăng nhập để tiếp tục")||result.equals("Tài khoản đã được xác nhận")){
                             dialog.dismiss();
@@ -60,14 +60,21 @@ public class PetShopRegister extends AppCompatActivity {
                     }
                 }
                 else{
-                    Toast.makeText(PetShopRegister.this,"Thất bại", Toast.LENGTH_SHORT).show();
+                    try {
+                        int code = response.code();
+                        String message = response.message();
+                        String error = response.errorBody().string();
+                        SendMessage.sendMessageFail(PetShopRegister.this,code,error,message);
+                    } catch (Exception e) {
+                        SendMessage.sendCatch(PetShopRegister.this,e.getMessage());
+                        return;
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable throwable) {
-                Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
-                Toast.makeText(PetShopRegister.this,"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
+                SendMessage.sendApiFail(PetShopRegister.this,throwable);
             }
         });
     }
@@ -106,17 +113,29 @@ public class PetShopRegister extends AppCompatActivity {
                 dangKyService.getAgain(thongTinDangKy).enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        try {
-                            maXacNhan = response.body().string();
-                            Toast.makeText(PetShopRegister.this, "Đã gửi lại mã",Toast.LENGTH_SHORT).show();
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
+                        if(response.code()==200){
+                            try {
+                                maXacNhan = response.body().string();
+                                Toast.makeText(PetShopRegister.this, "Đã gửi lại mã",Toast.LENGTH_SHORT).show();
+                            } catch (IOException e) {
+                                SendMessage.sendCatch(PetShopRegister.this,e.getMessage());
+                            }
+                        }
+                        else{
+                            try {
+                                int code = response.code();
+                                String message = response.message();
+                                String error = response.errorBody().string();
+                                SendMessage.sendMessageFail(PetShopRegister.this,code,error,message);
+                            } catch (Exception e) {
+                                SendMessage.sendCatch(PetShopRegister.this,e.getMessage());
+                                return;
+                            }
                         }
                     }
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable throwable) {
-                        Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
-                        Toast.makeText(PetShopRegister.this,"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
+                        SendMessage.sendApiFail(PetShopRegister.this,throwable);
                     }
                 });
             }
@@ -180,14 +199,6 @@ public class PetShopRegister extends AppCompatActivity {
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         if(response.code() == 200) {
                             try {
-                                if (response == null) {
-                                    System.out.println("response null");
-                                    return;
-                                }
-                                if (response.body() == null) {
-                                    System.out.println("response body null");
-                                    return;
-                                }
                                 maXacNhan = response.body().string();
                                 openConfirmDialog(Gravity.CENTER);
                             } catch (IOException e) {
@@ -195,15 +206,21 @@ public class PetShopRegister extends AppCompatActivity {
                             }
                         }
                         else{
-                            System.out.println("Thất bại");
-                            Toast.makeText(PetShopRegister.this,"Thất bại",Toast.LENGTH_SHORT).show();
+                            try {
+                                int code = response.code();
+                                String message = response.message();
+                                String error = response.errorBody().string();
+                                SendMessage.sendMessageFail(PetShopRegister.this,code,error,message);
+                            } catch (Exception e) {
+                                SendMessage.sendCatch(PetShopRegister.this,e.getMessage());
+                                return;
+                            }
                         }
                     }
 
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable throwable) {
-                        Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
-                        Toast.makeText(PetShopRegister.this,"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
+                        SendMessage.sendApiFail(PetShopRegister.this,throwable);
                     }
                 });
             }

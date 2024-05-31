@@ -28,13 +28,28 @@
             android:textSize="14sp"
             android:textColor="@color/text_color"
             android:text="Mời nhập đầy đủ thông tin"/>
-        <EditText
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:background="@drawable/bg_white_corner_10_border_gray"
-            android:id="@+id/edtTenLoaiSanPham"
-            android:hint="Tên loại sản phẩm"/>
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center"
+                android:textSize="12dp"
+                android:text="Tên loại sản phẩm: "/>
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="7"
+                android:padding="12dp"
+                android:background="@drawable/bg_white_corner_10_border_gray"
+                android:id="@+id/edtTenLoaiSanPham"
+                android:hint="Tên loại sản phẩm"/>
+        </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

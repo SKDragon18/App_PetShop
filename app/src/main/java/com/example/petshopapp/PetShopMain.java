@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.petshopapp.api.ApiClient;
 import com.example.petshopapp.factory.FragmentFactoryCustom;
 import com.example.petshopapp.fragment.HomeScreen;
 import com.example.petshopapp.fragment.adapter.ViewPagerAdapter;
@@ -93,15 +94,15 @@ public class PetShopMain extends AppCompatActivity{
 
         //for navigation bottom
         //Phân menu navigation bottom theo role
-        if(role.equals("manager")){
+        if(role.equals(fragmentFactoryCustom.getRole(3))){
             bottomNavigationView.getMenu().clear();
             bottomNavigationView.inflateMenu(R.menu.menu_bottom_navigation_manager);
         }
-        else if(role.equals("admin")){
+        else if(role.equals(fragmentFactoryCustom.getRole(2))){
             bottomNavigationView.getMenu().clear();
             bottomNavigationView.inflateMenu(R.menu.menu_bottom_navigation_admin);
         }
-        else if(role.equals("employee")){
+        else if(role.equals(fragmentFactoryCustom.getRole(1))){
             bottomNavigationView.getMenu().clear();
             bottomNavigationView.inflateMenu(R.menu.menu_bottom_navigation_employee);
         }
@@ -124,7 +125,7 @@ public class PetShopMain extends AppCompatActivity{
         //for navigation tool
         menu = navigationView.getMenu();
 
-        if(role.equals("admin")){
+        if(role.equals(fragmentFactoryCustom.getRole(2))){
             int groupId= R.id.groupAdmin;
             for(int i =0;i<menu.size();i++){
                 menuItem=menu.getItem(i);
@@ -215,6 +216,7 @@ public class PetShopMain extends AppCompatActivity{
                         sharedPreferences.edit().remove("password").apply();
                         sharedPreferences.edit().remove("role").apply();
                     }
+                    ApiClient.setAuToken("");//giải phóng token
                     finish();
                 }
 

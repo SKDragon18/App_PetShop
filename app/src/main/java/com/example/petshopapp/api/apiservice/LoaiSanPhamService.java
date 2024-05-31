@@ -16,19 +16,19 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface LoaiSanPhamService {
-    @GET("loaisanpham")
+    @GET("center/loaisanpham")
     Call<List<LoaiSanPham>> getAll();
 
-    @GET("loaisanpham/{id}")
+    @GET("center/loaisanpham/{id}")
     Call<LoaiSanPham> getOneById(@Path("id") int id);
 
-    @POST("loaisanpham")
+    @POST("center/loaisanpham")
     Call<LoaiSanPham> insert(@Body RequestBody tenLoaiSanPham);
 
-    @PUT("loaisanpham")
+    @PUT("center/loaisanpham")
     Call<LoaiSanPham> update(@Body LoaiSanPham loaiSanPham);
 
-    @DELETE("loaisanpham/{id}")
+    @DELETE("center/loaisanpham/{id}")
     Call<ResponseBody> delete(@Path("id") int id);
 
 }

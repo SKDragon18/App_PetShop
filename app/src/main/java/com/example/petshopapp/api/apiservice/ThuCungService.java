@@ -8,6 +8,6 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 
 public interface ThuCungService {
-    @GET("thucung")
+    @GET("center/thucung")
     Call<List<ThuCung>> getAll();
 }

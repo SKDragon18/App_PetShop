@@ -29,6 +29,7 @@ import com.example.petshopapp.adapter.GiongManageAdapter;
 import com.example.petshopapp.api.ApiClient;
 import com.example.petshopapp.api.apiservice.GiongService;
 import com.example.petshopapp.api.apiservice.LoaiThuCungService;
+import com.example.petshopapp.message.SendMessage;
 import com.example.petshopapp.model.Giong;
 import com.example.petshopapp.model.LoaiThuCung;
 
@@ -99,7 +100,7 @@ public class GiongTab extends Fragment {
         return fragment;
     }
 
-    protected void DocDLLoaiThuCung(){
+    protected void DocDLLoaiThuCung(ArrayAdapter adapterDSLoaiThuCung){
         System.out.println("DocDLLoaiThuCungCombobox");
         loaiThuCungService.getAll().enqueue(new Callback<List<LoaiThuCung>>() {
             @Override
@@ -111,17 +112,24 @@ public class GiongTab extends Fragment {
                         loaiThuCungList.add(x);
                         tenLoaiThuCungList.add(x.getTenLoaiThuCung());
                     }
+                    adapterDSLoaiThuCung.notifyDataSetChanged();
                 }
                 else{
-                    Toast.makeText(mView.getContext(),"Lỗi: "+String.valueOf(response.code()),Toast.LENGTH_SHORT).show();
+                    try {
+                        int code = response.code();
+                        String message = response.message();
+                        String error = response.errorBody().string();
+                        SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                    } catch (Exception e) {
+                        SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                        return;
+                    }
                 }
-
             }
 
             @Override
             public void onFailure(Call<List<LoaiThuCung>> call, Throwable throwable) {
-                Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
-                Toast.makeText(mView.getContext(),"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
+                SendMessage.sendApiFail(mView.getContext(),throwable);
             }
         });
     }
@@ -161,7 +169,7 @@ public class GiongTab extends Fragment {
         Button btnAdd = dialog.findViewById(R.id.btnAdd);
         Button btnCancel= dialog.findViewById(R.id.btnCancel);
 
-        DocDLLoaiThuCung();
+        DocDLLoaiThuCung(adapterDSLoaiThuCung);
 
         //Event
 
@@ -188,7 +196,6 @@ public class GiongTab extends Fragment {
             public void onClick(View v) {
                 try{
                     giong.setTengiong(edtTenGiong.getText().toString());
-                    System.out.println(giong.getTengiong());
                     giongService.insert(giong).enqueue(new Callback<Giong>() {
                         @Override
                         public void onResponse(Call<Giong> call, Response<Giong> response) {
@@ -197,21 +204,28 @@ public class GiongTab extends Fragment {
                                 Toast.makeText(mView.getContext(),"Thêm thành công",Toast.LENGTH_SHORT).show();
                             }
                             else{
-                                Toast.makeText(mView.getContext(),"Lỗi: "+String.valueOf(response.code()),Toast.LENGTH_SHORT).show();
+                                try {
+                                    int code = response.code();
+                                    String message = response.message();
+                                    String error = response.errorBody().string();
+                                    SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                                } catch (Exception e) {
+                                    SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                                    return;
+                                }
                             }
                         }
 
                         @Override
                         public void onFailure(Call<Giong> call, Throwable throwable) {
-                            Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
-                            Toast.makeText(mView.getContext(),"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
+                            SendMessage.sendApiFail(mView.getContext(),throwable);
                         }
                     });
 
                     dialog.dismiss();
                 }
                 catch (Exception e){
-                    System.out.println(e.getMessage());
+                    SendMessage.sendCatch(mView.getContext(),e.getMessage());
                 }
 
             }
@@ -240,15 +254,22 @@ public class GiongTab extends Fragment {
                     giongManageAdapter.notifyDataSetChanged();
                 }
                 else{
-                    Toast.makeText(mView.getContext(),"Lỗi: "+String.valueOf(response.code()),Toast.LENGTH_SHORT).show();
+                    try {
+                        int code = response.code();
+                        String message = response.message();
+                        String error = response.errorBody().string();
+                        SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                    } catch (Exception e) {
+                        SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                        return;
+                    }
                 }
 
             }
 
             @Override
             public void onFailure(Call<List<Giong>> call, Throwable throwable) {
-                Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
-                Toast.makeText(mView.getContext(),"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
+                SendMessage.sendApiFail(mView.getContext(),throwable);
             }
         });
     }

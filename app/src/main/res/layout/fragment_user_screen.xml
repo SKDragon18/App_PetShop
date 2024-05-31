@@ -1,18 +1,185 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.UserScreen"
-    android:background="@color/user_theme">
+    android:orientation="vertical"
+    tools:context=".fragment.UserScreen">
+    <!--Phần trên-->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="120dp">
+            <ImageView
+                android:id="@+id/ivAvatarNV"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
+                android:src="@mipmap/ic_launcher"/>
+            <Button
+                android:id="@+id/btnUpload"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="10dp"
+                android:text="Upload"
+                android:backgroundTint="@color/fresh_blue"/>
+            <Button
+                android:id="@+id/btnChangePassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Change Password"
+                android:backgroundTint="@color/fresh_blue"/>
+        </LinearLayout>
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="User Home"
-        android:textSize="20dp"
-        android:textColor="@color/white"/>
+    </LinearLayout>
+    <!--Phần dưới-->
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="6"
+        android:gravity="center">
 
-</RelativeLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_marginHorizontal="20dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center|left"
+                android:text="Chi nhánh"/>
+
+            <EditText
+                android:id="@+id/edtChiNhanh"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="7"
+                android:enabled="false" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_marginHorizontal="20dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center|left"
+                android:text="Chức vụ"/>
+            <EditText
+                android:id="@+id/edtChucVu"
+                android:enabled="false"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="7"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_marginHorizontal="20dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center|left"
+                android:text="Mã nhân viên"/>
+            <EditText
+                android:id="@+id/edtMaNV"
+                android:enabled="false"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="7"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_marginHorizontal="20dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center|left"
+                android:text="Họ tên"/>
+            <EditText
+                android:id="@+id/edtHoTen"
+                android:enabled="false"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="7"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_marginHorizontal="20dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center|left"
+                android:text="CCCD"/>
+            <EditText
+                android:id="@+id/edtCCCD"
+                android:enabled="false"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="7"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_marginHorizontal="20dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center|left"
+                android:text="Email"/>
+            <EditText
+                android:id="@+id/edtEmail"
+                android:enabled="false"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="7"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp"
+            android:layout_marginHorizontal="20dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center|left"
+                android:text="Số điện thoại"/>
+            <EditText
+                android:id="@+id/edtSDT"
+                android:enabled="false"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="7"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

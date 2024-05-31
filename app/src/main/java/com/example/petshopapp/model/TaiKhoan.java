@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public class TaiKhoan {
     private String tenDangNhap;
     private String matKhau;
-    private Boolean quyen;
+    private String quyen;
     private Boolean trangThai;
     private String maXacNhan;
     private LocalDateTime thoiGianTaoMa;
@@ -15,7 +15,7 @@ public class TaiKhoan {
     public TaiKhoan() {
     }
 
-    public TaiKhoan(String tenDangNhap, String matKhau, Boolean quyen, Boolean trangThai,
+    public TaiKhoan(String tenDangNhap, String matKhau, String quyen, Boolean trangThai,
                     String maXacNhan, LocalDateTime thoiGianTaoMa, LocalDateTime thoiGianHetHan,
                     LocalDateTime thoiGianXacNhan) {
         this.tenDangNhap = tenDangNhap;
@@ -44,11 +44,11 @@ public class TaiKhoan {
         this.matKhau = matKhau;
     }
 
-    public Boolean getQuyen() {
+    public String getQuyen() {
         return quyen;
     }
 
-    public void setQuyen(Boolean quyen) {
+    public void setQuyen(String quyen) {
         this.quyen = quyen;
     }
 

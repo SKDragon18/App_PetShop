@@ -26,6 +26,7 @@ import com.example.petshopapp.R;
 import com.example.petshopapp.api.ApiClient;
 import com.example.petshopapp.api.apiservice.GiongService;
 import com.example.petshopapp.api.apiservice.LoaiThuCungService;
+import com.example.petshopapp.message.SendMessage;
 import com.example.petshopapp.model.Giong;
 import com.example.petshopapp.model.LoaiThuCung;
 
@@ -61,7 +62,7 @@ public class GiongManageAdapter extends ArrayAdapter {
         this.data = data;
     }
 
-    protected void DocDLLoaiThuCung(){
+    protected void DocDLLoaiThuCung(ArrayAdapter adapterDSLoaiThuCung){
         loaiThuCungService.getAll().enqueue(new Callback<List<LoaiThuCung>>() {
             @Override
             public void onResponse(Call<List<LoaiThuCung>> call, Response<List<LoaiThuCung>> response) {
@@ -72,119 +73,132 @@ public class GiongManageAdapter extends ArrayAdapter {
                         loaiThuCungList.add(x);
                         tenLoaiThuCungList.add(x.getTenLoaiThuCung());
                     }
+                    adapterDSLoaiThuCung.notifyDataSetChanged();
                 }
                 else{
-                    Toast.makeText(mView.getContext(),"Lỗi: "+String.valueOf(response.code()),Toast.LENGTH_SHORT).show();
+                    try {
+                        int code = response.code();
+                        String message = response.message();
+                        String error = response.errorBody().string();
+                        SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                    } catch (Exception e) {
+                        SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                        return;
+                    }
                 }
 
             }
 
             @Override
             public void onFailure(Call<List<LoaiThuCung>> call, Throwable throwable) {
-                Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
-                Toast.makeText(mView.getContext(),"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
+                SendMessage.sendApiFail(mView.getContext(),throwable);
             }
         });
     }
 
     private void openUpdateDialog(int gravity, Giong giong){
-        try{
-            final Dialog dialog = new Dialog(mView.getContext());
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setContentView(R.layout.dialog_giong_update);
+        final Dialog dialog = new Dialog(mView.getContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_giong_update);
 
-            Window window = dialog.getWindow();
-            if(window == null)return;
+        Window window = dialog.getWindow();
+        if(window == null)return;
 
-            window.setLayout(WindowManager.LayoutParams.MATCH_PARENT,
-                    WindowManager.LayoutParams.WRAP_CONTENT);
-            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        window.setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT);
+        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-            WindowManager.LayoutParams windowAttributes = window.getAttributes();
-            windowAttributes.gravity=gravity;
-            window.setAttributes(windowAttributes);
+        WindowManager.LayoutParams windowAttributes = window.getAttributes();
+        windowAttributes.gravity=gravity;
+        window.setAttributes(windowAttributes);
 
-            if(Gravity.BOTTOM == gravity){
-                dialog.setCancelable(false);
-            }
-            else{
-                dialog.setCancelable(true);
-            }
+        if(Gravity.BOTTOM == gravity){
+            dialog.setCancelable(false);
+        }
+        else{
+            dialog.setCancelable(true);
+        }
 
-            //Init
+        //Init
 
-            EditText edtTenGiong = dialog.findViewById(R.id.edtTenGiong);
-            Spinner spLoaiThuCung = dialog.findViewById(R.id.spLoaiThuCung);
+        EditText edtTenGiong = dialog.findViewById(R.id.edtTenGiong);
+        Spinner spLoaiThuCung = dialog.findViewById(R.id.spLoaiThuCung);
 
-            Button btnUpdate = dialog.findViewById(R.id.btnUpdate);
-            Button btnCancel= dialog.findViewById(R.id.btnCancel);
+        Button btnUpdate = dialog.findViewById(R.id.btnUpdate);
+        Button btnCancel= dialog.findViewById(R.id.btnCancel);
 
-            edtTenGiong.setText(giong.getTengiong());
+        edtTenGiong.setText(giong.getTengiong());
 
-            DocDLLoaiThuCung();
 
-            ArrayAdapter adapterDSLoaiThuCung = new ArrayAdapter<>(mView.getContext(), android.R.layout.simple_list_item_1, tenLoaiThuCungList);
-            spLoaiThuCung.setAdapter(adapterDSLoaiThuCung);
 
-            spLoaiThuCung.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    String tenLoaiThuCung = spLoaiThuCung.getSelectedItem().toString();
-                    for(LoaiThuCung x: loaiThuCungList){
-                        if(x.getTenLoaiThuCung().equals(tenLoaiThuCung)){
-                            giong.setLoaiThuCung(x);
-                            break;
-                        }
+        ArrayAdapter adapterDSLoaiThuCung = new ArrayAdapter<>(mView.getContext(), android.R.layout.simple_list_item_1, tenLoaiThuCungList);
+        spLoaiThuCung.setAdapter(adapterDSLoaiThuCung);
+
+        DocDLLoaiThuCung(adapterDSLoaiThuCung);
+
+        spLoaiThuCung.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String tenLoaiThuCung = spLoaiThuCung.getSelectedItem().toString();
+                for(LoaiThuCung x: loaiThuCungList){
+                    if(x.getTenLoaiThuCung().equals(tenLoaiThuCung)){
+                        giong.setLoaiThuCung(x);
+                        break;
                     }
                 }
+            }
 
-                @Override
-                public void onNothingSelected(AdapterView<?> parent) {
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
 
-                }
-            });
+            }
+        });
 
-            spLoaiThuCung.setSelection(tenLoaiThuCungList.indexOf(giong.getLoaiThuCung().getTenLoaiThuCung()));
-            btnUpdate.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    giong.setTengiong(edtTenGiong.getText().toString());
-                    giongService.update(giong).enqueue(new Callback<Giong>() {
-                        @Override
-                        public void onResponse(Call<Giong> call, Response<Giong> response) {
-                            if(response.code() == 200) {
-                                Giong giong = response.body();
-                                notifyDataSetChanged();
-                                Toast.makeText(mView.getContext(), "Cập nhật thành công", Toast.LENGTH_SHORT).show();
-                            }
-                            else{
-                                Toast.makeText(mView.getContext(),"Lỗi: "+String.valueOf(response.code()),Toast.LENGTH_SHORT).show();
+        spLoaiThuCung.setSelection(tenLoaiThuCungList.indexOf(giong.getLoaiThuCung().getTenLoaiThuCung()));
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                giong.setTengiong(edtTenGiong.getText().toString());
+                giongService.update(giong).enqueue(new Callback<Giong>() {
+                    @Override
+                    public void onResponse(Call<Giong> call, Response<Giong> response) {
+                        if(response.code() == 200) {
+                            Giong giong = response.body();
+                            Toast.makeText(mView.getContext(), "Cập nhật thành công", Toast.LENGTH_SHORT).show();
+                            notifyDataSetChanged();
+
+                        }
+                        else{
+                            try {
+                                int code = response.code();
+                                String message = response.message();
+                                String error = response.errorBody().string();
+                                SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                            } catch (Exception e) {
+                                SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                                return;
                             }
                         }
+                    }
 
-                        @Override
-                        public void onFailure(Call<Giong> call, Throwable throwable) {
-                            Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
-                            Toast.makeText(mView.getContext(),"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    @Override
+                    public void onFailure(Call<Giong> call, Throwable throwable) {
+                        SendMessage.sendApiFail(mView.getContext(),throwable);
+                    }
+                });
 
-                    dialog.dismiss();
-                }
-            });
+                dialog.dismiss();
+            }
+        });
 
-            btnCancel.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialog.dismiss();
-                }
-            });
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
 
-            dialog.show();
-        }
-        catch(Exception e){
-            System.out.println(e.getMessage().toString());
-        }
+        dialog.show();
 
     }
 
@@ -228,26 +242,31 @@ public class GiongManageAdapter extends ArrayAdapter {
                         try{
                             if(response.code() == 200){
                                 String result = response.body().string();
+                                Toast.makeText(mView.getContext(),"Xóa thành công",Toast.LENGTH_SHORT).show();
                                 data.remove(giong);
                                 notifyDataSetChanged();
-                                Toast.makeText(mView.getContext(),"Xóa thành công",Toast.LENGTH_SHORT).show();
+
                             }
                             else{
-                                String message="Lỗi: "+String.valueOf(response.code())
-                                        +"\n"+"Chi tiết: "+ response.errorBody().string();
-                                Toast.makeText(mView.getContext(),"Tồn tại trong database",Toast.LENGTH_SHORT).show();
-                                Log.e("ERROR","Call api fail: "+message);
+                                try {
+                                    int code = response.code();
+                                    String message = response.message();
+                                    String error = response.errorBody().string();
+                                    SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                                } catch (Exception e) {
+                                    SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                                    return;
+                                }
                             }
                         }
                         catch (Exception e){
-                            System.out.println(e.getMessage());
+                            SendMessage.sendCatch(mView.getContext(),e.getMessage());
                         }
                     }
 
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable throwable) {
-                        Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
-                        Toast.makeText(mView.getContext(),"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
+                        SendMessage.sendApiFail(mView.getContext(),throwable);
                     }
                 });
 

@@ -23,6 +23,7 @@ import com.example.petshopapp.R;
 import com.example.petshopapp.adapter.ChiNhanhManageAdapter;
 import com.example.petshopapp.api.ApiClient;
 import com.example.petshopapp.api.apiservice.ChiNhanhService;
+import com.example.petshopapp.message.SendMessage;
 import com.example.petshopapp.model.ChiNhanh;
 
 import java.util.ArrayList;
@@ -125,14 +126,21 @@ public class ChiNhanhTab extends Fragment {
                             Toast.makeText(mView.getContext(),"Thêm thành công",Toast.LENGTH_SHORT).show();
                         }
                         else{
-                            Toast.makeText(mView.getContext(),"Lỗi: "+String.valueOf(response.code()),Toast.LENGTH_SHORT).show();
+                            try {
+                                int code = response.code();
+                                String message = response.message();
+                                String error = response.errorBody().string();
+                                SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                            } catch (Exception e) {
+                                SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                                return;
+                            }
                         }
                     }
 
                     @Override
                     public void onFailure(Call<ChiNhanh> call, Throwable throwable) {
-                        Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
-                        Toast.makeText(mView.getContext(),"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
+                        SendMessage.sendApiFail(mView.getContext(),throwable);
                     }
                 });
 
@@ -162,14 +170,21 @@ public class ChiNhanhTab extends Fragment {
                     }
                     chiNhanhManageAdapter.notifyDataSetChanged();
                 } else {
-                    Toast.makeText(mView.getContext(), "Lỗi: " + String.valueOf(response.code()), Toast.LENGTH_SHORT).show();
+                    try {
+                        int code = response.code();
+                        String message = response.message();
+                        String error = response.errorBody().string();
+                        SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                    } catch (Exception e) {
+                        SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                        return;
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<List<ChiNhanh>> call, Throwable throwable) {
-                Log.e("ERROR_API", "Call api fail: " + throwable.getMessage());
-                Toast.makeText(mView.getContext(), "Call api fail: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                SendMessage.sendApiFail(mView.getContext(),throwable);
             }
         });
     }

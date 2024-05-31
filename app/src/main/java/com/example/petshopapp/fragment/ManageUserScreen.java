@@ -28,6 +28,7 @@ import com.example.petshopapp.api.ApiClient;
 import com.example.petshopapp.api.apiservice.ChiNhanhService;
 import com.example.petshopapp.api.apiservice.HinhAnhService;
 import com.example.petshopapp.api.apiservice.TaiKhoanService;
+import com.example.petshopapp.message.SendMessage;
 import com.example.petshopapp.model.ChiNhanh;
 import com.example.petshopapp.model.TaiKhoan;
 
@@ -98,15 +99,22 @@ public class ManageUserScreen extends Fragment {
                     }
                     taiKhoanManageAdapter.notifyDataSetChanged();
                 } else {
-                    Toast.makeText(mView.getContext(), "Lỗi: " + String.valueOf(response.code()), Toast.LENGTH_SHORT).show();
+                    try {
+                        int code = response.code();
+                        String message = response.message();
+                        String error = response.errorBody().string();
+                        SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                    } catch (Exception e) {
+                        SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                        return;
+                    }
                 }
 
             }
 
             @Override
             public void onFailure(Call<List<TaiKhoan>> call, Throwable throwable) {
-                Log.e("ERROR_API", "Call api fail: " + throwable.getMessage());
-                Toast.makeText(mView.getContext(), "Call api fail: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                SendMessage.sendApiFail(mView.getContext(),throwable);
             }
         });
     }

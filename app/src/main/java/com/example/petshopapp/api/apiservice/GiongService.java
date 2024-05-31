@@ -16,15 +16,15 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface GiongService {
-    @GET("giong")
+    @GET("center/giong")
     Call<List<Giong>> getAll();
 
-    @POST("giong")
+    @POST("center/giong")
     Call<Giong> insert(@Body Giong giong);
 
-    @PUT("giong")
+    @PUT("center/giong")
     Call<Giong> update(@Body Giong giong);
 
-    @DELETE("giong/{id}")
+    @DELETE("center/giong/{id}")
     Call<ResponseBody> delete(@Path("id") int id);
 }

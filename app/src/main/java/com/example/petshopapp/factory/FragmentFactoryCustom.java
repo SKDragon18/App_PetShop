@@ -15,36 +15,50 @@ import java.util.Arrays;
 import java.util.List;
 
 public class FragmentFactoryCustom {
+
+    //Phân quyền
+    //khachhang-0
+    //nhanvien-1
+    //admin-2
+    //quanly-3
+    private static final String []ROLE = new String []{"khachhang","nhanvien","admin","quanly"};
+
     //Danh sách các thẻ bottom navigation theo role
     //Role customer
-    private static final String []tagRoleCustomer= new String[]{"home","cart","user"};
-    private static final Integer []idRoleCustomer=new Integer[]{R.id.home_screen,R.id.cart_screen,R.id.user_screen};
+    private static final String []TAGROLECUSTOMER= new String[]{"home","cart","user"};
+    private static final Integer []IDROLECUSTOMER=new Integer[]{R.id.home_screen,R.id.cart_screen,R.id.user_screen};
 
     //Role employee
-    private static final String []tagRoleEmployee= new String[]{"home","product_import","user"};
-    private static final Integer []idRoleEmployee=new Integer[]{R.id.home_screen,R.id.product_import,R.id.user_screen};
+    private static final String []TAGROLEEMPLOYEE= new String[]{"home","product_import","user"};
+    private static final Integer []IDROLEEMPLOYEE=new Integer[]{R.id.home_screen,R.id.product_import,R.id.user_screen};
 
     //Role manager
-    private static final String []tagRoleManager= new String[]{"home","manage","manage_employee","user"};
-    private static final Integer []idRoleManager=new Integer[]{R.id.home_screen,R.id.manage, R.id.manage_employee,R.id.user_screen};
+    private static final String []TAGROLEMANAGER= new String[]{"home","manage","manage_employee","user"};
+    private static final Integer []IDROLEMANAGER=new Integer[]{R.id.home_screen,R.id.manage, R.id.manage_employee,R.id.user_screen};
 
     //Role admin
-    private static final String []tagRoleAdmin= new String[]{"home","manage_account","user"};
-    private static final Integer []idRoleAdmin=new Integer[]{R.id.home_screen,R.id.manage_account,R.id.user_screen};
+    private static final String []TAGROLEADMIN= new String[]{"home","manage_account","user"};
+    private static final Integer []IDROLEADMIN=new Integer[]{R.id.home_screen,R.id.manage_account,R.id.user_screen};
     //Defind role methods
+    public String getRole(int index){
+        return ROLE[index];
+    }
+    public List getRoleList(){
+        return new ArrayList<String>(Arrays.asList(ROLE));
+    }
     public List getTagArray(String role){
         String []tagArray=null;
-        if(role.equals("customer")){
-            tagArray= tagRoleCustomer;
+        if(role.equals(ROLE[0])){
+            tagArray= TAGROLECUSTOMER;
         }
-        else if(role.equals("employee")){
-            tagArray= tagRoleEmployee;
+        else if(role.equals(ROLE[1])){
+            tagArray= TAGROLEEMPLOYEE;
         }
-        else if(role.equals("admin")){
-            tagArray= tagRoleAdmin;
+        else if(role.equals(ROLE[2])){
+            tagArray= TAGROLEADMIN;
         }
-        else if(role.equals("manager")){
-            tagArray=tagRoleManager;
+        else if(role.equals(ROLE[3])){
+            tagArray=TAGROLEMANAGER;
         }
         if(tagArray==null)return null;
         return new ArrayList<String>(Arrays.asList(tagArray));
@@ -52,17 +66,17 @@ public class FragmentFactoryCustom {
 
     public List getIdArray(String role){
         Integer []idArray=null;
-        if(role.equals("customer")){
-            idArray= idRoleCustomer;
+        if(role.equals(ROLE[0])){
+            idArray= IDROLECUSTOMER;
         }
-        else if(role.equals("employee")){
-            idArray= idRoleEmployee;
+        else if(role.equals(ROLE[1])){
+            idArray= IDROLEEMPLOYEE;
         }
-        else if(role.equals("admin")){
-            idArray= idRoleAdmin;
+        else if(role.equals(ROLE[2])){
+            idArray= IDROLEADMIN;
         }
-        else if(role.equals("manager")){
-            idArray=idRoleManager;
+        else if(role.equals(ROLE[3])){
+            idArray=IDROLEMANAGER;
         }
         if(idArray==null)return null;
         return new ArrayList<Integer>(Arrays.asList(idArray));

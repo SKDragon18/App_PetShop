@@ -15,19 +15,19 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface NhanVienService {
-    @GET("nhanvien")
+    @GET("identity/nhanvien")
     Call<List<NhanVien>> getAll();
 
-    @GET("nhanvien/{id}")
-    Call<NhanVien> getOneById(@Path("id") int id);
+    @GET("identity/nhanvien/{id}")
+    Call<NhanVien> getOneById(@Path("id") String id);
 
-    @POST("nhanvien")
+    @POST("identity/nhanvien")
     Call<NhanVien> insert(@Body NhanVien nhanVien);
 
-    @PUT("nhanvien")
+    @PUT("identity/nhanvien")
     Call<NhanVien> update(@Body NhanVien nhanVien);
 
-    @DELETE("nhanvien/{id}")
+    @DELETE("identity/nhanvien/{id}")
     Call<ResponseBody> delete(@Path("id")String id);
 
 }

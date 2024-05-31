@@ -41,6 +41,7 @@ import com.example.petshopapp.api.Const;
 import com.example.petshopapp.api.apiservice.ChiNhanhService;
 import com.example.petshopapp.api.apiservice.HinhAnhService;
 import com.example.petshopapp.api.apiservice.NhanVienService;
+import com.example.petshopapp.message.SendMessage;
 import com.example.petshopapp.model.ChiNhanh;
 import com.example.petshopapp.model.HinhAnh;
 import com.example.petshopapp.model.NhanVien;
@@ -215,14 +216,21 @@ public class NhanVienManageAdapter extends ArrayAdapter {
                             Toast.makeText(mView.getContext(), "Cập nhật thành công", Toast.LENGTH_SHORT).show();
                         }
                         else{
-                            Toast.makeText(mView.getContext(),"Lỗi: "+String.valueOf(response.code()),Toast.LENGTH_SHORT).show();
+                            try {
+                                int code = response.code();
+                                String message = response.message();
+                                String error = response.errorBody().string();
+                                SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                            } catch (Exception e) {
+                                SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                                return;
+                            }
                         }
                     }
 
                     @Override
                     public void onFailure(Call<NhanVien> call, Throwable throwable) {
-                        Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
-                        Toast.makeText(mView.getContext(),"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
+                        SendMessage.sendApiFail(mView.getContext(),throwable);
                     }
                 });
 
@@ -299,22 +307,26 @@ public class NhanVienManageAdapter extends ArrayAdapter {
                                 Toast.makeText(mView.getContext(),result,Toast.LENGTH_SHORT).show();
                             }
                             else{
-                                String message="Lỗi: "+String.valueOf(response.code())
-                                        +"\n"+"Chi tiết: "+ response.errorBody().string();
-                                Toast.makeText(mView.getContext(),"Tồn tại trong database",Toast.LENGTH_SHORT).show();
-                                Log.e("ERROR","Call api fail: "+message);
+                                try {
+                                    int code = response.code();
+                                    String message = response.message();
+                                    String error = response.errorBody().string();
+                                    SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                                } catch (Exception e) {
+                                    SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                                    return;
+                                }
                             }
                         }
                         catch (Exception e){
-                            System.out.println(e.getMessage());
+                            SendMessage.sendCatch(mView.getContext(),e.getMessage());
                         }
 
                     }
 
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable throwable) {
-                        Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
-                        Toast.makeText(mView.getContext(),"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
+                        SendMessage.sendApiFail(mView.getContext(),throwable);
                     }
                 });
 

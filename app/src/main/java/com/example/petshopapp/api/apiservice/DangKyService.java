@@ -9,12 +9,12 @@ import retrofit2.http.Body;
 import retrofit2.http.POST;
 
 public interface DangKyService {
-    @POST("/register")
+    @POST("identity/register")
     Call<ResponseBody> register(@Body ThongTinDangKy thongTinDangKy);
 
-    @POST("/register/confirm")
+    @POST("identity/register/confirm")
     Call<ResponseBody> confirm(@Body ThongTinXacNhan thongTinXacNhan);
 
-    @POST("/register/getVerifiedCode")
+    @POST("identity/register/getVerifiedCode")
     Call<ResponseBody> getAgain(@Body ThongTinDangKy thongTinDangKy);
 }

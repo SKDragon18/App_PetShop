@@ -29,25 +29,46 @@
             android:textColor="@color/text_color"
             android:text="Mời nhập đầy đủ thông tin"/>
 
-        <EditText
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:background="@drawable/bg_white_corner_10_border_gray"
-            android:id="@+id/edtTenGiong"
-            android:hint="Tên giống"/>
-        <TextView
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center"
+                android:textSize="15dp"
+                android:text="Tên giống: "/>
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="7"
+                android:padding="12dp"
+                android:background="@drawable/bg_white_corner_10_border_gray"
+                android:id="@+id/edtTenGiong"
+                android:hint="Tên giống"/>
+        </LinearLayout>
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:padding="12dp"
-            android:textColor="@color/text_color"
-            android:text="Chọn loại thú cưng"/>
-        <Spinner
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="12dp"
-            android:id="@+id/spLoaiThuCung"/>
+            android:orientation="vertical"
+            android:layout_marginTop="16dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:padding="12dp"
+                android:textColor="@color/text_color"
+                android:text="Chọn loại thú cưng"/>
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:id="@+id/spLoaiThuCung"/>
+        </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

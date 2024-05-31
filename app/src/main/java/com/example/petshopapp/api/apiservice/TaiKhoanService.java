@@ -14,12 +14,14 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 public interface TaiKhoanService {
-    @GET("tk")
+    @GET("identity/tk")
     Call<List<TaiKhoan>> getAll();
 
-    @GET("tk/{id}")
+    @GET("identity/tk/{id}")
     Call<TaiKhoan> getOneById(@Path("id") String id);
-    @PUT("tk")
+    @PUT("identity/tk")
     Call<ResponseBody> update(@Body TaiKhoan taiKhoan);
 
+    @PUT("identity/tk/reset")
+    Call<ResponseBody> reset(@Body TaiKhoan taiKhoan);
 }

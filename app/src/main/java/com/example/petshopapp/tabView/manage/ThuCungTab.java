@@ -17,6 +17,7 @@ import com.example.petshopapp.R;
 import com.example.petshopapp.adapter.ThuCungManageAdapter;
 import com.example.petshopapp.api.ApiClient;
 import com.example.petshopapp.api.apiservice.ThuCungService;
+import com.example.petshopapp.message.SendMessage;
 import com.example.petshopapp.model.ThuCung;
 
 import java.util.ArrayList;
@@ -84,14 +85,21 @@ public class ThuCungTab extends Fragment {
                     }
                     thuCungManageAdapter.notifyDataSetChanged();
                 } else {
-                    Toast.makeText(mView.getContext(), "Lỗi: " + String.valueOf(response.code()), Toast.LENGTH_SHORT).show();
+                    try {
+                        int code = response.code();
+                        String message = response.message();
+                        String error = response.errorBody().string();
+                        SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                    } catch (Exception e) {
+                        SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                        return;
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<List<ThuCung>> call, Throwable throwable) {
-                Log.e("ERROR_API", "Call api fail: " + throwable.getMessage());
-                Toast.makeText(mView.getContext(), "Call api fail: " + throwable.getMessage(), Toast.LENGTH_SHORT).show();
+                SendMessage.sendApiFail(mView.getContext(),throwable);
             }
         });
     }

@@ -26,6 +26,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.example.petshopapp.R;
 import com.example.petshopapp.api.ApiClient;
 import com.example.petshopapp.api.apiservice.TaiKhoanService;
+import com.example.petshopapp.message.SendMessage;
 import com.example.petshopapp.model.TaiKhoan;
 
 import java.io.IOException;
@@ -71,12 +72,7 @@ public class TaiKhoanManageAdapter extends ArrayAdapter {
 
         tvTenDangNhap.setText(taiKhoan.getTenDangNhap());
         tvMatKhau.setText("*****");
-        if(taiKhoan.getQuyen()){
-            tvQuyen.setText("Nhân viên");
-        }
-        else{
-            tvQuyen.setText("Khách hàng");
-        }
+        tvQuyen.setText(taiKhoan.getQuyen());
 
         if(taiKhoan.getTrangThai()){
             tvTrangThai.setText("Hoạt động");
@@ -93,64 +89,125 @@ public class TaiKhoanManageAdapter extends ArrayAdapter {
         btnClock.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Xác nhận");
-                if(taiKhoan.getTrangThai()){
-                    builder.setMessage("Bạn có chắc muốn KHÓA tài khoản này?");
-                }
-                else{
-                    builder.setMessage("Bạn có chắc muốn MỞ KHÓA tài khoản này?");
-                }
-
-                taiKhoan.setTrangThai(!taiKhoan.getTrangThai());
-
-                builder.setPositiveButton("Xác nhận", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        taiKhoanService.update(taiKhoan).enqueue(new Callback<ResponseBody>() {
-                            @Override
-                            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                                if(response.code()==200){
-                                    try {
-                                        String result = response.body().string();
-                                        Toast.makeText(getContext(),result, Toast.LENGTH_SHORT).show();
-                                        notifyDataSetChanged();
-                                    } catch (IOException e) {
-                                        throw new RuntimeException(e);
-                                    }
-                                }
-                                else{
-                                    Toast.makeText(getContext(),"Thất bại",Toast.LENGTH_SHORT).show();
-                                }
-                            }
-
-                            @Override
-                            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
-                                Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
-                                Toast.makeText(mView.getContext(),"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    }
-                });
-                builder.setNegativeButton("Hủy bỏ", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Xử lý khi người dùng hủy bỏ thao tác xóa
-                        dialog.dismiss();
-                    }
-                });
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
+                openClockDialog(taiKhoan);
             }
         });
 
         btnReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                openDeleteDialog(Gravity.CENTER, taiKhoan);
+                openResetDialog(taiKhoan);
             }
         });
 
         return convertView;
+    }
+
+    private void openClockDialog(TaiKhoan taiKhoan){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Xác nhận");
+        if(taiKhoan.getTrangThai()){
+            builder.setMessage("Bạn có chắc muốn KHÓA tài khoản này?");
+        }
+        else{
+            builder.setMessage("Bạn có chắc muốn MỞ KHÓA tài khoản này?");
+        }
+
+        taiKhoan.setTrangThai(!taiKhoan.getTrangThai());
+
+        builder.setPositiveButton("Xác nhận", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                taiKhoanService.update(taiKhoan).enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if(response.code()==200){
+                            try {
+                                String result = response.body().string();
+                                Toast.makeText(getContext(),result, Toast.LENGTH_SHORT).show();
+                                notifyDataSetChanged();
+                            } catch (IOException e) {
+                                SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                            }
+                        }
+                        else{
+                            try {
+                                int code = response.code();
+                                String message = response.message();
+                                String error = response.errorBody().string();
+                                SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                            } catch (Exception e) {
+                                SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                                return;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable throwable) {
+                        SendMessage.sendApiFail(mView.getContext(),throwable);
+                    }
+                });
+            }
+        });
+        builder.setNegativeButton("Hủy bỏ", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Xử lý khi người dùng hủy bỏ thao tác xóa
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+    private void openResetDialog(TaiKhoan taiKhoan){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Xác nhận");
+        builder.setMessage("Bạn có chắc muốn RESET MẬT KHẨU tài khoản này?");
+        builder.setPositiveButton("Xác nhận", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                taiKhoanService.reset(taiKhoan).enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if(response.code()==200){
+                            try {
+                                String result = response.body().string();
+                                System.out.println(result);
+                                Toast.makeText(getContext(),"Thành công reset", Toast.LENGTH_SHORT).show();
+                                notifyDataSetChanged();
+                            } catch (IOException e) {
+                                SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                            }
+                        }
+                        else{
+                            try {
+                                int code = response.code();
+                                String message = response.message();
+                                String error = response.errorBody().string();
+                                SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                            } catch (Exception e) {
+                                SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                                return;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable throwable) {
+                        SendMessage.sendApiFail(mView.getContext(),throwable);
+                    }
+                });
+            }
+        });
+        builder.setNegativeButton("Hủy bỏ", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Xử lý khi người dùng hủy bỏ thao tác xóa
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 }
