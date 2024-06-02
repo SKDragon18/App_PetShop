@@ -40,7 +40,27 @@ public class PetShopLogin extends AppCompatActivity {
     //Factory
     FragmentFactoryCustom fragmentFactoryCustom;
 
-    public void init(){
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cbGhiNho.setChecked(sharedPreferences.getBoolean("saveStatus",false));
+        edtUsername.setText(sharedPreferences.getString("username",""));
+        edtPassword.setText(sharedPreferences.getString("password",""));
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_pet_shop_login);
+
+        Retrofit retrofit = ApiClient.getClient();
+        dangNhapService =retrofit.create(DangNhapService.class);
+
+        setInit();
+        setEvent();
+    }
+
+    public void setInit(){
         //Fractory
         fragmentFactoryCustom=new FragmentFactoryCustom();
         //edittext
@@ -78,26 +98,6 @@ public class PetShopLogin extends AppCompatActivity {
                 startActivity(newIntent);
             }
         });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        cbGhiNho.setChecked(sharedPreferences.getBoolean("saveStatus",false));
-        edtUsername.setText(sharedPreferences.getString("username",""));
-        edtPassword.setText(sharedPreferences.getString("password",""));
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pet_shop_login);
-
-        Retrofit retrofit = ApiClient.getClient();
-        dangNhapService =retrofit.create(DangNhapService.class);
-
-        init();
-        setEvent();
     }
 
     private void dangNhap(String username, String password){

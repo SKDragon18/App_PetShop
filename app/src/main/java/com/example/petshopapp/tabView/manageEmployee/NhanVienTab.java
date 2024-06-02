@@ -90,24 +90,24 @@ public class NhanVienTab extends Fragment {
     private ListView lvNhanVien;
 
     //API
-    NhanVienService nhanVienService;
-    ChiNhanhService chiNhanhService;
-    HinhAnhService hinhAnhService;
+    private NhanVienService nhanVienService;
+    private ChiNhanhService chiNhanhService;
+    private HinhAnhService hinhAnhService;
 
     //Data
-    List<NhanVien> data = new ArrayList<>();
-    List<ChiNhanh> chiNhanhList= new ArrayList<>();
-    List<String> tenChiNhanhList=new ArrayList<>();
+    private List<NhanVien> data = new ArrayList<>();
+    private List<ChiNhanh> chiNhanhList= new ArrayList<>();
+    private List<String> tenChiNhanhList=new ArrayList<>();
 
     //Adapter
-    NhanVienManageAdapter nhanVienManageAdapter;
-    ArrayAdapter adapterDSChiNhanh;
+    private NhanVienManageAdapter nhanVienManageAdapter;
+    private ArrayAdapter adapterDSChiNhanh = null;
 
     //Avatar
     private static final int MY_REQUEST_CODE = 123;
-    ImageView ivAvatar;
-    Bitmap bitmap;
-    Uri mUri;
+    private ImageView ivAvatar;
+    private Bitmap bitmap;
+    private Uri mUri =null;
     private ActivityResultLauncher<Intent> mActivityResultLancher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
@@ -216,7 +216,7 @@ public class NhanVienTab extends Fragment {
                 String ten = spChiNhanh.getSelectedItem().toString();
                 for(ChiNhanh x: chiNhanhList){
                     if(x.getTenChiNhanh().equals(ten)){
-                        nhanVien.setChiNhanh(x);
+                        nhanVien.setMaChiNhanh(x.getMaChiNhanh());
                         break;
                     }
                 }
@@ -251,7 +251,10 @@ public class NhanVienTab extends Fragment {
                     public void onResponse(Call<NhanVien> call, Response<NhanVien> response) {
                         if(response.code()== 200){
                             NhanVien nhanVienMoi = response.body();
-                            sendImage(nhanVienMoi.getMaNhanVien(), "", "","");
+                            if (mUri!=null){
+                                sendImage(nhanVienMoi.getMaNhanVien(), "" );
+                            }
+
                             DocDL();
                             Toast.makeText(mView.getContext(),"Thêm thành công",Toast.LENGTH_SHORT).show();
                         }
@@ -300,7 +303,9 @@ public class NhanVienTab extends Fragment {
                         chiNhanhList.add(x);
                         tenChiNhanhList.add(x.getTenChiNhanh());
                     }
-                    adapterDSChiNhanh.notifyDataSetChanged();
+                    if(adapterDSChiNhanh!=null){
+                        adapterDSChiNhanh.notifyDataSetChanged();
+                    }
                 } else {
                     try {
                         int code = response.code();
@@ -358,7 +363,7 @@ public class NhanVienTab extends Fragment {
     }
 
     public void setEvent(){
-        nhanVienManageAdapter=new NhanVienManageAdapter(mView.getContext(),R.layout.item_nhanvien_manage,data);
+        nhanVienManageAdapter=new NhanVienManageAdapter(mView.getContext(),R.layout.item_nhanvien_manage,data, chiNhanhList,tenChiNhanhList);
         lvNhanVien.setAdapter(nhanVienManageAdapter);
         btnThem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -373,21 +378,19 @@ public class NhanVienTab extends Fragment {
         super.onResume();
         if(isVisible()){
             DocDL();
+            DocDLChiNhanh();
         }
     }
-    private void sendImage(String maNhanVien, String maKhachHang, String maThuCung, String maSanPham){
+    private void sendImage(String maNhanVien, String maKhachHang){
         RequestBody requestBodyMaNhanVien = RequestBody.create(MediaType.parse("multipart/form-data"), maNhanVien);
         RequestBody requestBodyMaKhachHang = RequestBody.create(MediaType.parse("multipart/form-data"), maKhachHang);
-        RequestBody requestBodyMaThuCung = RequestBody.create(MediaType.parse("multipart/form-data"), maThuCung);
-        RequestBody requestBodyMaSanPham = RequestBody.create(MediaType.parse("multipart/form-data"), maSanPham);
 
         String imgRealPath = RealPathUtil.getRealPath(this.getContext(), mUri);
         File file = new File(imgRealPath);
         RequestBody requestBodyAvatar = RequestBody.create(MediaType.parse("multipart/form-data"), file);
         MultipartBody.Part multipartBodyAvatar = MultipartBody.Part.createFormData(Const.KEY_IMAGE, file.getName(), requestBodyAvatar);
 
-        hinhAnhService.saveImage(multipartBodyAvatar, requestBodyMaNhanVien, requestBodyMaKhachHang,
-                requestBodyMaThuCung, requestBodyMaSanPham).enqueue(new Callback<ResponseBody>() {
+        hinhAnhService.saveImage(multipartBodyAvatar, requestBodyMaNhanVien, requestBodyMaKhachHang).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try{

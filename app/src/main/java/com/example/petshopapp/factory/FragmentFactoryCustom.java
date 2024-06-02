@@ -5,10 +5,12 @@ import androidx.fragment.app.Fragment;
 import com.example.petshopapp.R;
 import com.example.petshopapp.fragment.CartScreen;
 import com.example.petshopapp.fragment.HomeScreen;
+import com.example.petshopapp.fragment.ManageFinanceScreen;
 import com.example.petshopapp.fragment.ManageScreen;
 import com.example.petshopapp.fragment.ManageEmployeeScreen;
 import com.example.petshopapp.fragment.ManageUserScreen;
 import com.example.petshopapp.fragment.UserScreen;
+import com.example.petshopapp.fragment.UserScreen2;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,16 +31,16 @@ public class FragmentFactoryCustom {
     private static final Integer []IDROLECUSTOMER=new Integer[]{R.id.home_screen,R.id.cart_screen,R.id.user_screen};
 
     //Role employee
-    private static final String []TAGROLEEMPLOYEE= new String[]{"home","product_import","user"};
-    private static final Integer []IDROLEEMPLOYEE=new Integer[]{R.id.home_screen,R.id.product_import,R.id.user_screen};
+    private static final String []TAGROLEEMPLOYEE= new String[]{"home","product_import","user2"};
+    private static final Integer []IDROLEEMPLOYEE=new Integer[]{R.id.home_screen,R.id.product_import,R.id.user_screen2};
 
     //Role manager
-    private static final String []TAGROLEMANAGER= new String[]{"home","manage","manage_employee","user"};
-    private static final Integer []IDROLEMANAGER=new Integer[]{R.id.home_screen,R.id.manage, R.id.manage_employee,R.id.user_screen};
+    private static final String []TAGROLEMANAGER= new String[]{"home","manage","manage_employee","manage_finance","user2"};
+    private static final Integer []IDROLEMANAGER=new Integer[]{R.id.home_screen,R.id.manage, R.id.manage_employee,R.id.manage_finance,R.id.user_screen2};
 
     //Role admin
-    private static final String []TAGROLEADMIN= new String[]{"home","manage_account","user"};
-    private static final Integer []IDROLEADMIN=new Integer[]{R.id.home_screen,R.id.manage_account,R.id.user_screen};
+    private static final String []TAGROLEADMIN= new String[]{"home","manage_account","user2"};
+    private static final Integer []IDROLEADMIN=new Integer[]{R.id.home_screen,R.id.manage_account,R.id.user_screen2};
     //Defind role methods
     public String getRole(int index){
         return ROLE[index];
@@ -91,6 +93,8 @@ public class FragmentFactoryCustom {
                 return new CartScreen();
             case "user":
                 return new UserScreen();
+            case "user2":
+                return new UserScreen2();
             case "manage":
                 return new ManageScreen();
             case "manage_account":
@@ -99,6 +103,8 @@ public class FragmentFactoryCustom {
                 return new ManageEmployeeScreen();
             case "product_import":
                 return new Fragment();
+            case "manage_finance":
+                return new ManageFinanceScreen();
             default:
                 return new Fragment();
         }

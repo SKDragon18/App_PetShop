@@ -4,8 +4,8 @@
     <item android:id="@+id/home_screen" android:title="Home" android:icon="@drawable/home"/>
     <!--Manager-->
     <item android:id="@+id/manage" android:title="Manage" android:icon="@drawable/planning"/>
-
     <item android:id="@+id/manage_employee" android:title="Manage Employee" android:icon="@drawable/manager_employee"/>
+    <item android:id="@+id/manage_finance" android:title="Manage Finance" android:icon="@drawable/money_bag"/>
     <!--All-->
-    <item android:id="@+id/user_screen" android:title="User" android:icon="@drawable/user"/>
+    <item android:id="@+id/user_screen2" android:title="User" android:icon="@drawable/user"/>
 </menu>

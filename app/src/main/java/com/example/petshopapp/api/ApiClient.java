@@ -14,7 +14,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
     private static final String API_PATH ="http://192.168.1.243:8989/";
-    private static Gson gson =new GsonBuilder().setLenient().create();
+    private static Gson gson =new GsonBuilder()
+            .setLenient()
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+            .create();
     private static String authToken = "";
     public static void setAuToken(String authTokenNew){
         authToken=authTokenNew;

@@ -10,7 +10,7 @@ public class NhanVien {
     private String chucVu;
     private String soDienThoai;
     private String email;
-    private ChiNhanh chiNhanh;
+    private int maChiNhanh;
     private List<Long> hinhAnh;
     private boolean trangThai;
 
@@ -18,7 +18,7 @@ public class NhanVien {
     }
 
     public NhanVien(String maNhanVien, String ho, String ten, String cccd,
-                    String chucVu, String soDienThoai, String email, ChiNhanh chiNhanh,
+                    String chucVu, String soDienThoai, String email,int maChiNhanh,
                     List<Long> hinhAnh, boolean trangThai) {
         this.maNhanVien = maNhanVien;
         this.ho = ho;
@@ -27,7 +27,7 @@ public class NhanVien {
         this.chucVu = chucVu;
         this.soDienThoai = soDienThoai;
         this.email = email;
-        this.chiNhanh = chiNhanh;
+        this.maChiNhanh = maChiNhanh;
         this.hinhAnh = hinhAnh;
         this.trangThai=trangThai;
     }
@@ -88,12 +88,12 @@ public class NhanVien {
         this.email = email;
     }
 
-    public ChiNhanh getChiNhanh() {
-        return chiNhanh;
+    public int getMaChiNhanh() {
+        return maChiNhanh;
     }
 
-    public void setChiNhanh(ChiNhanh chiNhanh) {
-        this.chiNhanh = chiNhanh;
+    public void setMaChiNhanh(int maChiNhanh) {
+        this.maChiNhanh = maChiNhanh;
     }
 
     public List<Long> getHinhAnh() {

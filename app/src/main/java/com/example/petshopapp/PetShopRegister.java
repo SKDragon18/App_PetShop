@@ -41,6 +41,88 @@ public class PetShopRegister extends AppCompatActivity {
     ThongTinDangKy thongTinDangKy = new ThongTinDangKy();
     String maXacNhan="";
 
+    //Chương trình
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Retrofit retrofit = ApiClient.getClient();
+        dangKyService =retrofit.create(DangKyService.class);
+        setContentView(R.layout.activity_pet_shop_register);
+        setInit();
+        setControl();
+    }
+
+    private void setInit(){
+        edtHo=findViewById(R.id.edtHo);
+        edtTen=findViewById(R.id.edtTen);
+        edtUsername=findViewById(R.id.edtUsername);
+        edtPassword=findViewById(R.id.edtPassword);
+        edtPasswordNhapLai=findViewById(R.id.edtPasswordNhapLai);
+        edtCCCD=findViewById(R.id.edtCCCD);
+        edtSDT=findViewById(R.id.edtSDT);
+        edtEmail=findViewById(R.id.edtEmail);
+        btnRegister=findViewById(R.id.btnRegister);
+    }
+
+    private void setControl(){
+        btnRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String ho = edtHo.getText().toString();
+                String ten = edtTen.getText().toString();
+                String username = edtUsername.getText().toString();
+                String password = edtPassword.getText().toString();
+                String passwordNhapLai = edtPasswordNhapLai.getText().toString();
+                String cccd = edtCCCD.getText().toString();
+                String sdt = edtSDT.getText().toString();
+                String email = edtEmail.getText().toString();
+
+                //Check
+                if(!password.equals(passwordNhapLai)){
+                    Toast.makeText(PetShopRegister.this, "Mật khẩu nhập lại không chính xác", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                thongTinDangKy.setHo(ho);
+                thongTinDangKy.setTen(ten);
+                thongTinDangKy.setTenDangNhap(username);
+                thongTinDangKy.setMatKhau(password);
+                thongTinDangKy.setCccd(cccd);
+                thongTinDangKy.setSoDienThoai(sdt);
+                thongTinDangKy.setEmail(email);
+                dangKyService.register(thongTinDangKy).enqueue(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if(response.code() == 200) {
+                            try {
+                                maXacNhan = response.body().string();
+                                openConfirmDialog(Gravity.CENTER);
+                            } catch (IOException e) {
+                                System.out.println(e.getMessage());
+                            }
+                        }
+                        else{
+                            try {
+                                int code = response.code();
+                                String message = response.message();
+                                String error = response.errorBody().string();
+                                SendMessage.sendMessageFail(PetShopRegister.this,code,error,message);
+                            } catch (Exception e) {
+                                SendMessage.sendCatch(PetShopRegister.this,e.getMessage());
+                                return;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable throwable) {
+                        SendMessage.sendApiFail(PetShopRegister.this,throwable);
+                    }
+                });
+            }
+        });
+    }
+
     private void confirmAccount(Dialog dialog, String tenDangNhap, String maXacNhan){
         ThongTinXacNhan thongTinXacNhan = new ThongTinXacNhan(tenDangNhap,maXacNhan);
         dangKyService.confirm(thongTinXacNhan).enqueue(new Callback<ResponseBody>() {
@@ -155,84 +237,5 @@ public class PetShopRegister extends AppCompatActivity {
         });
 
         dialog.show();
-    }
-
-    private void setInit(){
-        edtHo=findViewById(R.id.edtHo);
-        edtTen=findViewById(R.id.edtTen);
-        edtUsername=findViewById(R.id.edtUsername);
-        edtPassword=findViewById(R.id.edtPassword);
-        edtPasswordNhapLai=findViewById(R.id.edtPasswordNhapLai);
-        edtCCCD=findViewById(R.id.edtCCCD);
-        edtSDT=findViewById(R.id.edtSDT);
-        edtEmail=findViewById(R.id.edtEmail);
-        btnRegister=findViewById(R.id.btnRegister);
-    }
-    private void setControl(){
-        btnRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String ho = edtHo.getText().toString();
-                String ten = edtTen.getText().toString();
-                String username = edtUsername.getText().toString();
-                String password = edtPassword.getText().toString();
-                String passwordNhapLai = edtPasswordNhapLai.getText().toString();
-                String cccd = edtCCCD.getText().toString();
-                String sdt = edtSDT.getText().toString();
-                String email = edtEmail.getText().toString();
-
-                //Check
-                if(!password.equals(passwordNhapLai)){
-                    Toast.makeText(PetShopRegister.this, "Mật khẩu nhập lại không chính xác", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                thongTinDangKy.setHo(ho);
-                thongTinDangKy.setTen(ten);
-                thongTinDangKy.setTenDangNhap(username);
-                thongTinDangKy.setMatKhau(password);
-                thongTinDangKy.setCccd(cccd);
-                thongTinDangKy.setSoDienThoai(sdt);
-                thongTinDangKy.setEmail(email);
-                dangKyService.register(thongTinDangKy).enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        if(response.code() == 200) {
-                            try {
-                                maXacNhan = response.body().string();
-                                openConfirmDialog(Gravity.CENTER);
-                            } catch (IOException e) {
-                                System.out.println(e.getMessage());
-                            }
-                        }
-                        else{
-                            try {
-                                int code = response.code();
-                                String message = response.message();
-                                String error = response.errorBody().string();
-                                SendMessage.sendMessageFail(PetShopRegister.this,code,error,message);
-                            } catch (Exception e) {
-                                SendMessage.sendCatch(PetShopRegister.this,e.getMessage());
-                                return;
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable throwable) {
-                        SendMessage.sendApiFail(PetShopRegister.this,throwable);
-                    }
-                });
-            }
-        });
-    }
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Retrofit retrofit = ApiClient.getClient();
-        dangKyService =retrofit.create(DangKyService.class);
-        setContentView(R.layout.activity_pet_shop_register);
-        setInit();
-        setControl();
     }
 }

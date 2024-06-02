@@ -1,5 +1,6 @@
 package com.example.petshopapp.tabView.manage;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,13 +11,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import com.example.petshopapp.PetShopRegister;
 import com.example.petshopapp.R;
 import com.example.petshopapp.adapter.ThuCungManageAdapter;
 import com.example.petshopapp.api.ApiClient;
 import com.example.petshopapp.api.apiservice.ThuCungService;
+import com.example.petshopapp.fragment.BlankFragment;
 import com.example.petshopapp.message.SendMessage;
 import com.example.petshopapp.model.ThuCung;
 
@@ -71,6 +75,13 @@ public class ThuCungTab extends Fragment {
     public void setEvent(){
         thuCungManageAdapter=new ThuCungManageAdapter(mView.getContext(),R.layout.item_thucung_manage,data);
         gvThuCung.setAdapter(thuCungManageAdapter);
+        gvThuCung.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(mView.getContext(), PetShopRegister.class);
+                startActivity(intent);
+            }
+        });
     }
 
     public void DocDL(){

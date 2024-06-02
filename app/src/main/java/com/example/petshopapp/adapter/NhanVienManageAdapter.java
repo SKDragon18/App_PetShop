@@ -81,8 +81,8 @@ public class NhanVienManageAdapter extends ArrayAdapter {
 
     //Data
     List<NhanVien> data;
-    List<ChiNhanh> chiNhanhList= new ArrayList<>();
-    List<String> tenChiNhanhList=new ArrayList<>();
+    List<ChiNhanh> chiNhanhList;
+    List<String> tenChiNhanhList;
 
     //Adapter
     ArrayAdapter adapterDSChiNhanh;
@@ -124,11 +124,14 @@ public class NhanVienManageAdapter extends ArrayAdapter {
 //            }
 //    );
 
-    public NhanVienManageAdapter(@NonNull Context context, int resource, List<NhanVien> data) {
+    public NhanVienManageAdapter(@NonNull Context context, int resource, List<NhanVien> data,
+                                 List<ChiNhanh>chiNhanhList, List<String>tenChiNhanhList) {
         super(context, resource,data);
         this.context = context;
         this.resource = resource;
         this.data = data;
+        this.chiNhanhList = chiNhanhList;
+        this.tenChiNhanhList=tenChiNhanhList;
     }
 
     private void openUpdateDialog(int gravity, NhanVien nhanVien){
@@ -184,7 +187,7 @@ public class NhanVienManageAdapter extends ArrayAdapter {
                 String ten = spChiNhanh.getSelectedItem().toString();
                 for(ChiNhanh x: chiNhanhList){
                     if(x.getTenChiNhanh().equals(ten)){
-                        nhanVienTemp.setChiNhanh(x);
+                        nhanVienTemp.setMaChiNhanh(x.getMaChiNhanh());
                         break;
                     }
                 }
@@ -196,7 +199,7 @@ public class NhanVienManageAdapter extends ArrayAdapter {
             }
         });
 
-        spChiNhanh.setSelection(tenChiNhanhList.indexOf(nhanVienTemp.getChiNhanh().getTenChiNhanh()));
+        spChiNhanh.setSelection(tenChiNhanhList.indexOf(chiNhanhList.get(nhanVienTemp.getMaChiNhanh()-1).getTenChiNhanh()));
 
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -291,7 +294,7 @@ public class NhanVienManageAdapter extends ArrayAdapter {
         edtCCCD.setText(nhanVien.getCccd());
         edtEmail.setText(nhanVien.getEmail());
         edtSDT.setText(nhanVien.getSoDienThoai());
-        edtChiNhanh.setText(nhanVien.getChiNhanh().getTenChiNhanh());
+        edtChiNhanh.setText(chiNhanhList.get(nhanVien.getMaChiNhanh()-1).getTenChiNhanh());
 
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override

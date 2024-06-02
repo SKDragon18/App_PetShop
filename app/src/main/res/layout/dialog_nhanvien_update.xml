@@ -89,6 +89,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="8"
                 android:padding="12dp"
+                android:maxLength="50"
                 android:background="@drawable/bg_white_corner_10_border_gray"
                 android:id="@+id/edtHo"
                 android:hint="Họ"/>
@@ -110,6 +111,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="8"
                 android:padding="12dp"
+                android:maxLength="50"
                 android:background="@drawable/bg_white_corner_10_border_gray"
                 android:id="@+id/edtTen"
                 android:hint="Tên"/>
@@ -131,6 +133,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="7"
                 android:padding="12dp"
+                android:maxLength="12"
                 android:background="@drawable/bg_white_corner_10_border_gray"
                 android:id="@+id/edtCCCD"
                 android:hint="Căn cước công dân"/>
@@ -152,6 +155,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="7"
                 android:padding="12dp"
+                android:maxLength="20"
                 android:background="@drawable/bg_white_corner_10_border_gray"
                 android:id="@+id/edtChucVu"
                 android:hint="Chức vụ"/>
@@ -173,6 +177,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="7"
                 android:padding="12dp"
+                android:maxLength="10"
                 android:background="@drawable/bg_white_corner_10_border_gray"
                 android:id="@+id/edtSDT"
                 android:hint="Số điện thoại"/>
@@ -194,6 +199,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="8"
                 android:padding="12dp"
+                android:maxLength="50"
                 android:background="@drawable/bg_white_corner_10_border_gray"
                 android:id="@+id/edtEmail"
                 android:hint="Email"/>

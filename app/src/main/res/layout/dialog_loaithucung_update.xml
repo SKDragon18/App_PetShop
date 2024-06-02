@@ -45,6 +45,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="7"
                 android:padding="12dp"
+                android:maxLength="50"
                 android:background="@drawable/bg_white_corner_10_border_gray"
                 android:id="@+id/edtTenLoaiThuCung"
                 android:hint="Tên loại thú cưng"/>

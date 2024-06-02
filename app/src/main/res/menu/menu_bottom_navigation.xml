@@ -3,9 +3,7 @@
     <!--All-->
     <item android:id="@+id/home_screen" android:title="Home" android:icon="@drawable/home"/>
     <!--Customer-->
-    <item android:id="@+id/cart_screen" android:title="Cart" android:icon="@drawable/eye"/>
-    <!--Admin-->
-    <item android:id="@+id/manage_account" android:title="Mange Account" android:icon="@drawable/eye"/>
+    <item android:id="@+id/cart_screen" android:title="Cart" android:icon="@drawable/shopping_cart"/>
     <!--All-->
     <item android:id="@+id/user_screen" android:title="User" android:icon="@drawable/user"/>
 </menu>

@@ -19,9 +19,7 @@ public interface HinhAnhService {
     @POST("identity/image")
     Call<ResponseBody> saveImage(@Part MultipartBody.Part avatar,
                                  @Part(Const.KEY_MA_NHAN_VIEN)RequestBody maNhanVien,
-                                 @Part(Const.KEY_MA_KHACH_HANG) RequestBody maKhachHang,
-                                 @Part(Const.KEY_MA_THU_CUNG)RequestBody maThuCung,
-                                 @Part(Const.KEY_MA_SAN_PHAM)RequestBody maSanPham);
+                                 @Part(Const.KEY_MA_KHACH_HANG) RequestBody maKhachHang);
     @POST("identity/image/get")
     Call<ResponseBody> getImage(@Body long []id);
 }

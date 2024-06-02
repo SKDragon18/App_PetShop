@@ -6,11 +6,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import com.example.petshopapp.factory.FragmentFactoryCustom;
-import com.example.petshopapp.fragment.CartScreen;
-import com.example.petshopapp.fragment.HomeScreen;
-import com.example.petshopapp.fragment.UserScreen;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ViewPagerAdapter extends FragmentStatePagerAdapter {

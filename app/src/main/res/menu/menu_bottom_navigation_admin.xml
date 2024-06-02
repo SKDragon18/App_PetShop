@@ -5,5 +5,5 @@
     <!--Admin-->
     <item android:id="@+id/manage_account" android:title="Mange Account" android:icon="@drawable/management"/>
     <!--All-->
-    <item android:id="@+id/user_screen" android:title="User" android:icon="@drawable/user"/>
+    <item android:id="@+id/user_screen2" android:title="User" android:icon="@drawable/user"/>
 </menu>
