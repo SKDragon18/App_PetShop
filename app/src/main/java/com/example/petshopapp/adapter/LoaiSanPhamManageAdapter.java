@@ -222,8 +222,8 @@ public class LoaiSanPhamManageAdapter extends ArrayAdapter {
         tvMaLoaiSanPham.setText(String.valueOf(loaiSanPham.getMaLoaiSanPham()));
         tvTenLoaiSanPham.setText(loaiSanPham.getTenLoaiSanPham());
 
-        Retrofit retrofit = ApiClient.getClient();
-        loaiSanPhamService =retrofit.create(LoaiSanPhamService.class);
+        ApiClient apiClient = ApiClient.getApiClient();
+        loaiSanPhamService =apiClient.getRetrofit().create(LoaiSanPhamService.class);
 
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -96,8 +96,7 @@ public class NhanVienTab extends Fragment {
 
     //Data
     private List<NhanVien> data = new ArrayList<>();
-    private List<ChiNhanh> chiNhanhList= new ArrayList<>();
-    private List<String> tenChiNhanhList=new ArrayList<>();
+    private Map<Integer, String> chiNhanhMap = new HashMap<>();
 
     //Adapter
     private NhanVienManageAdapter nhanVienManageAdapter;
@@ -205,7 +204,7 @@ public class NhanVienTab extends Fragment {
         Spinner spChiNhanh=dialog.findViewById(R.id.spChiNhanh);
         ivAvatar = dialog.findViewById(R.id.ivAvatar);
 
-        adapterDSChiNhanh = new ArrayAdapter<>(mView.getContext(), android.R.layout.simple_list_item_1, tenChiNhanhList);
+        adapterDSChiNhanh = new ArrayAdapter<>(mView.getContext(), android.R.layout.simple_list_item_1, new ArrayList<>(chiNhanhMap.values()));
         spChiNhanh.setAdapter(adapterDSChiNhanh);
         DocDLChiNhanh();
         NhanVien nhanVien = new NhanVien();
@@ -214,9 +213,9 @@ public class NhanVienTab extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String ten = spChiNhanh.getSelectedItem().toString();
-                for(ChiNhanh x: chiNhanhList){
-                    if(x.getTenChiNhanh().equals(ten)){
-                        nhanVien.setMaChiNhanh(x.getMaChiNhanh());
+                for(Map.Entry<Integer,String> x:chiNhanhMap.entrySet()){
+                    if(x.getValue().equals(ten)){
+                        nhanVien.setMaChiNhanh(x.getKey());
                         break;
                     }
                 }
@@ -297,11 +296,9 @@ public class NhanVienTab extends Fragment {
             @Override
             public void onResponse(Call<List<ChiNhanh>> call, Response<List<ChiNhanh>> response) {
                 if (response.code() == 200) {
-                    chiNhanhList.clear();
-                    tenChiNhanhList.clear();
+                    chiNhanhMap.clear();
                     for (ChiNhanh x : response.body()) {
-                        chiNhanhList.add(x);
-                        tenChiNhanhList.add(x.getTenChiNhanh());
+                        chiNhanhMap.put(x.getMaChiNhanh(),x.getTenChiNhanh());
                     }
                     if(adapterDSChiNhanh!=null){
                         adapterDSChiNhanh.notifyDataSetChanged();
@@ -363,7 +360,7 @@ public class NhanVienTab extends Fragment {
     }
 
     public void setEvent(){
-        nhanVienManageAdapter=new NhanVienManageAdapter(mView.getContext(),R.layout.item_nhanvien_manage,data, chiNhanhList,tenChiNhanhList);
+        nhanVienManageAdapter=new NhanVienManageAdapter(mView.getContext(),R.layout.item_nhanvien_manage,data, chiNhanhMap);
         lvNhanVien.setAdapter(nhanVienManageAdapter);
         btnThem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -547,10 +544,10 @@ public class NhanVienTab extends Fragment {
         // Inflate the layout for this fragment
         mView =  inflater.inflate(R.layout.fragment_nhan_vien_tab, container, false);
 
-        Retrofit retrofit = ApiClient.getClient();
-        nhanVienService =retrofit.create(NhanVienService.class);
-        chiNhanhService=retrofit.create(ChiNhanhService.class);
-        hinhAnhService=retrofit.create(HinhAnhService.class);
+        ApiClient apiClient = ApiClient.getApiClient();
+        nhanVienService =apiClient.getRetrofit().create(NhanVienService.class);
+        chiNhanhService=apiClient.getRetrofit().create(ChiNhanhService.class);
+        hinhAnhService=apiClient.getRetrofit().create(HinhAnhService.class);
 
         setInit();
         setEvent();

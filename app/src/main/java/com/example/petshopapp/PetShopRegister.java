@@ -45,8 +45,8 @@ public class PetShopRegister extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Retrofit retrofit = ApiClient.getClient();
-        dangKyService =retrofit.create(DangKyService.class);
+        ApiClient apiClient = ApiClient.getApiClient();
+        dangKyService =apiClient.getRetrofit().create(DangKyService.class);
         setContentView(R.layout.activity_pet_shop_register);
         setInit();
         setControl();
@@ -98,7 +98,7 @@ public class PetShopRegister extends AppCompatActivity {
                                 maXacNhan = response.body().string();
                                 openConfirmDialog(Gravity.CENTER);
                             } catch (IOException e) {
-                                System.out.println(e.getMessage());
+                                SendMessage.sendCatch(PetShopRegister.this,e.getMessage());
                             }
                         }
                         else{
@@ -109,7 +109,6 @@ public class PetShopRegister extends AppCompatActivity {
                                 SendMessage.sendMessageFail(PetShopRegister.this,code,error,message);
                             } catch (Exception e) {
                                 SendMessage.sendCatch(PetShopRegister.this,e.getMessage());
-                                return;
                             }
                         }
                     }
@@ -138,7 +137,7 @@ public class PetShopRegister extends AppCompatActivity {
                         }
 
                     } catch (IOException e) {
-                        System.out.println(e.getMessage());
+                        SendMessage.sendCatch(PetShopRegister.this,e.getMessage());
                     }
                 }
                 else{
@@ -149,7 +148,6 @@ public class PetShopRegister extends AppCompatActivity {
                         SendMessage.sendMessageFail(PetShopRegister.this,code,error,message);
                     } catch (Exception e) {
                         SendMessage.sendCatch(PetShopRegister.this,e.getMessage());
-                        return;
                     }
                 }
             }
@@ -211,7 +209,6 @@ public class PetShopRegister extends AppCompatActivity {
                                 SendMessage.sendMessageFail(PetShopRegister.this,code,error,message);
                             } catch (Exception e) {
                                 SendMessage.sendCatch(PetShopRegister.this,e.getMessage());
-                                return;
                             }
                         }
                     }

@@ -23,6 +23,7 @@ import com.example.petshopapp.R;
 import com.example.petshopapp.adapter.ChiNhanhManageAdapter;
 import com.example.petshopapp.api.ApiClient;
 import com.example.petshopapp.api.apiservice.ChiNhanhService;
+import com.example.petshopapp.api.apiservice.DangKyService;
 import com.example.petshopapp.message.SendMessage;
 import com.example.petshopapp.model.ChiNhanh;
 
@@ -229,8 +230,8 @@ public class ChiNhanhTab extends Fragment {
         // Inflate the layout for this fragment
         mView =  inflater.inflate(R.layout.fragment_chi_nhanh_tab, container, false);
 
-        Retrofit retrofit = ApiClient.getClient();
-        chiNhanhService =retrofit.create(ChiNhanhService.class);
+        ApiClient apiClient = ApiClient.getApiClient();
+        chiNhanhService =apiClient.getRetrofit().create(ChiNhanhService.class);
 
         setInit();
         setEvent();

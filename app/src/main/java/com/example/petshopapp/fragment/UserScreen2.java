@@ -52,7 +52,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -88,7 +90,7 @@ public class UserScreen2 extends Fragment {
     private ChiNhanhService chiNhanhService;
 
     //Data
-    private static List<ChiNhanh> chiNhanhList = new ArrayList<>();
+    private Map<Integer,String> chiNhanhMap = new HashMap<>();
 
     //Info
     private NhanVien nhanVien;
@@ -176,11 +178,11 @@ public class UserScreen2 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mView =  inflater.inflate(R.layout.fragment_user_screen2, container, false);
-        Retrofit retrofit = ApiClient.getClient();
-        nhanVienService =retrofit.create(NhanVienService.class);
-        taiKhoanService=retrofit.create(TaiKhoanService.class);
-        hinhAnhService=retrofit.create(HinhAnhService.class);
-        chiNhanhService=retrofit.create(ChiNhanhService.class);
+        ApiClient apiClient = ApiClient.getApiClient();
+        nhanVienService =apiClient.getRetrofit().create(NhanVienService.class);
+        taiKhoanService=apiClient.getRetrofit().create(TaiKhoanService.class);
+        hinhAnhService=apiClient.getRetrofit().create(HinhAnhService.class);
+        chiNhanhService=apiClient.getRetrofit().create(ChiNhanhService.class);
         setInit();
         setEvent();
         return mView;
@@ -225,16 +227,19 @@ public class UserScreen2 extends Fragment {
     }
 
     private void updateEditText(){
-        if(chiNhanhList == null||chiNhanhList.size()==0) {
-            Toast.makeText(mView.getContext(), "ChiNhanhList null", Toast.LENGTH_SHORT).show();
-            return;
+        if(chiNhanhMap == null||chiNhanhMap.size()==0) {
+            DocDLChiNhanh();//Thử đọc lại data chi nhánh
+            if(chiNhanhMap == null||chiNhanhMap.size()==0) {
+                Toast.makeText(mView.getContext(), "Lỗi: ChiNhanhList null", Toast.LENGTH_SHORT).show();
+                return;
+            }
         }
         if(nhanVien==null) {
             Toast.makeText(mView.getContext(), "NhanVien null", Toast.LENGTH_SHORT).show();
             return;
         }
         //update editText
-        edtChiNhanh.setText(chiNhanhList.get(nhanVien.getMaChiNhanh()-1).getTenChiNhanh());
+        edtChiNhanh.setText(chiNhanhMap.get(nhanVien.getMaChiNhanh()));
         edtMaNV.setText(getString(nhanVien.getMaNhanVien()));
         edtChucVu.setText(getString(nhanVien.getChucVu()));
         edtHoTen.setText(getString(nhanVien.getHo())+" "+getString(nhanVien.getTen()));
@@ -278,9 +283,9 @@ public class UserScreen2 extends Fragment {
             public void onResponse(Call<List<ChiNhanh>> call, Response<List<ChiNhanh>> response) {
                 if (response.code() == 200) {
                     System.out.println(response.body().size());
-                    chiNhanhList.clear();
+                    chiNhanhMap.clear();
                     for (ChiNhanh x : response.body()) {
-                        chiNhanhList.add(x);
+                        chiNhanhMap.put(x.getMaChiNhanh(),x.getTenChiNhanh());
                     }
                 } else {
                     try {
@@ -318,7 +323,6 @@ public class UserScreen2 extends Fragment {
                         SendMessage.sendMessageFail(mView.getContext(),code,error,message);
                     } catch (Exception e) {
                         SendMessage.sendCatch(mView.getContext(),e.getMessage());
-                        return;
                     }
                 }
             }
@@ -462,7 +466,6 @@ public class UserScreen2 extends Fragment {
                             SendMessage.sendMessageFail(mView.getContext(),code,error,message);
                         } catch (Exception e) {
                             SendMessage.sendCatch(mView.getContext(),e.getMessage());
-                            return;
                         }
                     }
                 }

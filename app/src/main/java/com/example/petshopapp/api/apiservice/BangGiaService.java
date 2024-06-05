@@ -35,13 +35,13 @@ public interface BangGiaService {
     @GET("center/ct-san-pham")
     Call<List<BangGiaSanPham>> getAllSP();
 
-    @PUT("center/ct-san-pham")
+    @POST("center/ct-san-pham")
     Call<ResponseBody> updateSP(@Body List<BangGiaSanPhamGui> bangGiaSanPhamGuiList);
 
     //Chi tiết thú cưng
     @GET("center/ct-thu-cung")
     Call<List<BangGiaThuCung>> getAllTC();
 
-    @PUT("center/ct-thu-cung")
+    @POST("center/ct-thu-cung")
     Call<ResponseBody> updateTC(@Body List<BangGiaThuCungGui> bangGiaThuCungGuiList);
 }

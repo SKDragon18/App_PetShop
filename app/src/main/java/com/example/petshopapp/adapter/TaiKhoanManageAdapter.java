@@ -16,6 +16,7 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,11 +49,13 @@ public class TaiKhoanManageAdapter extends ArrayAdapter {
     Button btnReset, btnClock;
     List<TaiKhoan> data;
     TaiKhoanService taiKhoanService;
-    public TaiKhoanManageAdapter(@NonNull Context context, int resource, List<TaiKhoan> data) {
+    String maNV;
+    public TaiKhoanManageAdapter(@NonNull Context context, int resource, List<TaiKhoan> data, String maNV) {
         super(context, resource,data);
         this.context = context;
         this.resource = resource;
         this.data = data;
+        this.maNV =maNV;
     }
 
     @NonNull
@@ -62,6 +65,8 @@ public class TaiKhoanManageAdapter extends ArrayAdapter {
         this.mView=convertView;
         TaiKhoan taiKhoan = data.get(position);
 
+
+
         tvTenDangNhap = mView.findViewById(R.id.tvTenDangNhap);
         tvMatKhau=mView.findViewById(R.id.tvMatKhau);
         tvQuyen=mView.findViewById(R.id.tvQuyen);
@@ -69,6 +74,10 @@ public class TaiKhoanManageAdapter extends ArrayAdapter {
 
         btnReset=mView.findViewById(R.id.btnReset);
         btnClock=mView.findViewById(R.id.btnClock);
+        if(taiKhoan.getTenDangNhap().equals(maNV)){
+            btnReset.setEnabled(false);
+            btnClock.setEnabled(false);
+        }
 
         tvTenDangNhap.setText(taiKhoan.getTenDangNhap());
         tvMatKhau.setText("*****");
@@ -83,8 +92,8 @@ public class TaiKhoanManageAdapter extends ArrayAdapter {
             btnClock.setBackgroundResource(R.drawable.allow);
         }
 
-        Retrofit retrofit = ApiClient.getClient();
-        taiKhoanService =retrofit.create(TaiKhoanService.class);
+        ApiClient apiClient = ApiClient.getApiClient();
+        taiKhoanService =apiClient.getRetrofit().create(TaiKhoanService.class);
 
         btnClock.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,7 +182,7 @@ public class TaiKhoanManageAdapter extends ArrayAdapter {
                         if(response.code()==200){
                             try {
                                 String result = response.body().string();
-                                System.out.println(result);
+                                taiKhoan.setMatKhau(result);
                                 Toast.makeText(getContext(),"Thành công reset", Toast.LENGTH_SHORT).show();
                                 notifyDataSetChanged();
                             } catch (IOException e) {

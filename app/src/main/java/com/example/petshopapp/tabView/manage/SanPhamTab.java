@@ -18,68 +18,71 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.petshopapp.PetShopRegister;
 import com.example.petshopapp.R;
-import com.example.petshopapp.adapter.ThuCungManageAdapter;
+import com.example.petshopapp.adapter.SanPhamManageAdapter;
 import com.example.petshopapp.api.ApiClient;
 import com.example.petshopapp.api.apiservice.ChiNhanhService;
-import com.example.petshopapp.api.apiservice.GiongService;
-import com.example.petshopapp.api.apiservice.ThuCungService;
+import com.example.petshopapp.api.apiservice.LoaiSanPhamService;
+import com.example.petshopapp.api.apiservice.SanPhamService;
 import com.example.petshopapp.message.SendMessage;
 import com.example.petshopapp.model.ChiNhanh;
-import com.example.petshopapp.model.Giong;
+import com.example.petshopapp.model.LoaiSanPham;
 import com.example.petshopapp.model.LoaiThuCung;
-import com.example.petshopapp.model.ThuCung;
+import com.example.petshopapp.model.SanPham;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link ThuCungTab#newInstance} factory method to
+ * Use the {@link SanPhamTab#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ThuCungTab extends Fragment {
+public class SanPhamTab extends Fragment {
 
     //View
     private View mView;
 
     //View
-    ListView lvThuCung;
-    Button btnThem;
+    private ListView lvSanPham;
+    private Button btnThem;
 
     //API
-    ThuCungService thuCungService;
-    ChiNhanhService chiNhanhService;
-    GiongService giongService;
+    private SanPhamService sanPhamService;
+    private ChiNhanhService chiNhanhService;
+    private LoaiSanPhamService loaiSanPhamService;
 
     //Data
-    List<ThuCung> data= new ArrayList<>();
-    ThuCungManageAdapter thuCungManageAdapter;
+    private List<SanPham> data= new ArrayList<>();
+    private Map<Integer,String> chiNhanhMap = new HashMap<>();
+    private List<String> tenChiNhanhList;
+    private List<LoaiSanPham> loaiSanPhamList = new ArrayList<>();
+    private List<String> tenLoaiSanPham = new ArrayList<>();
 
-    List<ChiNhanh> chiNhanhList = new ArrayList<>();
-    List<Giong> giongList = new ArrayList<>();
-    List<String> tenChiNhanhList = new ArrayList<>();
-    List<String> tenGiongList = new ArrayList<>();
-    public ThuCungTab() {
-        // Required empty public constructor
+    //Adapter
+    private SanPhamManageAdapter sanPhamManageAdapter;
+    private ArrayAdapter adapterDSLoaiSanPham;
+    private ArrayAdapter adapterDSChiNhanh;
+
+    public SanPhamTab() {
     }
 
-    public static ThuCungTab newInstance(String param1, String param2) {
-        ThuCungTab fragment = new ThuCungTab();
+    public static SanPhamTab newInstance(String param1, String param2) {
+        SanPhamTab fragment = new SanPhamTab();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
@@ -93,38 +96,42 @@ public class ThuCungTab extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        ApiClient apiClient = ApiClient.getApiClient();
-        thuCungService =apiClient.getRetrofit().create(ThuCungService.class);
-        chiNhanhService = apiClient.getRetrofit().create(ChiNhanhService.class);
-        giongService = apiClient.getRetrofit().create(GiongService.class);
         // Inflate the layout for this fragment
-        mView =  inflater.inflate(R.layout.fragment_thu_cung_tab, container, false);
+        ApiClient apiClient = ApiClient.getApiClient();
+        sanPhamService =apiClient.getRetrofit().create(SanPhamService.class);
+        chiNhanhService = apiClient.getRetrofit().create(ChiNhanhService.class);
+        loaiSanPhamService = apiClient.getRetrofit().create(LoaiSanPhamService.class);
+        // Inflate the layout for this fragment
+        mView =  inflater.inflate(R.layout.fragment_san_pham_tab, container, false);
         setInit();
         setEvent();
         return mView;
     }
-
     @Override
     public void onResume() {
         super.onResume();
         if(isVisible()){
             DocDL();
-            DocDlChiNhanh();
-            DocDLGiong();
+            DocDLChiNhanh();
         }
     }
 
-    private void setInit(){
-        lvThuCung = mView.findViewById(R.id.lvThuCung);
+    public void setInit(){
         btnThem = mView.findViewById(R.id.btnThem);
+        lvSanPham = mView.findViewById(R.id.lvSanPham);
     }
 
-    private void setEvent(){
-        if(tenChiNhanhList==null||tenChiNhanhList.size()==0)DocDlChiNhanh();
-        if(tenGiongList==null||tenGiongList.size()==0)DocDLGiong();
-        thuCungManageAdapter=new ThuCungManageAdapter(mView.getContext(),R.layout.item_thucung_manage,data,
-                chiNhanhList,tenChiNhanhList,giongList,tenGiongList);
-        lvThuCung.setAdapter(thuCungManageAdapter);
+    public void setEvent(){
+        if(chiNhanhMap.size()==0){
+            DocDLChiNhanh();
+        }
+        if(tenLoaiSanPham.size()==0){
+            DocDLLoaiSanPham();
+        }
+
+        sanPhamManageAdapter=new SanPhamManageAdapter(mView.getContext(),R.layout.item_sanpham_manage,
+                data,chiNhanhMap, loaiSanPhamList, tenLoaiSanPham);
+        lvSanPham.setAdapter(sanPhamManageAdapter);
         btnThem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -133,17 +140,17 @@ public class ThuCungTab extends Fragment {
         });
     }
 
-    private void DocDL(){
-        System.out.println("DocDLThuCung");
-        thuCungService.getAll().enqueue(new Callback<List<ThuCung>>() {
+    public void DocDL(){
+        System.out.println("DocDLSanPham");
+        sanPhamService.getAll().enqueue(new Callback<List<SanPham>>() {
             @Override
-            public void onResponse(Call<List<ThuCung>> call, Response<List<ThuCung>> response) {
+            public void onResponse(Call<List<SanPham>> call, Response<List<SanPham>> response) {
                 if (response.code() == 200) {
                     data.clear();
-                    for (ThuCung x : response.body()) {
+                    for (SanPham x : response.body()) {
                         data.add(x);
                     }
-                    thuCungManageAdapter.notifyDataSetChanged();
+                    sanPhamManageAdapter.notifyDataSetChanged();
                 } else {
                     try {
                         int code = response.code();
@@ -152,28 +159,29 @@ public class ThuCungTab extends Fragment {
                         SendMessage.sendMessageFail(mView.getContext(),code,error,message);
                     } catch (Exception e) {
                         SendMessage.sendCatch(mView.getContext(),e.getMessage());
-                        return;
                     }
                 }
             }
 
             @Override
-            public void onFailure(Call<List<ThuCung>> call, Throwable throwable) {
+            public void onFailure(Call<List<SanPham>> call, Throwable throwable) {
                 SendMessage.sendApiFail(mView.getContext(),throwable);
             }
         });
     }
-
-    private void DocDlChiNhanh(){
+    public void DocDLChiNhanh(){
+        System.out.println("DocDLChiNhanh");
         chiNhanhService.getAll().enqueue(new Callback<List<ChiNhanh>>() {
             @Override
             public void onResponse(Call<List<ChiNhanh>> call, Response<List<ChiNhanh>> response) {
                 if (response.code() == 200) {
-                    chiNhanhList.clear();
-                    tenChiNhanhList.clear();
+                    chiNhanhMap.clear();
                     for (ChiNhanh x : response.body()) {
-                        chiNhanhList.add(x);
-                        tenChiNhanhList.add(x.getTenChiNhanh());
+                        chiNhanhMap.put(x.getMaChiNhanh(),x.getTenChiNhanh());
+                    }
+                    tenChiNhanhList = new ArrayList<>(chiNhanhMap.values());
+                    if(adapterDSChiNhanh!=null){
+                        adapterDSChiNhanh.notifyDataSetChanged();
                     }
                 } else {
                     try {
@@ -183,7 +191,6 @@ public class ThuCungTab extends Fragment {
                         SendMessage.sendMessageFail(mView.getContext(),code,error,message);
                     } catch (Exception e) {
                         SendMessage.sendCatch(mView.getContext(),e.getMessage());
-                        return;
                     }
                 }
             }
@@ -194,17 +201,20 @@ public class ThuCungTab extends Fragment {
             }
         });
     }
-
-    private void DocDLGiong(){
-        giongService.getAll().enqueue(new Callback<List<Giong>>() {
+    public void DocDLLoaiSanPham(){
+        System.out.println("DocDLLoaiSanPham");
+        loaiSanPhamService.getAll().enqueue(new Callback<List<LoaiSanPham>>() {
             @Override
-            public void onResponse(Call<List<Giong>> call, Response<List<Giong>> response) {
+            public void onResponse(Call<List<LoaiSanPham>> call, Response<List<LoaiSanPham>> response) {
                 if (response.code() == 200) {
-                    giongList.clear();
-                    tenGiongList.clear();
-                    for (Giong x : response.body()) {
-                        giongList.add(x);
-                        tenGiongList.add(x.getTengiong());
+                    loaiSanPhamList.clear();
+                    tenLoaiSanPham.clear();
+                    for (LoaiSanPham x : response.body()) {
+                        loaiSanPhamList.add(x);
+                        tenLoaiSanPham.add(x.getTenLoaiSanPham());
+                    }
+                    if(adapterDSLoaiSanPham!=null){
+                        adapterDSLoaiSanPham.notifyDataSetChanged();
                     }
                 } else {
                     try {
@@ -214,18 +224,16 @@ public class ThuCungTab extends Fragment {
                         SendMessage.sendMessageFail(mView.getContext(),code,error,message);
                     } catch (Exception e) {
                         SendMessage.sendCatch(mView.getContext(),e.getMessage());
-                        return;
                     }
                 }
             }
 
             @Override
-            public void onFailure(Call<List<Giong>> call, Throwable throwable) {
+            public void onFailure(Call<List<LoaiSanPham>> call, Throwable throwable) {
                 SendMessage.sendApiFail(mView.getContext(),throwable);
             }
         });
     }
-
     private BigDecimal convertBigDecimal(String text){
         if(text==null){
             SendMessage.sendCatch(mView.getContext(), "Text is null");
@@ -247,7 +255,7 @@ public class ThuCungTab extends Fragment {
     private void openAddDialog(int gravity){
         final Dialog dialog = new Dialog(mView.getContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_thucung_add);
+        dialog.setContentView(R.layout.dialog_sanpham_add);
 
         Window window = dialog.getWindow();
         if(window == null)return;
@@ -261,55 +269,67 @@ public class ThuCungTab extends Fragment {
         window.setAttributes(windowAttributes);
         dialog.setCancelable(true);
 
-        EditText edtTenThuCung = dialog.findViewById(R.id.edtTenThuCung);
-        EditText edtChu = dialog.findViewById(R.id.edtChu);
-        EditText edtMoTa = dialog.findViewById(R.id.edtMoTa);
+        EditText edtTenSanPham = dialog.findViewById(R.id.edtTenSanPham);
         EditText edtGiaHienTai = dialog.findViewById(R.id.edtGiaHienTai);
         EditText edtSLTon = dialog.findViewById(R.id.edtSLTon);
-        Spinner spGiong = dialog.findViewById(R.id.spGiong);
+        Spinner spLoaiSanPham = dialog.findViewById(R.id.spLoaiSanPham);
         Spinner spChiNhanh = dialog.findViewById(R.id.spChiNhanh);
 
         Button btnAdd = dialog.findViewById(R.id.btnAdd);
         Button btnCancel= dialog.findViewById(R.id.btnCancel);
 
-        if(tenGiongList==null||tenGiongList.size()==0)DocDLGiong();
-        if(tenChiNhanhList==null||tenChiNhanhList.size()==0)DocDlChiNhanh();
 
-        ArrayAdapter adapterDSGiong= new ArrayAdapter<>(mView.getContext(), android.R.layout.simple_list_item_1, tenGiongList);
-        spGiong.setAdapter(adapterDSGiong);
-        adapterDSGiong.notifyDataSetChanged();
-        ArrayAdapter adapterDSChiNhanh= new ArrayAdapter<>(mView.getContext(), android.R.layout.simple_list_item_1, tenChiNhanhList);
+
+
+
+        if(chiNhanhMap==null||chiNhanhMap.size()==0)DocDLChiNhanh();
+        if(tenLoaiSanPham==null||tenLoaiSanPham.size()==0)DocDLLoaiSanPham();
+
+        adapterDSChiNhanh= new ArrayAdapter<>(mView.getContext(), android.R.layout.simple_list_item_1, tenChiNhanhList);
         spChiNhanh.setAdapter(adapterDSChiNhanh);
-        adapterDSChiNhanh.notifyDataSetChanged();
+
+
+        adapterDSLoaiSanPham= new ArrayAdapter<>(mView.getContext(), android.R.layout.simple_list_item_1, tenLoaiSanPham);
+        spLoaiSanPham.setAdapter(adapterDSLoaiSanPham);
+
+
+
 
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ThuCung thuCung = new ThuCung();
-                thuCung.setTenThuCung(edtTenThuCung.getText().toString());
-                thuCung.setChu(edtChu.getText().toString());
-                thuCung.setMoTa(edtMoTa.getText().toString());
-                thuCung.setGiaHienTai(convertBigDecimal(edtGiaHienTai.getText().toString()));
-                thuCung.setSoLuongTon(Integer.parseInt(edtSLTon.getText().toString()));
-                String chiNhanh = spChiNhanh.getSelectedItem().toString();
-                String giong = spGiong.getSelectedItem().toString();
-                for(ChiNhanh x : chiNhanhList){
-                    if(x.getTenChiNhanh().equals(chiNhanh)){
-                        thuCung.setChiNhanh(x);
+
+                SanPham sanPham = new SanPham();
+                String tenSanPham = edtTenSanPham.getText().toString();
+                String giaHienTai = edtGiaHienTai.getText().toString();
+                String soLuongTon = edtSLTon.getText().toString();
+                String tenChiNhanh = spChiNhanh.getSelectedItem().toString();
+                String tenLoaiSanPham = spLoaiSanPham.getSelectedItem().toString();
+
+                if(tenSanPham.isEmpty()||giaHienTai.isEmpty()||soLuongTon.isEmpty()){
+                    Toast.makeText(mView.getContext(),"Mời nhập đầy đủ thông tin",Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                sanPham.setTenSanPham(tenSanPham);
+                sanPham.setGiaHienTai(convertBigDecimal(giaHienTai));
+                sanPham.setSoLuongTon(Integer.parseInt(soLuongTon));
+                for(Map.Entry<Integer,String> x:chiNhanhMap.entrySet()) {
+                    if (x.getValue().equals(tenChiNhanh)) {
+                        sanPham.setMaChiNhanh(x.getKey());
                         break;
                     }
                 }
-                for(Giong x: giongList){
-                    if(x.getTengiong().equals(giong)){
-                        thuCung.setGiong(x);
+                for(LoaiSanPham x: loaiSanPhamList){
+                    if(x.getTenLoaiSanPham().equals(tenLoaiSanPham)){
+                        sanPham.setLoaiSanPham(x);
                         break;
                     }
                 }
-
-
-                thuCungService.insert(thuCung).enqueue(new Callback<ThuCung>() {
+                System.out.println(sanPham.getMaChiNhanh());
+                sanPhamService.insert(sanPham).enqueue(new Callback<SanPham>() {
                     @Override
-                    public void onResponse(Call<ThuCung> call, Response<ThuCung> response) {
+                    public void onResponse(Call<SanPham> call, Response<SanPham> response) {
                         if(response.code()== 200){
                             DocDL();
                             Toast.makeText(mView.getContext(),"Thêm thành công",Toast.LENGTH_SHORT).show();
@@ -328,11 +348,10 @@ public class ThuCungTab extends Fragment {
                     }
 
                     @Override
-                    public void onFailure(Call<ThuCung> call, Throwable throwable) {
+                    public void onFailure(Call<SanPham> call, Throwable throwable) {
                         SendMessage.sendApiFail(mView.getContext(),throwable);
                     }
                 });
-
             }
         });
 

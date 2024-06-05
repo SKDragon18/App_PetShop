@@ -225,8 +225,8 @@ public class LoaiThuCungManageAdapter extends ArrayAdapter {
         tvIdLoaiThuCung.setText(String.valueOf(loaiThuCung.getMaLoaiThuCung()));
         tvTenLoaiThuCung.setText(loaiThuCung.getTenLoaiThuCung());
 
-        Retrofit retrofit = ApiClient.getClient();
-        loaiThuCungService =retrofit.create(LoaiThuCungService.class);
+        ApiClient apiClient = ApiClient.getApiClient();
+        loaiThuCungService =apiClient.getRetrofit().create(LoaiThuCungService.class);
 
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override

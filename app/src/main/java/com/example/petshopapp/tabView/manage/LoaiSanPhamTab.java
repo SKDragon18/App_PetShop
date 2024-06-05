@@ -233,8 +233,8 @@ public class LoaiSanPhamTab extends Fragment {
         // Inflate the layout for this fragment
         mView =  inflater.inflate(R.layout.fragment_loai_san_pham_tab, container, false);
 
-        Retrofit retrofit = ApiClient.getClient();
-        loaiSanPhamService =retrofit.create(LoaiSanPhamService.class);
+        ApiClient apiClient = ApiClient.getApiClient();
+        loaiSanPhamService =apiClient.getRetrofit().create(LoaiSanPhamService.class);
 
         setInit();
         setEvent();

@@ -96,9 +96,9 @@ public class BangGiaTab extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         mView = inflater.inflate(R.layout.fragment_bang_gia_tab, container, false);
-        Retrofit retrofit = ApiClient.getClient();
-        bangGiaService =retrofit.create(BangGiaService.class);
-        chiNhanhService = retrofit.create(ChiNhanhService.class);
+        ApiClient apiClient = ApiClient.getApiClient();
+        bangGiaService =apiClient.getRetrofit().create(BangGiaService.class);
+        chiNhanhService = apiClient.getRetrofit().create(ChiNhanhService.class);
         setInit();
         setEvent();
         return mView;
@@ -130,7 +130,7 @@ public class BangGiaTab extends Fragment {
         lvBangGia.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                openChiTietTab(position);
+                openChiTietTab(data.get(position).getMaBangGia());
             }
         });
     }

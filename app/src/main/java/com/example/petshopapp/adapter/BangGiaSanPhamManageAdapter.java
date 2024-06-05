@@ -4,6 +4,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -46,20 +48,29 @@ public class BangGiaSanPhamManageAdapter extends ArrayAdapter {
 
     TextView tvMaSanPham, tvTenSanPham, tvTenLoaiSanPham, tvGiaHienTai;
     EditText edtGiaKM;
+    static Button btnSave;
     List<BangGiaSanPham> data;
     private BangGiaService bangGiaSanPhamService;
-    public BangGiaSanPhamManageAdapter(@NonNull Context context, int resource, List<BangGiaSanPham> data) {
+    public BangGiaSanPhamManageAdapter(@NonNull Context context, int resource, List<BangGiaSanPham> data, Button btn) {
         super(context, resource,data);
         this.context = context;
         this.resource = resource;
         this.data = data;
+        btnSave=btn;
     }
     private String getString(BigDecimal bigDecimal){
         return bigDecimal==null? "" :bigDecimal.toString();
     }
     private BigDecimal convertBigDecimal(String text){
-        if(text==null)return null;
+        if(text==null){
+            SendMessage.sendCatch(mView.getContext(), "Text is null");
+            return null;
+        }
         try{
+            if(text.isEmpty()){
+                SendMessage.sendCatch(mView.getContext(), "Text is empty");
+                return null;
+            }
             return new BigDecimal(text);
         }
         catch (Exception e){
@@ -88,22 +99,19 @@ public class BangGiaSanPhamManageAdapter extends ArrayAdapter {
         tvGiaHienTai.setText(getString(bangGiaSanPham.getGiaHienTai()));
 
         edtGiaKM.setText(getString(bangGiaSanPham.getGiaKhuyenMai()));
-        edtGiaKM.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        edtGiaKM.addTextChangedListener(new TextWatcher() {
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if((actionId == EditorInfo.IME_ACTION_DONE ||
-                        actionId == EditorInfo.IME_ACTION_GO ||
-                        actionId == EditorInfo.IME_ACTION_NEXT ||
-                        actionId == EditorInfo.IME_ACTION_SEARCH ||
-                        actionId == EditorInfo.IME_ACTION_SEND ||
-                        (event != null && event.getKeyCode() == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN))){
-                    if(edtGiaKM.getText()==null || edtGiaKM.getText().toString().isEmpty()){
-                        edtGiaKM.setError("Mời nhập số");
-                    }
-                    data.get(position).setGiaKhuyenMai(convertBigDecimal(edtGiaKM.getText().toString()));
-                    return true;
-                }
-                return false;
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                data.get(position).setGiaKhuyenMai(convertBigDecimal(s.toString()));
+                btnSave.setBackgroundColor(mView.getResources().getColor(R.color.fresh_blue));
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
             }
         });
 

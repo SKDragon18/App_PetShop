@@ -1,23 +1,26 @@
 package com.example.petshopapp.model;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class ThuCung {
     private long maThuCung;
     private String tenThuCung;
     private int trangThaiBan;
-    String chu;
-    String moTa;
-    BigDecimal giaHienTai;
-    ChiNhanh chiNhanh;
-    Giong giong;
+    private String chu;
+    private String moTa;
+    private BigDecimal giaHienTai;
+    private ChiNhanh chiNhanh;
+    private Giong giong;
+    private List<Long> hinhAnh;
+    private int soLuongTon;
 
     public ThuCung() {
     }
 
-    public ThuCung(long maThuCung, String tenThuCung, int trangThaiBan,
-                   String chu, String moTa, BigDecimal giaHienTai,
-                   ChiNhanh chiNhanh, Giong giong) {
+    public ThuCung(long maThuCung, String tenThuCung, int trangThaiBan, String chu,
+                   String moTa, BigDecimal giaHienTai, ChiNhanh chiNhanh, Giong giong,
+                   List<Long> hinhAnh, int soLuongTon) {
         this.maThuCung = maThuCung;
         this.tenThuCung = tenThuCung;
         this.trangThaiBan = trangThaiBan;
@@ -26,6 +29,8 @@ public class ThuCung {
         this.giaHienTai = giaHienTai;
         this.chiNhanh = chiNhanh;
         this.giong = giong;
+        this.hinhAnh = hinhAnh;
+        this.soLuongTon = soLuongTon;
     }
 
     public long getMaThuCung() {
@@ -90,5 +95,21 @@ public class ThuCung {
 
     public void setGiong(Giong giong) {
         this.giong = giong;
+    }
+
+    public List<Long> getHinhAnh() {
+        return hinhAnh;
+    }
+
+    public void setHinhAnh(List<Long> hinhAnh) {
+        this.hinhAnh = hinhAnh;
+    }
+
+    public int getSoLuongTon() {
+        return soLuongTon;
+    }
+
+    public void setSoLuongTon(int soLuongTon) {
+        this.soLuongTon = soLuongTon;
     }
 }

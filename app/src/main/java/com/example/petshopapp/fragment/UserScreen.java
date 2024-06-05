@@ -178,10 +178,10 @@ public class UserScreen extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mView =  inflater.inflate(R.layout.fragment_user_screen, container, false);
-        Retrofit retrofit = ApiClient.getClient();
-        khachHangService =retrofit.create(KhachHangService.class);
-        taiKhoanService=retrofit.create(TaiKhoanService.class);
-        hinhAnhService=retrofit.create(HinhAnhService.class);
+        ApiClient apiClient = ApiClient.getApiClient();
+        khachHangService =apiClient.getRetrofit().create(KhachHangService.class);
+        taiKhoanService=apiClient.getRetrofit().create(TaiKhoanService.class);
+        hinhAnhService=apiClient.getRetrofit().create(HinhAnhService.class);
         setInit();
         setEvent();
         return mView;

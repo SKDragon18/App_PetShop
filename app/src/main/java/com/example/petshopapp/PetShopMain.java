@@ -235,7 +235,9 @@ public class PetShopMain extends AppCompatActivity{
                         sharedPreferences.edit().remove("password").apply();
                         sharedPreferences.edit().remove("role").apply();
                     }
-                    ApiClient.setAuToken("");//giải phóng token
+                    ApiClient apiClient = ApiClient.getApiClient();
+                    apiClient.setAuToken("");
+                    apiClient.deleteRetrofit();
                     finish();
                 }
 

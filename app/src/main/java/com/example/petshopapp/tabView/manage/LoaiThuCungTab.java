@@ -223,8 +223,8 @@ public class LoaiThuCungTab extends Fragment {
         // Inflate the layout for this fragment
         mView =  inflater.inflate(R.layout.fragment_loai_thu_cung_tab, container, false);
 
-        Retrofit retrofit = ApiClient.getClient();
-        loaiThuCungService =retrofit.create(LoaiThuCungService.class);
+        ApiClient apiClient = ApiClient.getApiClient();
+        loaiThuCungService =apiClient.getRetrofit().create(LoaiThuCungService.class);
 
         setInit();
         setEvent();

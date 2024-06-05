@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.petshopapp.api.ApiClient;
@@ -29,12 +30,14 @@ public class PetShopLogin extends AppCompatActivity {
     private EditText edtUsername, edtPassword;
     private Button btnLogin, btnRegister;
     private CheckBox cbGhiNho;
+    private TextView tvQuenMatKhau;
 
     //Đối tượng lưu thông tin vào file
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
 
     //Api
+    ApiClient apiClient;
     DangNhapService dangNhapService;
 
     //Factory
@@ -53,8 +56,8 @@ public class PetShopLogin extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pet_shop_login);
 
-        Retrofit retrofit = ApiClient.getClient();
-        dangNhapService =retrofit.create(DangNhapService.class);
+        apiClient =ApiClient.getApiClient();
+        dangNhapService =apiClient.getRetrofit().create(DangNhapService.class);
 
         setInit();
         setEvent();
@@ -63,6 +66,8 @@ public class PetShopLogin extends AppCompatActivity {
     public void setInit(){
         //Fractory
         fragmentFactoryCustom=new FragmentFactoryCustom();
+        //textView
+        tvQuenMatKhau = findViewById(R.id.tvQuenMatKhau);
         //edittext
         edtUsername=findViewById(R.id.edtUsername);
         edtPassword=findViewById(R.id.edtPassword);
@@ -77,6 +82,13 @@ public class PetShopLogin extends AppCompatActivity {
         editor =  sharedPreferences.edit();
     }
     public void setEvent(){
+        tvQuenMatKhau.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent newIntent=new Intent(PetShopLogin.this, PetShopForgetPassword.class);
+                startActivity(newIntent);
+            }
+        });
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -123,7 +135,8 @@ public class PetShopLogin extends AppCompatActivity {
                     editor.commit();
 
                     //Lưu trữ thông tin token vào lớp ApiClient
-                    ApiClient.setAuToken(thongTinPhanHoiDangNhap.getToken());
+                    apiClient.deleteRetrofit();
+                    apiClient.setAuToken(thongTinPhanHoiDangNhap.getToken());
 
                     //Chuyển trang home
                     Intent newIntent=new Intent(PetShopLogin.this, PetShopMain.class);

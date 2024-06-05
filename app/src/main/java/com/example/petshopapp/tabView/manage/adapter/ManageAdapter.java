@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import com.example.petshopapp.tabView.manage.GiongTab;
 import com.example.petshopapp.tabView.manage.LoaiSanPhamTab;
 import com.example.petshopapp.tabView.manage.LoaiThuCungTab;
+import com.example.petshopapp.tabView.manage.SanPhamTab;
 import com.example.petshopapp.tabView.manage.ThuCungTab;
 
 
@@ -21,14 +22,17 @@ public class ManageAdapter extends FragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position){
+
             case 0:
-                return new ThuCungTab();
-            case 1:
                 return new LoaiThuCungTab();
-            case 2:
+            case 1:
                 return new GiongTab();
-            case 3:
+            case 2:
                 return new LoaiSanPhamTab();
+            case 3:
+                return new ThuCungTab();
+            case 4:
+                return new SanPhamTab();
             default:
                 return new Fragment();
         }
@@ -36,7 +40,7 @@ public class ManageAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 4; // trả về số item
+        return 5; // trả về số item
     }
 
     @Nullable
@@ -44,16 +48,19 @@ public class ManageAdapter extends FragmentStatePagerAdapter {
     public CharSequence getPageTitle(int position) {
 
         switch (position){
+
             case 0:
-                return "ThuCung";
-            case 1:
                 return "LoaiThuCung";
-            case 2:
+            case 1:
                 return "Giong";
-            case 3:
+            case 2:
                 return "LoaiSanPham";
-            default:
+            case 3:
                 return "ThuCung";
+            case 4:
+                return "SanPham";
+            default:
+                return "";
         }
     }
 }

@@ -10,8 +10,9 @@
         android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:gravity="center"
             android:orientation="vertical">
             <Button
                 android:layout_width="wrap_content"
@@ -23,9 +24,47 @@
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="7"
+            android:layout_height="0dp"
+            android:layout_weight="8"
             android:orientation="vertical">
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginVertical="5dp">
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="2"
+                        android:gravity="center"
+                        android:paddingVertical="10dp"
+                        android:text="Id"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="6"
+                        android:gravity="center"
+                        android:layout_marginEnd="10dp"
+                        android:text="Tên"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:layout_marginEnd="10dp"
+                        android:text="Edit"/>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:layout_marginEnd="10dp"
+                        android:text="Delete"/>
+                </LinearLayout>
+            </TableRow>
             <ListView
                 android:id="@+id/lvLoaiThuCung"
                 android:layout_width="match_parent"

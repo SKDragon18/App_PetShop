@@ -13,7 +13,6 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,66 +22,67 @@ import androidx.annotation.Nullable;
 
 import com.example.petshopapp.R;
 import com.example.petshopapp.api.ApiClient;
-import com.example.petshopapp.api.apiservice.ThuCungService;
+import com.example.petshopapp.api.apiservice.SanPhamService;
 import com.example.petshopapp.message.SendMessage;
 import com.example.petshopapp.model.ChiNhanh;
 import com.example.petshopapp.model.Giong;
-import com.example.petshopapp.model.ThuCung;
+import com.example.petshopapp.model.LoaiSanPham;
+import com.example.petshopapp.model.SanPham;
+import com.example.petshopapp.model.SanPham;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ThuCungManageAdapter extends ArrayAdapter {
-    //View
+public class SanPhamManageAdapter extends ArrayAdapter {
     private Context context;
     private int resource;
     private View mView;
     //Data
-    private List<ThuCung> data;
-    private List<ChiNhanh> chiNhanhList = new ArrayList<>();
-    private List<Giong> giongList = new ArrayList<>();
-    private List<String> tenChiNhanhList = new ArrayList<>();
-    private List<String> tenGiongList = new ArrayList<>();
-    //Api
-    private ThuCungService thuCungService;
+    private List<SanPham> data;
+    private Map<Integer,String> chiNhanhMap;
+    private List<LoaiSanPham> loaiSanPhamList = new ArrayList<>();
+    private List<String> tenLoaiSanPham = new ArrayList<>();
 
-    public      ThuCungManageAdapter(@NonNull Context context, int resource, List<ThuCung> data,
-                                     List<ChiNhanh> chiNhanhList,List<String> tenChiNhanhList,
-                                     List<Giong> giongList,List<String> tenGiongList) {
+    //Api
+    private SanPhamService sanPhamService;
+    public SanPhamManageAdapter(@NonNull Context context, int resource, List<SanPham> data,
+                                Map<Integer,String> chiNhanhMap,
+                                List<LoaiSanPham> loaiSanPhamList, List<String> tenLoaiSanPham) {
         super(context, resource,data);
         this.context = context;
         this.resource = resource;
         this.data = data;
-        this.chiNhanhList = chiNhanhList;
-        this.tenChiNhanhList = tenChiNhanhList;
-        this.giongList = giongList;
-        this.tenGiongList = tenGiongList;
+        this.chiNhanhMap = chiNhanhMap;
+        this.loaiSanPhamList = loaiSanPhamList;
+        this.tenLoaiSanPham = tenLoaiSanPham;
         ApiClient apiClient = ApiClient.getApiClient();
-        this.thuCungService = apiClient.getRetrofit().create(ThuCungService.class);
+        this.sanPhamService = apiClient.getRetrofit().create(SanPhamService.class);
     }
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         convertView = LayoutInflater.from(context).inflate(resource, null);
         mView = convertView;
-        TextView tvMaThuCung = convertView.findViewById(R.id.tvMaThuCung);
-        TextView tvTenThuCung=convertView.findViewById(R.id.tvTenThuCung);
+        TextView tvMaSanPham = convertView.findViewById(R.id.tvMaSanPham);
+        TextView tvTenSanPham=convertView.findViewById(R.id.tvTenSanPham);
         TextView tvGiaHienTai=convertView.findViewById(R.id.tvGiaHienTai);
         TextView tvSLTon = convertView.findViewById(R.id.tvSLTon);
         TextView tvTenChiNhanh = convertView.findViewById(R.id.tvTenChiNhanh);
+
         Button btnUpdate=convertView.findViewById(R.id.btnUpdate);
         Button btnDelete=convertView.findViewById(R.id.btnDelete);
 
-        ThuCung x = data.get(position);
-        tvMaThuCung.setText(String.valueOf(x.getMaThuCung()));
-        tvTenThuCung.setText(x.getTenThuCung());
-        tvTenChiNhanh.setText(x.getChiNhanh().getTenChiNhanh());
+        SanPham x = data.get(position);
+        tvMaSanPham.setText(String.valueOf(x.getMaSanPham()));
+        tvTenSanPham.setText(x.getTenSanPham());
+        tvTenChiNhanh.setText(chiNhanhMap.get(x.getMaChiNhanh()));
         if(x.getGiaHienTai()!=null)tvGiaHienTai.setText(String.valueOf(x.getGiaHienTai()));
         else{
             tvGiaHienTai.setText("Liên hệ");
@@ -127,8 +127,8 @@ public class ThuCungManageAdapter extends ArrayAdapter {
         return null;
     }
 
-    private void capNhatSoLuongTon(ThuCung thuCung){
-        thuCungService.updateSL(thuCung).enqueue(new Callback<ResponseBody>() {
+    private void capNhatSoLuongTon(SanPham sanPham){
+        sanPhamService.updateSL(sanPham).enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try{
@@ -160,10 +160,10 @@ public class ThuCungManageAdapter extends ArrayAdapter {
         });
     }
 
-    private void openUpdateDialog(int gravity, ThuCung thuCung){
+    private void openUpdateDialog(int gravity, SanPham sanPham){
         final Dialog dialog = new Dialog(mView.getContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_thucung_update);
+        dialog.setContentView(R.layout.dialog_sanpham_update);
 
         Window window = dialog.getWindow();
         if(window == null)return;
@@ -177,67 +177,63 @@ public class ThuCungManageAdapter extends ArrayAdapter {
         window.setAttributes(windowAttributes);
         dialog.setCancelable(true);
 
-        EditText edtMaThuCung = dialog.findViewById(R.id.edtMaThuCung);
-        EditText edtTenThuCung = dialog.findViewById(R.id.edtTenThuCung);
-        EditText edtChu = dialog.findViewById(R.id.edtChu);
-        EditText edtMoTa = dialog.findViewById(R.id.edtMoTa);
+        EditText edtMaSanPham = dialog.findViewById(R.id.edtMaSanPham);
+        EditText edtTenSanPham = dialog.findViewById(R.id.edtTenSanPham);
         EditText edtGiaHienTai = dialog.findViewById(R.id.edtGiaHienTai);
         EditText edtSLTon = dialog.findViewById(R.id.edtSLTon);
-        Spinner spGiong = dialog.findViewById(R.id.spGiong);
+        Spinner spLoaiSanPham = dialog.findViewById(R.id.spLoaiSanPham);
         Spinner spChiNhanh = dialog.findViewById(R.id.spChiNhanh);
 
         Button btnUpdate = dialog.findViewById(R.id.btnUpdate);
         Button btnCancel= dialog.findViewById(R.id.btnCancel);
 
-        edtMaThuCung.setText(String.valueOf(thuCung.getMaThuCung()));
-        edtTenThuCung.setText(thuCung.getTenThuCung());
-        edtChu.setText(thuCung.getChu());
-        edtMoTa.setText(thuCung.getMoTa());
-        edtGiaHienTai.setText(getString(thuCung.getGiaHienTai()));
-        edtSLTon.setText(String.valueOf(thuCung.getSoLuongTon()));
+        edtMaSanPham.setText(String.valueOf(sanPham.getMaSanPham()));
+        edtTenSanPham.setText(sanPham.getTenSanPham());
+        edtGiaHienTai.setText(getString(sanPham.getGiaHienTai()));
+        edtSLTon.setText(String.valueOf(sanPham.getSoLuongTon()));
+        List<String> tenChiNhanhList= new ArrayList<>(chiNhanhMap.values());
 
-        ArrayAdapter adapterDSGiong= new ArrayAdapter<>(mView.getContext(), android.R.layout.simple_list_item_1, tenGiongList);
-        spGiong.setAdapter(adapterDSGiong);
-        adapterDSGiong.notifyDataSetChanged();
+        ArrayAdapter adapterDSLoaiSanPham= new ArrayAdapter<>(mView.getContext(), android.R.layout.simple_list_item_1, tenLoaiSanPham);
+        spLoaiSanPham.setAdapter(adapterDSLoaiSanPham);
+        adapterDSLoaiSanPham.notifyDataSetChanged();
 
         ArrayAdapter adapterDSChiNhanh= new ArrayAdapter<>(mView.getContext(), android.R.layout.simple_list_item_1, tenChiNhanhList);
         spChiNhanh.setAdapter(adapterDSChiNhanh);
+        spChiNhanh.setEnabled(false);//Khóa chức năng
         adapterDSChiNhanh.notifyDataSetChanged();
 
-        spGiong.setSelection(tenGiongList.indexOf(thuCung.getGiong().getTengiong()));
-        spChiNhanh.setSelection(tenChiNhanhList.indexOf(thuCung.getChiNhanh().getTenChiNhanh()));
+        spLoaiSanPham.setSelection(tenLoaiSanPham.indexOf(sanPham.getLoaiSanPham().getTenLoaiSanPham()));
+        spChiNhanh.setSelection(tenChiNhanhList.indexOf(chiNhanhMap.get(sanPham.getMaChiNhanh())));
 
-        int soLuongTon = thuCung.getSoLuongTon();
-        final ThuCung thuCungTemp=thuCung;
+        long soLuongTon = sanPham.getSoLuongTon();
+        final SanPham sanPhamTemp=sanPham;
 
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                thuCungTemp.setTenThuCung(edtTenThuCung.getText().toString());
-                thuCungTemp.setChu(edtChu.getText().toString());
-                thuCungTemp.setMoTa(edtMoTa.getText().toString());
-                thuCungTemp.setGiaHienTai(convertBigDecimal(edtGiaHienTai.getText().toString()));
-                thuCungTemp.setSoLuongTon(Integer.parseInt(edtSLTon.getText().toString()));
+                sanPhamTemp.setTenSanPham(edtTenSanPham.getText().toString());
+                sanPhamTemp.setGiaHienTai(convertBigDecimal(edtGiaHienTai.getText().toString()));
+                sanPhamTemp.setSoLuongTon(Long.parseLong(edtSLTon.getText().toString()));
                 String tenChiNhanh= spChiNhanh.getSelectedItem().toString();
-                String tenGiong = spGiong.getSelectedItem().toString();
-                for(Giong x: giongList){
-                    if(x.getTengiong().equals(tenGiong)){
-                        thuCungTemp.setGiong(x);
+                String tenLoaiSanPham = spLoaiSanPham.getSelectedItem().toString();
+                for(Map.Entry<Integer,String> x: chiNhanhMap.entrySet()){
+                    if(x.getValue().equals(tenChiNhanh)){
+                        sanPhamTemp.setMaChiNhanh(x.getKey());
                         break;
                     }
                 }
-                for(ChiNhanh x: chiNhanhList){
-                    if(x.getTenChiNhanh().equals(tenChiNhanh)){
-                        thuCungTemp.setChiNhanh(x);
+                for(LoaiSanPham x: loaiSanPhamList){
+                    if(x.getTenLoaiSanPham().equals(tenLoaiSanPham)){
+                        sanPhamTemp.setLoaiSanPham(x);
                         break;
                     }
                 }
-                thuCungService.update(thuCungTemp).enqueue(new Callback<ThuCung>() {
+                sanPhamService.update(sanPhamTemp).enqueue(new Callback<SanPham>() {
                     @Override
-                    public void onResponse(Call<ThuCung> call, Response<ThuCung> response) {
+                    public void onResponse(Call<SanPham> call, Response<SanPham> response) {
                         if(response.code() == 200) {
-                            if(soLuongTon!=thuCungTemp.getSoLuongTon()){
-                                capNhatSoLuongTon(thuCungTemp);
+                            if(soLuongTon!=sanPhamTemp.getSoLuongTon()){
+                                capNhatSoLuongTon(sanPhamTemp);
                             }
                             else{
                                 notifyDataSetChanged();
@@ -257,7 +253,7 @@ public class ThuCungManageAdapter extends ArrayAdapter {
                     }
 
                     @Override
-                    public void onFailure(Call<ThuCung> call, Throwable throwable) {
+                    public void onFailure(Call<SanPham> call, Throwable throwable) {
                         SendMessage.sendApiFail(mView.getContext(),throwable);
                     }
                 });
@@ -276,10 +272,10 @@ public class ThuCungManageAdapter extends ArrayAdapter {
         dialog.show();
     }
 
-    private void openDeleteDialog(int gravity, ThuCung thuCung){
+    private void openDeleteDialog(int gravity, SanPham sanPham){
         final Dialog dialog = new Dialog(mView.getContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_thucung_delete);
+        dialog.setContentView(R.layout.dialog_sanpham_delete);
 
         Window window = dialog.getWindow();
         if(window == null)return;
@@ -293,37 +289,33 @@ public class ThuCungManageAdapter extends ArrayAdapter {
         window.setAttributes(windowAttributes);
         dialog.setCancelable(true);
 
-        EditText edtMaThuCung = dialog.findViewById(R.id.edtMaThuCung);
-        EditText edtTenThuCung = dialog.findViewById(R.id.edtTenThuCung);
-        EditText edtChu = dialog.findViewById(R.id.edtChu);
-        EditText edtMoTa = dialog.findViewById(R.id.edtMoTa);
+        EditText edtMaSanPham = dialog.findViewById(R.id.edtMaSanPham);
+        EditText edtTenSanPham = dialog.findViewById(R.id.edtTenSanPham);
         EditText edtGiaHienTai = dialog.findViewById(R.id.edtGiaHienTai);
         EditText edtSLTon = dialog.findViewById(R.id.edtSLTon);
-        EditText edtGiong = dialog.findViewById(R.id.edtGiong);
+        EditText edtLoaiSanPham = dialog.findViewById(R.id.edtLoaiSanPham);
         EditText edtChiNhanh = dialog.findViewById(R.id.edtChiNhanh);
 
         Button btnConfirm = dialog.findViewById(R.id.btnConfirm);
         Button btnCancel= dialog.findViewById(R.id.btnCancel);
 
-        edtMaThuCung.setText(String.valueOf(thuCung.getMaThuCung()));
-        edtTenThuCung.setText(thuCung.getTenThuCung());
-        edtChu.setText(thuCung.getChu());
-        edtMoTa.setText(thuCung.getMoTa());
-        edtGiaHienTai.setText(getString(thuCung.getGiaHienTai()));
-        edtSLTon.setText(String.valueOf(thuCung.getSoLuongTon()));
-        edtGiong.setText(thuCung.getGiong().getTengiong());
-        edtChiNhanh.setText(thuCung.getChiNhanh().getTenChiNhanh());
+        edtMaSanPham.setText(String.valueOf(sanPham.getMaSanPham()));
+        edtTenSanPham.setText(sanPham.getTenSanPham());
+        edtGiaHienTai.setText(getString(sanPham.getGiaHienTai()));
+        edtSLTon.setText(String.valueOf(sanPham.getSoLuongTon()));
+        edtLoaiSanPham.setText(sanPham.getLoaiSanPham().getTenLoaiSanPham());
+        edtChiNhanh.setText(chiNhanhMap.get(sanPham.getMaChiNhanh()));
 
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                thuCungService.delete(thuCung.getMaThuCung()).enqueue(new Callback<ResponseBody>() {
+                sanPhamService.delete(sanPham.getMaSanPham(),sanPham.getMaChiNhanh()).enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         try{
                             if(response.code() == 200){
                                 String result = response.body().string();
-                                data.remove(thuCung);
+                                data.remove(sanPham);
                                 notifyDataSetChanged();
                                 Toast.makeText(mView.getContext(),result,Toast.LENGTH_SHORT).show();
                             }

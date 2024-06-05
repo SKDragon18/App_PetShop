@@ -79,8 +79,8 @@ public class BangGiaManageAdapter extends ArrayAdapter {
         tvTGBatDau.setText(TimeConvert.convertJavaDatetime(bangGia.getThoiGianBatDau()));
         tvTGKetThuc.setText(TimeConvert.convertJavaDatetime(bangGia.getThoiGianKetThuc()));
 
-        Retrofit retrofit = ApiClient.getClient();
-        bangGiaService =retrofit.create(BangGiaService.class);
+        ApiClient apiClient = ApiClient.getApiClient();
+        bangGiaService =apiClient.getRetrofit().create(BangGiaService.class);
 
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override

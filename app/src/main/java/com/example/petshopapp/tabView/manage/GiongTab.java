@@ -316,9 +316,9 @@ public class GiongTab extends Fragment {
         // Inflate the layout for this fragment
         mView =  inflater.inflate(R.layout.fragment_giong_tab, container, false);
 
-        Retrofit retrofit = ApiClient.getClient();
-        giongService =retrofit.create(GiongService.class);
-        loaiThuCungService=retrofit.create(LoaiThuCungService.class);
+        ApiClient apiClient = ApiClient.getApiClient();
+        giongService =apiClient.getRetrofit().create(GiongService.class);
+        loaiThuCungService=apiClient.getRetrofit().create(LoaiThuCungService.class);
 
         setInit();
         setEvent();

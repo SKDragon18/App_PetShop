@@ -51,6 +51,42 @@ public class ChiNhanhManageAdapter extends ArrayAdapter {
         this.data = data;
     }
 
+    @NonNull
+    @Override
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        convertView = LayoutInflater.from(context).inflate(resource, null);
+        this.mView=convertView;
+        ChiNhanh chiNhanh = data.get(position);
+
+        tvMaChiNhanh = mView.findViewById(R.id.tvMaChiNhanh);
+        tvTenChiNhanh = mView.findViewById(R.id.tvTenChiNhanh);
+        btnUpdate=mView.findViewById(R.id.btnUpdate);
+        btnDelete=mView.findViewById(R.id.btnDelete);
+
+
+        tvMaChiNhanh.setText(String.valueOf(chiNhanh.getMaChiNhanh()));
+        tvTenChiNhanh.setText(chiNhanh.getTenChiNhanh());
+
+        ApiClient apiClient = ApiClient.getApiClient();
+        chiNhanhService =apiClient.getRetrofit().create(ChiNhanhService.class);
+
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openUpdateDialog(Gravity.CENTER, chiNhanh);
+            }
+        });
+
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDeleteDialog(Gravity.CENTER, chiNhanh);
+            }
+        });
+
+        return convertView;
+    }
+
     private void openUpdateDialog(int gravity, ChiNhanh chiNhanh){
         final Dialog dialog = new Dialog(mView.getContext());
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -175,7 +211,6 @@ public class ChiNhanhManageAdapter extends ArrayAdapter {
                                     SendMessage.sendMessageFail(mView.getContext(),code,error,message);
                                 } catch (Exception e) {
                                     SendMessage.sendCatch(mView.getContext(),e.getMessage());
-                                    return;
                                 }
                             }
                         }
@@ -205,39 +240,5 @@ public class ChiNhanhManageAdapter extends ArrayAdapter {
         dialog.show();
     }
 
-    @NonNull
-    @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        convertView = LayoutInflater.from(context).inflate(resource, null);
-        this.mView=convertView;
-        ChiNhanh chiNhanh = data.get(position);
 
-        tvMaChiNhanh = mView.findViewById(R.id.tvMaChiNhanh);
-        tvTenChiNhanh = mView.findViewById(R.id.tvTenChiNhanh);
-        btnUpdate=mView.findViewById(R.id.btnUpdate);
-        btnDelete=mView.findViewById(R.id.btnDelete);
-
-
-        tvMaChiNhanh.setText(String.valueOf(chiNhanh.getMaChiNhanh()));
-        tvTenChiNhanh.setText(chiNhanh.getTenChiNhanh());
-
-        Retrofit retrofit = ApiClient.getClient();
-        chiNhanhService =retrofit.create(ChiNhanhService.class);
-
-        btnUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openUpdateDialog(Gravity.CENTER, chiNhanh);
-            }
-        });
-
-        btnDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDeleteDialog(Gravity.CENTER, chiNhanh);
-            }
-        });
-
-        return convertView;
-    }
 }

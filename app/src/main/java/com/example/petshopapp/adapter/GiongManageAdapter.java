@@ -301,9 +301,9 @@ public class GiongManageAdapter extends ArrayAdapter {
         tvTenGiong.setText(giong.getTengiong());
         tvLoaiThuCung.setText(giong.getLoaiThuCung().getTenLoaiThuCung());
 
-        Retrofit retrofit = ApiClient.getClient();
-        giongService =retrofit.create(GiongService.class);
-        loaiThuCungService=retrofit.create(LoaiThuCungService.class);
+        ApiClient apiClient = ApiClient.getApiClient();
+        giongService =apiClient.getRetrofit().create(GiongService.class);
+        loaiThuCungService=apiClient.getRetrofit().create(LoaiThuCungService.class);
 
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override

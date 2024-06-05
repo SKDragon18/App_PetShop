@@ -55,6 +55,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -81,8 +82,7 @@ public class NhanVienManageAdapter extends ArrayAdapter {
 
     //Data
     List<NhanVien> data;
-    List<ChiNhanh> chiNhanhList;
-    List<String> tenChiNhanhList;
+    Map<Integer,String> chiNhanhMap;
 
     //Adapter
     ArrayAdapter adapterDSChiNhanh;
@@ -125,13 +125,12 @@ public class NhanVienManageAdapter extends ArrayAdapter {
 //    );
 
     public NhanVienManageAdapter(@NonNull Context context, int resource, List<NhanVien> data,
-                                 List<ChiNhanh>chiNhanhList, List<String>tenChiNhanhList) {
+                                 Map<Integer,String> chiNhanhMap) {
         super(context, resource,data);
         this.context = context;
         this.resource = resource;
         this.data = data;
-        this.chiNhanhList = chiNhanhList;
-        this.tenChiNhanhList=tenChiNhanhList;
+        this.chiNhanhMap = chiNhanhMap;
     }
 
     private void openUpdateDialog(int gravity, NhanVien nhanVien){
@@ -175,31 +174,13 @@ public class NhanVienManageAdapter extends ArrayAdapter {
         edtCCCD.setText(nhanVien.getCccd());
         edtEmail.setText(nhanVien.getEmail());
         edtSDT.setText(nhanVien.getSoDienThoai());
-
-        adapterDSChiNhanh = new ArrayAdapter<>(mView.getContext(), android.R.layout.simple_list_item_1, tenChiNhanhList);
+        List<String> tenChiNhanhList = new ArrayList<>(chiNhanhMap.values());
+        adapterDSChiNhanh = new ArrayAdapter<>(mView.getContext(), android.R.layout.simple_list_item_1,tenChiNhanhList );
         spChiNhanh.setAdapter(adapterDSChiNhanh);
         DocDLChiNhanh();
         final NhanVien nhanVienTemp=nhanVien;
-
-        spChiNhanh.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String ten = spChiNhanh.getSelectedItem().toString();
-                for(ChiNhanh x: chiNhanhList){
-                    if(x.getTenChiNhanh().equals(ten)){
-                        nhanVienTemp.setMaChiNhanh(x.getMaChiNhanh());
-                        break;
-                    }
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
-            }
-        });
-
-        spChiNhanh.setSelection(tenChiNhanhList.indexOf(chiNhanhList.get(nhanVienTemp.getMaChiNhanh()-1).getTenChiNhanh()));
+        
+        spChiNhanh.setSelection(tenChiNhanhList.indexOf(chiNhanhMap.get(nhanVienTemp.getMaChiNhanh())));
 
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -210,6 +191,13 @@ public class NhanVienManageAdapter extends ArrayAdapter {
                 nhanVienTemp.setCccd(edtCCCD.getText().toString());
                 nhanVienTemp.setEmail(edtEmail.getText().toString());
                 nhanVienTemp.setSoDienThoai(edtSDT.getText().toString());
+                String ten = spChiNhanh.getSelectedItem().toString();
+                for(Map.Entry<Integer,String> x:chiNhanhMap.entrySet()){
+                    if(x.getValue().equals(ten)){
+                        nhanVienTemp.setMaChiNhanh(x.getKey());
+                        break;
+                    }
+                }
                 nhanVienService.update(nhanVienTemp).enqueue(new Callback<NhanVien>() {
                     @Override
                     public void onResponse(Call<NhanVien> call, Response<NhanVien> response) {
@@ -294,7 +282,7 @@ public class NhanVienManageAdapter extends ArrayAdapter {
         edtCCCD.setText(nhanVien.getCccd());
         edtEmail.setText(nhanVien.getEmail());
         edtSDT.setText(nhanVien.getSoDienThoai());
-        edtChiNhanh.setText(chiNhanhList.get(nhanVien.getMaChiNhanh()-1).getTenChiNhanh());
+        edtChiNhanh.setText(chiNhanhMap.get(nhanVien.getMaChiNhanh()));
 
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -352,11 +340,9 @@ public class NhanVienManageAdapter extends ArrayAdapter {
             @Override
             public void onResponse(Call<List<ChiNhanh>> call, Response<List<ChiNhanh>> response) {
                 if (response.code() == 200) {
-                    chiNhanhList.clear();
-                    tenChiNhanhList.clear();
+                    chiNhanhMap.clear();
                     for (ChiNhanh x : response.body()) {
-                        chiNhanhList.add(x);
-                        tenChiNhanhList.add(x.getTenChiNhanh());
+                        chiNhanhMap.put(x.getMaChiNhanh(),x.getTenChiNhanh());
                     }
                     adapterDSChiNhanh.notifyDataSetChanged();
                 } else {
@@ -497,10 +483,10 @@ public class NhanVienManageAdapter extends ArrayAdapter {
         tvEmail.setText(nhanVien.getEmail());
         tvSDT.setText(nhanVien.getSoDienThoai());
 
-        Retrofit retrofit = ApiClient.getClient();
-        nhanVienService =retrofit.create(NhanVienService.class);
-        chiNhanhService=retrofit.create(ChiNhanhService.class);
-        hinhAnhService=retrofit.create(HinhAnhService.class);
+        ApiClient apiClient = ApiClient.getApiClient();
+        nhanVienService =apiClient.getRetrofit().create(NhanVienService.class);
+        chiNhanhService=apiClient.getRetrofit().create(ChiNhanhService.class);
+        hinhAnhService=apiClient.getRetrofit().create(HinhAnhService.class);
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

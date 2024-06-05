@@ -1,5 +1,6 @@
 package com.example.petshopapp.tabView.manageFinance;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -19,11 +20,14 @@ import com.example.petshopapp.api.ApiClient;
 import com.example.petshopapp.api.apiservice.BangGiaService;
 import com.example.petshopapp.message.SendMessage;
 import com.example.petshopapp.model.BangGiaSanPham;
+import com.example.petshopapp.model.BangGiaSanPhamGui;
 import com.example.petshopapp.model.BangGiaThuCung;
+import com.example.petshopapp.model.BangGiaThuCungGui;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -39,6 +43,7 @@ public class BangGiaChiTietTab extends Fragment {
     private View mView;
     private Button btnBack;
     private ListView lvCTThuCung, lvCTSanPham;
+    private Button btnSave;
 
     //Api
     private BangGiaService bangGiaService;
@@ -76,8 +81,8 @@ public class BangGiaChiTietTab extends Fragment {
             idBangGia = bundle.getLong("idBangGia");
 //            Toast.makeText(mView.getContext(),String.valueOf(idBangGia),Toast.LENGTH_SHORT).show();
         }
-        Retrofit retrofit = ApiClient.getClient();
-        bangGiaService=retrofit.create(BangGiaService.class);
+        ApiClient apiClient = ApiClient.getApiClient();
+        bangGiaService=apiClient.getRetrofit().create(BangGiaService.class);
         setInit();
         setEvent();
         return mView;
@@ -91,14 +96,14 @@ public class BangGiaChiTietTab extends Fragment {
 
     private void setInit(){
         btnBack = mView.findViewById(R.id.btnBack);
+        btnSave = mView.findViewById(R.id.btnSave);
         lvCTSanPham=mView.findViewById(R.id.lvCTSanPham);
         lvCTThuCung=mView.findViewById(R.id.lvCTThuCung);
     }
     private void setEvent(){
-        DocDL();
-        bangGiaSanPhamManageAdapter = new BangGiaSanPhamManageAdapter(mView.getContext(),R.layout.item_banggiasanpham_manage,bangGiaSanPhamList);
+        bangGiaSanPhamManageAdapter = new BangGiaSanPhamManageAdapter(mView.getContext(),R.layout.item_banggiasanpham_manage,bangGiaSanPhamList, btnSave);
         lvCTSanPham.setAdapter(bangGiaSanPhamManageAdapter);
-        bangGiaThuCungManageAdapter = new BangGiaThuCungManageAdapter(mView.getContext(),R.layout.item_banggiathucung_manage,bangGiaThuCungList);
+        bangGiaThuCungManageAdapter = new BangGiaThuCungManageAdapter(mView.getContext(),R.layout.item_banggiathucung_manage,bangGiaThuCungList, btnSave);
         lvCTThuCung.setAdapter(bangGiaThuCungManageAdapter);
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,10 +114,123 @@ public class BangGiaChiTietTab extends Fragment {
                 }
             }
         });
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<BangGiaThuCungGui> bangGiaThuCungGuiList = getBangGiaThuCungGui();
+                List<BangGiaSanPhamGui> bangGiaSanPhamGuiList = getBangGiaSanPhamGui();
+                if(bangGiaThuCungGuiList==null){
+                    SendMessage.sendCatch(mView.getContext(),"Bảng giá thú cưng rỗng");
+                    return;
+                }
+                if(bangGiaSanPhamGuiList==null){
+                    SendMessage.sendCatch(mView.getContext(),"Bảng giá sản phẩm rỗng");
+                    return;
+                }
+                updateBangGiaThuCung(bangGiaThuCungGuiList,bangGiaSanPhamGuiList);
+            }
+        });
+    }
+
+    private void updateBangGiaThuCung(List<BangGiaThuCungGui> bangGiaThuCungGuiList, List<BangGiaSanPhamGui> bangGiaSanPhamGuiList){
+        bangGiaService.updateTC(bangGiaThuCungGuiList).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if(response.code() == 200){
+                    try{
+                        String result = response.body().string();
+                        bangGiaThuCungManageAdapter.notifyDataSetChanged();
+                        updateBangGiaSanPham(bangGiaSanPhamGuiList);
+                    }
+                    catch(Exception e){
+                        SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                    }
+                }
+                else{
+                    try {
+                        int code = response.code();
+                        String message = response.message();
+                        String error = response.errorBody().string();
+                        SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                    } catch (Exception e) {
+                        SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
+                SendMessage.sendApiFail(mView.getContext(),throwable);
+            }
+        });
+    }
+
+    private void updateBangGiaSanPham(List<BangGiaSanPhamGui> bangGiaSanPhamGuiList){
+        bangGiaService.updateSP(bangGiaSanPhamGuiList).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if(response.code() == 200){
+                    try{
+                        String result = response.body().string();
+                        bangGiaSanPhamManageAdapter.notifyDataSetChanged();
+                        Toast.makeText(mView.getContext(),result,Toast.LENGTH_SHORT).show();
+                        btnSave.setBackgroundColor(Color.GREEN);
+                    }
+                    catch(Exception e){
+                        SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                    }
+                }
+                else{
+                    try {
+                        int code = response.code();
+                        String message = response.message();
+                        String error = response.errorBody().string();
+                        SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                    } catch (Exception e) {
+                        SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
+                SendMessage.sendApiFail(mView.getContext(),throwable);
+            }
+        });
+    }
+
+    private List<BangGiaSanPhamGui> getBangGiaSanPhamGui(){
+        if(bangGiaSanPhamList==null || bangGiaSanPhamList.size()==0){
+            return null;
+        }
+        List<BangGiaSanPhamGui> bangGiaSanPhamGuiList =new ArrayList<>();
+        for(BangGiaSanPham x: bangGiaSanPhamList){
+            BangGiaSanPhamGui bangGiaSanPhamGui = new BangGiaSanPhamGui();
+            bangGiaSanPhamGui.setMaBangGia(idBangGia);
+            bangGiaSanPhamGui.setMaSanPham(x.getMaSanPham());
+            bangGiaSanPhamGui.setDonGia(x.getGiaKhuyenMai());
+            bangGiaSanPhamGuiList.add(bangGiaSanPhamGui);
+        }
+        return bangGiaSanPhamGuiList;
+    }
+
+    public List<BangGiaThuCungGui> getBangGiaThuCungGui(){
+        if(bangGiaThuCungList==null || bangGiaThuCungList.size()==0){
+            return null;
+        }
+        List<BangGiaThuCungGui> bangGiaThuCungGuiList = new ArrayList<>();
+        for(BangGiaThuCung x: bangGiaThuCungList){
+            BangGiaThuCungGui bangGiaThuCungGui =new BangGiaThuCungGui();
+            bangGiaThuCungGui.setMaBangGia(idBangGia);
+            bangGiaThuCungGui.setMaThuCung(x.getMaThuCung());
+            bangGiaThuCungGui.setDonGia(x.getGiaKhuyenMai());
+            bangGiaThuCungGuiList.add(bangGiaThuCungGui);
+        }
+        return bangGiaThuCungGuiList;
     }
 
     private void DocDL(){
-        Toast.makeText(mView.getContext(),"DocDl",Toast.LENGTH_SHORT).show();
+        System.out.println("DocDLBangGiaChiTiet");
         bangGiaService.getAllSP().enqueue(new Callback<List<BangGiaSanPham>>() {
             @Override
             public void onResponse(Call<List<BangGiaSanPham>> call, Response<List<BangGiaSanPham>> response) {
