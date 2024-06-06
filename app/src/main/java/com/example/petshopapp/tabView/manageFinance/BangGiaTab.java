@@ -130,16 +130,17 @@ public class BangGiaTab extends Fragment {
         lvBangGia.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                openChiTietTab(data.get(position).getMaBangGia());
+                openChiTietTab(data.get(position).getMaBangGia(),data.get(position).getChiNhanh().getMaChiNhanh());
             }
         });
     }
 
-    private void openChiTietTab(long idBangGia){
+    private void openChiTietTab(long idBangGia, int maChiNhanh){
         llND.setVisibility(View.GONE);
         BangGiaChiTietTab newFragment = new BangGiaChiTietTab();
         Bundle bundle = new Bundle();
         bundle.putLong("idBangGia",idBangGia);
+        bundle.putInt("maChiNhanh",maChiNhanh);
         newFragment.setArguments(bundle);
         FragmentManager fragmentManager =getActivity().getSupportFragmentManager();
         fragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
@@ -160,8 +161,6 @@ public class BangGiaTab extends Fragment {
                 .replace(R.id.flContainer,newFragment)
                 .addToBackStack(null)
                 .commit();
-
-
     }
 
     private void close(){
@@ -329,7 +328,6 @@ public class BangGiaTab extends Fragment {
                                 SendMessage.sendMessageFail(mView.getContext(),code,error,message);
                             } catch (Exception e) {
                                 SendMessage.sendCatch(mView.getContext(),e.getMessage());
-                                return;
                             }
                         }
                     }

@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment;
 import com.example.petshopapp.R;
 import com.example.petshopapp.fragment.CartScreen;
 import com.example.petshopapp.fragment.HomeScreen;
+import com.example.petshopapp.fragment.ImportProductScreen;
 import com.example.petshopapp.fragment.ManageFinanceScreen;
 import com.example.petshopapp.fragment.ManageScreen;
 import com.example.petshopapp.fragment.ManageEmployeeScreen;
@@ -102,7 +103,7 @@ public class FragmentFactoryCustom {
             case "manage_employee":
                 return new ManageEmployeeScreen();
             case "product_import":
-                return new Fragment();
+                return new ImportProductScreen();
             case "manage_finance":
                 return new ManageFinanceScreen();
             default:

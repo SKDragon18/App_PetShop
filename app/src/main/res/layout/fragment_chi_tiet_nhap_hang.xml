@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".tabView.manageFinance.BangGiaChiTietTab">
+    tools:context=".tabView.importProduct.ChiTietNhapHangTab">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -21,8 +22,22 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
+                android:orientation="horizontal"
                 android:gravity="center|end">
+                <Button
+                    android:id="@+id/btnAddTC"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:text="Add TC"
+                    android:layout_marginEnd="20dp"
+                    android:background="@color/fresh_blue"/>
+                <Button
+                    android:id="@+id/btnAddSP"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:text="Add SP"
+                    android:layout_marginEnd="20dp"
+                    android:background="@color/fresh_blue"/>
                 <Button
                     android:id="@+id/btnSave"
                     android:layout_width="wrap_content"
@@ -60,14 +75,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:visibility="gone"
-                android:text="Upload"
-                android:background="@color/fresh_blue"
-                android:id="@+id/btnUploadTC"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -95,14 +102,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </LinearLayout>
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:visibility="gone"
-                android:text="Upload"
-                android:background="@color/fresh_blue"
-                android:id="@+id/btnUploadSP"/>
         </LinearLayout>
     </LinearLayout>
+
 </FrameLayout>

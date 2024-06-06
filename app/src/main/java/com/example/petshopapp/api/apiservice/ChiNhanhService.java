@@ -1,6 +1,7 @@
 package com.example.petshopapp.api.apiservice;
 
 import com.example.petshopapp.model.ChiNhanh;
+import com.example.petshopapp.model.NhanVien;
 
 import java.util.List;
 
@@ -17,6 +18,9 @@ import retrofit2.http.Path;
 public interface ChiNhanhService {
     @GET("center/chinhanh")
     Call<List<ChiNhanh>> getAll();
+
+    @GET("center/chinhanh/{id}")
+    Call<ChiNhanh> getOneById(@Path("id") int id);
 
     @POST("center/chinhanh")
     Call<ChiNhanh> insert(@Body RequestBody tenChiNhanh);

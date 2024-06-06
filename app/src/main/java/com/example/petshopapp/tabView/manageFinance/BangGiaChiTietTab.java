@@ -43,7 +43,7 @@ public class BangGiaChiTietTab extends Fragment {
     private View mView;
     private Button btnBack;
     private ListView lvCTThuCung, lvCTSanPham;
-    private Button btnSave;
+    private Button btnSave, btnUploadTC, btnUploadSP;
 
     //Api
     private BangGiaService bangGiaService;
@@ -52,6 +52,7 @@ public class BangGiaChiTietTab extends Fragment {
     private List<BangGiaThuCung> bangGiaThuCungList = new ArrayList<>();
     private List<BangGiaSanPham> bangGiaSanPhamList = new ArrayList<>();
     private long idBangGia;
+    private int maChiNhanh;
 
     //Adapter
     private BangGiaThuCungManageAdapter bangGiaThuCungManageAdapter;
@@ -79,7 +80,7 @@ public class BangGiaChiTietTab extends Fragment {
         Bundle bundle =getArguments();
         if(bundle!=null){
             idBangGia = bundle.getLong("idBangGia");
-//            Toast.makeText(mView.getContext(),String.valueOf(idBangGia),Toast.LENGTH_SHORT).show();
+            maChiNhanh = bundle.getInt("maChiNhanh");
         }
         ApiClient apiClient = ApiClient.getApiClient();
         bangGiaService=apiClient.getRetrofit().create(BangGiaService.class);
@@ -97,6 +98,8 @@ public class BangGiaChiTietTab extends Fragment {
     private void setInit(){
         btnBack = mView.findViewById(R.id.btnBack);
         btnSave = mView.findViewById(R.id.btnSave);
+        btnUploadSP = mView.findViewById(R.id.btnUploadSP);
+        btnUploadTC = mView.findViewById(R.id.btnUploadTC);
         lvCTSanPham=mView.findViewById(R.id.lvCTSanPham);
         lvCTThuCung=mView.findViewById(R.id.lvCTThuCung);
     }
@@ -130,6 +133,12 @@ public class BangGiaChiTietTab extends Fragment {
                 updateBangGiaThuCung(bangGiaThuCungGuiList,bangGiaSanPhamGuiList);
             }
         });
+        if(bangGiaThuCungList.size()==0){
+            btnUploadTC.setVisibility(View.VISIBLE);
+        }
+        if(bangGiaSanPhamList.size()==0){
+            btnUploadSP.setVisibility(View.VISIBLE);
+        }
     }
 
     private void updateBangGiaThuCung(List<BangGiaThuCungGui> bangGiaThuCungGuiList, List<BangGiaSanPhamGui> bangGiaSanPhamGuiList){

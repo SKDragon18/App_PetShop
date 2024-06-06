@@ -13,7 +13,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiClient {
-    private static final String API_PATH ="http://192.168.1.243:8989/";
+    private static final String API_PATH ="http://192.168.1.29:8989/";
     private static final Gson GSON =new GsonBuilder()
             .setLenient()
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX")
