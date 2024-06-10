@@ -2,6 +2,7 @@ package com.example.petshopapp.adapter;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.Gravity;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
 import com.example.petshopapp.R;
 import com.example.petshopapp.api.ApiClient;
@@ -28,9 +30,12 @@ import com.example.petshopapp.api.apiservice.ChiNhanhService;
 import com.example.petshopapp.message.SendMessage;
 import com.example.petshopapp.model.BangGia;
 import com.example.petshopapp.model.ChiNhanh;
+import com.example.petshopapp.model.TaiKhoan;
+import com.example.petshopapp.tabView.manageFinance.BangGiaTab;
 import com.example.petshopapp.tools.TimeConvert;
 import com.example.petshopapp.widget.CalendarDialog;
 
+import java.io.IOException;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,16 +51,18 @@ public class BangGiaManageAdapter extends ArrayAdapter {
     int resource;
 
     View mView;
+    BangGiaTab bangGiaTab;
 
     TextView tvMaBangGia, tvTGBatDau, tvTGKetThuc, tvChiNhanh;
-    Button btnUpdate, btnDelete;
+    Button btnUpdate, btnDelete, btnApply;
     List<BangGia> data;
     private BangGiaService bangGiaService;
-    public BangGiaManageAdapter(@NonNull Context context, int resource, List<BangGia> data) {
+    public BangGiaManageAdapter(@NonNull Context context, int resource, List<BangGia> data, BangGiaTab bangGiaTab) {
         super(context, resource,data);
         this.context = context;
         this.resource = resource;
         this.data = data;
+        this.bangGiaTab = bangGiaTab;
     }
 
     @NonNull
@@ -72,12 +79,21 @@ public class BangGiaManageAdapter extends ArrayAdapter {
 
         btnUpdate=mView.findViewById(R.id.btnUpdate);
         btnDelete=mView.findViewById(R.id.btnDelete);
-
+        btnApply = mView.findViewById(R.id.btnApply);
 
         tvMaBangGia.setText(String.valueOf(bangGia.getMaBangGia()));
         tvChiNhanh.setText(bangGia.getChiNhanh().getTenChiNhanh());
         tvTGBatDau.setText(TimeConvert.convertJavaDatetime(bangGia.getThoiGianBatDau()));
         tvTGKetThuc.setText(TimeConvert.convertJavaDatetime(bangGia.getThoiGianKetThuc()));
+
+        if(bangGia.getTrangThai()){
+            btnApply.setBackgroundResource(R.drawable.allow);
+            btnApply.setEnabled(false);
+        }
+        else{
+            btnApply.setBackgroundResource(R.drawable.accept);
+            btnApply.setEnabled(true);
+        }
 
         ApiClient apiClient = ApiClient.getApiClient();
         bangGiaService =apiClient.getRetrofit().create(BangGiaService.class);
@@ -93,6 +109,12 @@ public class BangGiaManageAdapter extends ArrayAdapter {
             @Override
             public void onClick(View v) {
                 openDeleteDialog(Gravity.CENTER, bangGia);
+            }
+        });
+        btnApply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openApplyDialog(bangGia.getMaBangGia());
             }
         });
 
@@ -290,5 +312,50 @@ public class BangGiaManageAdapter extends ArrayAdapter {
         dialog.show();
     }
 
-    
+    private void openApplyDialog(long idBangGia){
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Xác nhận");
+        builder.setMessage("Bạn có chắc muốn ÁP DỤNG bảng giá này?");
+        builder.setPositiveButton("Xác nhận", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                bangGiaService.apply(idBangGia).enqueue(new Callback<BangGia>() {
+                    @Override
+                    public void onResponse(Call<BangGia> call, Response<BangGia> response) {
+                        if(response.code()==200){
+                            bangGiaTab.DocDL();
+
+                            Toast.makeText(getContext(),"Thành công áp dụng", Toast.LENGTH_SHORT).show();
+
+                        }
+                        else{
+                            try {
+                                int code = response.code();
+                                String message = response.message();
+                                String error = response.errorBody().string();
+                                SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                            } catch (Exception e) {
+                                SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                                return;
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<BangGia> call, Throwable throwable) {
+                        SendMessage.sendApiFail(mView.getContext(),throwable);
+                    }
+                });
+            }
+        });
+        builder.setNegativeButton("Hủy bỏ", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Xử lý khi người dùng hủy bỏ thao tác
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
 }

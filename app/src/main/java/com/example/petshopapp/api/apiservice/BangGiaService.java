@@ -31,6 +31,9 @@ public interface BangGiaService {
     @DELETE("center/banggia/{id}")
     Call<ResponseBody> delete(@Path("id") long id);
 
+    @GET("center/banggia/apply/{id}")
+    Call<BangGia> apply(@Path("id") long id);
+
     //Chi tiết sản phẩm
     @GET("center/ct-san-pham")
     Call<List<BangGiaSanPham>> getAllSP();

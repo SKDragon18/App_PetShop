@@ -51,11 +51,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link BangGiaTab#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class BangGiaTab extends Fragment {
 
     private Button btnThem;
@@ -119,7 +115,8 @@ public class BangGiaTab extends Fragment {
         llND = mView.findViewById(R.id.llND);
     }
     private void setEvent(){
-        bangGiaManageAdapter=new BangGiaManageAdapter(mView.getContext(),R.layout.item_banggia_manage,data);
+
+        bangGiaManageAdapter=new BangGiaManageAdapter(mView.getContext(),R.layout.item_banggia_manage,data, this);
         lvBangGia.setAdapter(bangGiaManageAdapter);
         btnThem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -201,7 +198,7 @@ public class BangGiaTab extends Fragment {
         });
     }
 
-    private void DocDL(){
+    public void DocDL(){
         System.out.println("DocDLBangGia");
         bangGiaService.getAll().enqueue(new Callback<List<BangGia>>() {
             @Override
