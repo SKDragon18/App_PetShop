@@ -38,6 +38,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.petshopapp.PetShopMain;
 import com.example.petshopapp.R;
 import com.example.petshopapp.api.ApiClient;
 import com.example.petshopapp.api.Const;
@@ -47,8 +48,10 @@ import com.example.petshopapp.api.apiservice.KhachHangService;
 import com.example.petshopapp.api.apiservice.TaiKhoanService;
 import com.example.petshopapp.message.SendMessage;
 import com.example.petshopapp.model.ChiNhanh;
+import com.example.petshopapp.model.HinhAnh;
 import com.example.petshopapp.model.KhachHang;
 import com.example.petshopapp.model.TaiKhoan;
+import com.example.petshopapp.tools.ImageInteract;
 import com.example.petshopapp.tools.RealPathUtil;
 import com.example.petshopapp.tools.TimeConvert;
 import com.example.petshopapp.widget.CalendarDialog;
@@ -118,6 +121,7 @@ public class UserScreen extends Fragment {
                         try{
                             bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(),uri);
                             ivAvatar.setImageBitmap(bitmap);
+                            sendImage("",khachHang.getMaKhachHang());
                         } catch (FileNotFoundException e) {
                             Log.e("FileNotFoundException", e.getMessage());
                             Toast.makeText(getContext(),"FileNotFoundException" + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -202,7 +206,7 @@ public class UserScreen extends Fragment {
         btnEdit = mView.findViewById(R.id.btnEdit);
         btnCalendar =mView.findViewById(R.id.btnCalendar);
 
-        ivAvatar = mView.findViewById(R.id.ivAvatar);
+        ivAvatar = mView.findViewById(R.id.ivAvatarKH);
 
         calendarDialog = new CalendarDialog();
 
@@ -214,6 +218,7 @@ public class UserScreen extends Fragment {
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                onClickRequestPermission();
             }
         });
         btnCalendar.setOnClickListener(new View.OnClickListener() {
@@ -314,7 +319,7 @@ public class UserScreen extends Fragment {
         catch(Exception e){
             SendMessage.sendCatch(mView.getContext(),e.getMessage());
         }
-
+        getImage();
     }
 
     private void DocDL(){
@@ -406,7 +411,6 @@ public class UserScreen extends Fragment {
                         SendMessage.sendMessageFail(mView.getContext(),code,error,message);
                     } catch (Exception e) {
                         SendMessage.sendCatch(mView.getContext(),e.getMessage());
-                        return;
                     }
                 }
             }
@@ -484,50 +488,45 @@ public class UserScreen extends Fragment {
         dialog.show();
     }
 
+    private void sendImage(String maNhanVien, String maKhachHang){
+        RequestBody requestBodyMaNhanVien = RequestBody.create(MediaType.parse("multipart/form-data"), maNhanVien);
+        RequestBody requestBodyMaKhachHang = RequestBody.create(MediaType.parse("multipart/form-data"), maKhachHang);
 
+        String imgRealPath = RealPathUtil.getRealPath(this.getContext(), mUri);
+        File file = new File(imgRealPath);
+        RequestBody requestBodyAvatar = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+        MultipartBody.Part multipartBodyAvatar = MultipartBody.Part.createFormData(Const.KEY_IMAGE, file.getName(), requestBodyAvatar);
 
+        hinhAnhService.saveImage(multipartBodyAvatar, requestBodyMaNhanVien, requestBodyMaKhachHang).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try{
+                    if(response.code() == 200){
+                        String result = response.body().string();
+                        Toast.makeText(mView.getContext(),result,Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        try {
+                            int code = response.code();
+                            String message = response.message();
+                            String error = response.errorBody().string();
+                            SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                        } catch (Exception e) {
+                            SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                        }
+                    }
+                }
+                catch (Exception e){
+                    SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                }
+            }
 
-
-//    private void sendImage(String maKhachHang, String maKhachHang){
-//        RequestBody requestBodyMaKhachHang = RequestBody.create(MediaType.parse("multipart/form-data"), maKhachHang);
-//        RequestBody requestBodyMaKhachHang = RequestBody.create(MediaType.parse("multipart/form-data"), maKhachHang);
-//
-//        String imgRealPath = RealPathUtil.getRealPath(this.getContext(), mUri);
-//        File file = new File(imgRealPath);
-//        RequestBody requestBodyAvatar = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-//        MultipartBody.Part multipartBodyAvatar = MultipartBody.Part.createFormData(Const.KEY_IMAGE, file.getName(), requestBodyAvatar);
-//
-//        hinhAnhService.saveImage(multipartBodyAvatar, requestBodyMaKhachHang, requestBodyMaKhachHang).enqueue(new Callback<ResponseBody>() {
-//            @Override
-//            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-//                try{
-//                    if(response.code() == 200){
-//                        String result = response.body().string();
-//                        Toast.makeText(mView.getContext(),result,Toast.LENGTH_SHORT).show();
-//                    }
-//                    else{
-//                        try {
-//                            int code = response.code();
-//                            String message = response.message();
-//                            String error = response.errorBody().string();
-//                            SendMessage.sendMessageFail(mView.getContext(),code,error,message);
-//                        } catch (Exception e) {
-//                            SendMessage.sendCatch(mView.getContext(),e.getMessage());
-//                            return;
-//                        }
-//                    }
-//                }
-//                catch (Exception e){
-//                    SendMessage.sendCatch(mView.getContext(),e.getMessage());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
-//                SendMessage.sendApiFail(mView.getContext(),throwable);
-//            }
-//        });
-//    }
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
+                SendMessage.sendApiFail(mView.getContext(),throwable);
+            }
+        });
+    }
     private void getGallery(){
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
@@ -548,5 +547,45 @@ public class UserScreen extends Fragment {
         }
     }
 
+    private void getImage(){
+        if(khachHang!=null && khachHang.getHinhAnh()!=null&&khachHang.getHinhAnh().size()!=0){
+            long idHinh = khachHang.getHinhAnh().get(0);
+            hinhAnhService.getImage(new long[]{idHinh}).enqueue(new Callback<List<HinhAnh>>() {
+                @Override
+                public void onResponse(Call<List<HinhAnh>> call, Response<List<HinhAnh>> response) {
+                    try{
+                        if(response.code() == 200){
+                            List<HinhAnh> list = response.body();
+                            String source = list.get(0).getSource();
+                            bitmap= ImageInteract.convertStringToBitmap(source);
+                            if(bitmap == null){
+                                Toast.makeText(getContext(),"Bitmap null",Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            ivAvatar.setImageBitmap(bitmap);
+                        }
+                        else{
+                            try {
+                                int code = response.code();
+                                String message = response.message();
+                                String error = response.errorBody().string();
+                                SendMessage.sendMessageFail(getContext(),code,error,message);
+                            } catch (Exception e) {
+                                SendMessage.sendCatch(getContext(),e.getMessage());
+                            }
+                        }
+                    }
+                    catch (Exception e){
+                        SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<HinhAnh>> call, Throwable throwable) {
+                    SendMessage.sendApiFail(mView.getContext(),throwable);
+                }
+            });
+        }
+    }
 
 }

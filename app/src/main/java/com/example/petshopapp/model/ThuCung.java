@@ -10,6 +10,7 @@ public class ThuCung {
     private String chu;
     private String moTa;
     private BigDecimal giaHienTai;
+    private BigDecimal giaKM;
     private ChiNhanh chiNhanh;
     private Giong giong;
     private List<Long> hinhAnh;
@@ -18,15 +19,14 @@ public class ThuCung {
     public ThuCung() {
     }
 
-    public ThuCung(long maThuCung, String tenThuCung, int trangThaiBan, String chu,
-                   String moTa, BigDecimal giaHienTai, ChiNhanh chiNhanh, Giong giong,
-                   List<Long> hinhAnh, int soLuongTon) {
+    public ThuCung(long maThuCung, String tenThuCung, int trangThaiBan, String chu, String moTa, BigDecimal giaHienTai, BigDecimal giaKM, ChiNhanh chiNhanh, Giong giong, List<Long> hinhAnh, int soLuongTon) {
         this.maThuCung = maThuCung;
         this.tenThuCung = tenThuCung;
         this.trangThaiBan = trangThaiBan;
         this.chu = chu;
         this.moTa = moTa;
         this.giaHienTai = giaHienTai;
+        this.giaKM = giaKM;
         this.chiNhanh = chiNhanh;
         this.giong = giong;
         this.hinhAnh = hinhAnh;
@@ -79,6 +79,14 @@ public class ThuCung {
 
     public void setGiaHienTai(BigDecimal giaHienTai) {
         this.giaHienTai = giaHienTai;
+    }
+
+    public BigDecimal getGiaKM() {
+        return giaKM;
+    }
+
+    public void setGiaKM(BigDecimal giaKM) {
+        this.giaKM = giaKM;
     }
 
     public ChiNhanh getChiNhanh() {

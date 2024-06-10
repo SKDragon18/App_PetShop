@@ -30,6 +30,7 @@ public class PetShopForgetPassword extends AppCompatActivity {
 
     //Api
     QuenMatKhauService quenMatKhauService;
+    String maLuu=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,6 +73,11 @@ public class PetShopForgetPassword extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                         if(response.code()==200){
+                            try {
+                                maLuu= response.body().string();
+                            }catch(Exception e){
+                                SendMessage.sendCatch(PetShopForgetPassword.this,e.getMessage());
+                            }
                             Toast.makeText(PetShopForgetPassword.this, "Đã gửi mã xác nhận đến email của bạn",Toast.LENGTH_SHORT).show();
                             edtMaXacNhan.setEnabled(true);
                             btnConfirm.setEnabled(true);
@@ -109,43 +115,15 @@ public class PetShopForgetPassword extends AppCompatActivity {
                     edtMaXacNhan.setError("Mời nhập mã xác nhận");
                     return;
                 }
-                quenMatKhauService.confirm(new ThongTinXacNhan(username,maXacNhan)).enqueue(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        if(response.code()==200){
-                            try{
-                                String result = response.body().string();
-                                Toast.makeText(PetShopForgetPassword.this, result,Toast.LENGTH_SHORT).show();
-                                if(result.equals("Xác nhận thành công")){
-                                    edtMaXacNhan.setEnabled(false);
-                                    btnConfirm.setEnabled(false);
+                if(maLuu!=null&&maXacNhan.equals(maLuu)){
+                    edtMaXacNhan.setEnabled(false);
+                    btnConfirm.setEnabled(false);
 
-                                    edtPasswordMoi.setEnabled(true);
-                                    edtPasswordNhapLai.setEnabled(true);
-                                    btnUpdate.setEnabled(true);
-                                }
-                            }
-                            catch (Exception e){
-                                SendMessage.sendCatch(PetShopForgetPassword.this,e.getMessage());
-                            }
-                        }
-                        else{
-                            try {
-                                int code = response.code();
-                                String message = response.message();
-                                String error = response.errorBody().string();
-                                SendMessage.sendMessageFail(PetShopForgetPassword.this,code,error,message);
-                            } catch (Exception e) {
-                                SendMessage.sendCatch(PetShopForgetPassword.this,e.getMessage());
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable throwable) {
-                        SendMessage.sendApiFail(PetShopForgetPassword.this,throwable);
-                    }
-                });
+                    edtPasswordMoi.setEnabled(true);
+                    edtPasswordNhapLai.setEnabled(true);
+                    btnUpdate.setEnabled(true);
+                    Toast.makeText(PetShopForgetPassword.this, "Xác nhận thành công",Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

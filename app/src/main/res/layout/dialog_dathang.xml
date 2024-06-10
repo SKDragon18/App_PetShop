@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@drawable/bg_white_corner_16"
+    android:layout_margin="16dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp"
+        android:textColor="@color/text_color"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:background="@drawable/bg_white_corner_16_top_left_top_right"
+        android:text="Đặt hàng"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="14sp"
+            android:textColor="@color/text_color"
+            android:text="Thông tin giao hàng"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center"
+                android:textSize="12dp"
+                android:text="Địa chỉ giao hàng: "/>
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="7"
+                android:padding="12dp"
+                android:maxLength="50"
+                android:background="@drawable/bg_white_corner_10_border_gray"
+                android:id="@+id/edtDiaChi"
+                android:hint="Địa chỉ nhận hàng"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center"
+                android:textSize="12dp"
+                android:text="Số điện thoại liên hệ: "/>
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="7"
+                android:padding="12dp"
+                android:maxLength="10"
+                android:background="@drawable/bg_white_corner_10_border_gray"
+                android:id="@+id/edtSoDienThoai"
+                android:inputType="phone"
+                android:hint="Số điện thoại liên lạc"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:id="@+id/llThanhToan">
+            <com.paypal.checkout.paymentbutton.PaymentButtonContainer
+                android:id="@+id/payment_button_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                app:paypal_button_color="blue"
+                app:paypal_button_enabled="true"
+                app:paypal_button_label="pay"
+                app:paypal_button_shape="pill"
+                app:paypal_button_size="small" />
+        </LinearLayout>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:textSize="14sp"
+            android:background="@drawable/bg_shop_color_corner_10"
+            android:text="Đặt hàng"
+            android:id="@+id/btnCreate"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:alpha="0.5"
+            android:textSize="14sp"
+            android:background="@drawable/bg_gray_corner_10"
+            android:text="Hủy bỏ"
+            android:id="@+id/btnCancel"/>
+
+    </LinearLayout>
+
+</LinearLayout>

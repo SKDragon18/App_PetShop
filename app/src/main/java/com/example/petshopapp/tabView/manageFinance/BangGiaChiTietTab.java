@@ -135,9 +135,21 @@ public class BangGiaChiTietTab extends Fragment {
         });
         if(bangGiaThuCungList.size()==0){
             btnUploadTC.setVisibility(View.VISIBLE);
+            btnUploadTC.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    uploadTC();
+                }
+            });
         }
         if(bangGiaSanPhamList.size()==0){
             btnUploadSP.setVisibility(View.VISIBLE);
+            btnUploadSP.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    uploadSP();
+                }
+            });
         }
     }
 
@@ -237,9 +249,7 @@ public class BangGiaChiTietTab extends Fragment {
         }
         return bangGiaThuCungGuiList;
     }
-
-    private void DocDL(){
-        System.out.println("DocDLBangGiaChiTiet");
+    private void DocDLCTSP(){
         bangGiaService.getAllSP().enqueue(new Callback<List<BangGiaSanPham>>() {
             @Override
             public void onResponse(Call<List<BangGiaSanPham>> call, Response<List<BangGiaSanPham>> response) {
@@ -250,6 +260,11 @@ public class BangGiaChiTietTab extends Fragment {
                         if(x.getMaBangGia()==idBangGia)bangGiaSanPhamList.add(x);
                     }
                     bangGiaSanPhamManageAdapter.notifyDataSetChanged();
+                    if(bangGiaSanPhamList.size()!=0){
+                        if(btnUploadSP!=null&&btnUploadSP.getVisibility()==View.VISIBLE){
+                            btnUploadSP.setVisibility(View.GONE);
+                        }
+                    }
                 }
                 else{
                     try {
@@ -268,6 +283,8 @@ public class BangGiaChiTietTab extends Fragment {
                 SendMessage.sendApiFail(mView.getContext(),throwable);
             }
         });
+    }
+    private void DocDLCTTC(){
         bangGiaService.getAllTC().enqueue(new Callback<List<BangGiaThuCung>>() {
             @Override
             public void onResponse(Call<List<BangGiaThuCung>> call, Response<List<BangGiaThuCung>> response) {
@@ -278,6 +295,11 @@ public class BangGiaChiTietTab extends Fragment {
                         if(x.getMaBangGia()==idBangGia)bangGiaThuCungList.add(x);
                     }
                     bangGiaThuCungManageAdapter.notifyDataSetChanged();
+                    if(bangGiaThuCungList.size()!=0){
+                        if(btnUploadTC!=null&&btnUploadTC.getVisibility()==View.VISIBLE){
+                            btnUploadTC.setVisibility(View.GONE);
+                        }
+                    }
                 }
                 else{
                     try {
@@ -293,6 +315,75 @@ public class BangGiaChiTietTab extends Fragment {
 
             @Override
             public void onFailure(Call<List<BangGiaThuCung>> call, Throwable throwable) {
+                SendMessage.sendApiFail(mView.getContext(),throwable);
+            }
+        });
+    }
+    private void DocDL(){
+        System.out.println("DocDLBangGiaChiTiet");
+        DocDLCTSP();
+        DocDLCTTC();
+    }
+    private void uploadTC(){
+        bangGiaService.uploadTC(idBangGia).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if(response.code()==200){
+                    try{
+                        String result = response.body().string();
+                        DocDLCTTC();
+                        Toast.makeText(mView.getContext(), result,Toast.LENGTH_SHORT).show();
+                    }
+                    catch (Exception e){
+                        SendMessage.sendCatch(mView.getContext(), e.getMessage());
+                    }
+                }
+                else{
+                    try {
+                        int code = response.code();
+                        String message = response.message();
+                        String error = response.errorBody().string();
+                        SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                    } catch (Exception e) {
+                        SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
+                SendMessage.sendApiFail(mView.getContext(),throwable);
+            }
+        });
+    }
+    private void uploadSP(){
+        bangGiaService.uploadSP(idBangGia).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if(response.code()==200){
+                    try{
+                        String result = response.body().string();
+                        DocDLCTSP();
+                        Toast.makeText(mView.getContext(), result,Toast.LENGTH_SHORT).show();
+                    }
+                    catch (Exception e){
+                        SendMessage.sendCatch(mView.getContext(), e.getMessage());
+                    }
+                }
+                else{
+                    try {
+                        int code = response.code();
+                        String message = response.message();
+                        String error = response.errorBody().string();
+                        SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                    } catch (Exception e) {
+                        SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
                 SendMessage.sendApiFail(mView.getContext(),throwable);
             }
         });

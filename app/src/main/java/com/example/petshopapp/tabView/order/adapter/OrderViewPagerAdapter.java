@@ -8,8 +8,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
-import com.example.petshopapp.tabView.order.Tab1;
-import com.example.petshopapp.tabView.order.Tab2;
+import com.example.petshopapp.tabView.order.MuaThuCungTab;
+import com.example.petshopapp.tabView.order.MuaSanPhamTab;
 
 public class OrderViewPagerAdapter extends FragmentStatePagerAdapter {
     public OrderViewPagerAdapter(@NonNull FragmentManager fm, int behavior) {
@@ -21,11 +21,11 @@ public class OrderViewPagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         switch (position){
             case 0:
-                return new Tab1();
+                return new MuaThuCungTab();
             case 1:
-                return new Tab2();
+                return new MuaSanPhamTab();
             default:
-                return new Tab1();
+                return new MuaThuCungTab();
         }
     }
 
@@ -40,9 +40,9 @@ public class OrderViewPagerAdapter extends FragmentStatePagerAdapter {
 
         switch (position){
             case 0:
-                return "Tab1";
+                return "Thú cưng";
             case 1:
-                return "Tab2";
+                return "Sản phẩm";
             default:
                 return "Tab1";
         }

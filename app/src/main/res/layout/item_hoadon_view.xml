@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginVertical="5dp">
+            <TextView
+                android:id="@+id/tvMaHoaDon"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:paddingVertical="10dp"
+                android:text="Mã hóa đơn"/>
+            <TextView
+                android:id="@+id/tvNgayLap"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center"
+                android:paddingVertical="10dp"
+                android:text="Ngày lập"/>
+            <TextView
+                android:id="@+id/tvTongHoaDon"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center"
+                android:paddingVertical="10dp"
+                android:text="Tổng hóa đơn"/>
+            <TextView
+                android:id="@+id/tvHinhThucThanhToan"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:gravity="center"
+                android:paddingVertical="10dp"
+                android:text="Hình thức thanh toán"
+                />
+        </LinearLayout>
+    </TableRow>
+</LinearLayout>

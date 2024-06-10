@@ -146,7 +146,7 @@ public class LoaiSanPhamTab extends Fragment {
                                 SendMessage.sendMessageFail(mView.getContext(),code,error,message);
                             } catch (Exception e) {
                                 SendMessage.sendCatch(mView.getContext(),e.getMessage());
-                                return;
+
                             }
                         }
                     }

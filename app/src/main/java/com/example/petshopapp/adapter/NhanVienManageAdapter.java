@@ -88,41 +88,9 @@ public class NhanVienManageAdapter extends ArrayAdapter {
     ArrayAdapter adapterDSChiNhanh;
 
     //Avatar
-//    private static final int MY_REQUEST_CODE = 123;
-//    ImageView ivAvatar;
-//    Bitmap bitmap;
-//    Uri mUri;
-//    private ActivityResultLauncher<Intent> mActivityResultLancher = ((Activity)context).registerForActivityResult(
-//            new ActivityResultContracts.StartActivityForResult(),
-//            new ActivityResultCallback<ActivityResult>() {
-//                @Override
-//                public void onActivityResult(ActivityResult result) {
-//                    Log.e(NhanVienTab.class.getName(),"onActivityResult");
-//                    if(result.getResultCode() == Activity.RESULT_OK){
-//                        Intent data = result.getData();
-//                        if(data == null ){
-//                            return;
-//                        }
-//                        Uri uri = data.getData();
-//                        mUri=uri;
-//                        try{
-//                            bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(),uri);
-//                            ivAvatar.setImageBitmap(bitmap);
-//                        } catch (FileNotFoundException e) {
-//                            Log.e("FileNotFoundException", e.getMessage());
-//                            Toast.makeText(getContext(),"FileNotFoundException" + e.getMessage(), Toast.LENGTH_SHORT).show();
-//                            bitmap=null;
-//                            ivAvatar.setImageResource(R.mipmap.ic_launcher);
-//                        } catch (IOException e) {
-//                            Log.e("IOException", e.getMessage());
-//                            Toast.makeText(getContext(),"IOException" + e.getMessage(), Toast.LENGTH_SHORT).show();
-//                            bitmap=null;
-//                            ivAvatar.setImageResource(R.mipmap.ic_launcher);
-//                        }
-//                    }
-//                }
-//            }
-//    );
+    private static final int MY_REQUEST_CODE = 123;
+
+
 
     public NhanVienManageAdapter(@NonNull Context context, int resource, List<NhanVien> data,
                                  Map<Integer,String> chiNhanhMap) {
@@ -131,6 +99,46 @@ public class NhanVienManageAdapter extends ArrayAdapter {
         this.resource = resource;
         this.data = data;
         this.chiNhanhMap = chiNhanhMap;
+    }
+
+    @NonNull
+    @Override
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        convertView = LayoutInflater.from(context).inflate(resource, null);
+        this.mView=convertView;
+
+        TextView tvHoTen = convertView.findViewById(R.id.tvHoTen);
+        TextView tvMaNhanVien = convertView.findViewById(R.id.tvMaNhanVien);
+        TextView tvSDT= convertView.findViewById(R.id.tvSDT);
+        TextView tvEmail=convertView.findViewById(R.id.tvEmail);
+        Button btnUpdate = convertView.findViewById(R.id.btnUpdate);
+        Button btnDelete=convertView.findViewById(R.id.btnDelete);
+
+        NhanVien nhanVien = data.get(position);
+        tvHoTen.setText(nhanVien.getHo()+" "+nhanVien.getTen());
+        tvMaNhanVien.setText(nhanVien.getMaNhanVien());
+        tvEmail.setText(nhanVien.getEmail());
+        tvSDT.setText(nhanVien.getSoDienThoai());
+
+        ApiClient apiClient = ApiClient.getApiClient();
+        nhanVienService =apiClient.getRetrofit().create(NhanVienService.class);
+        chiNhanhService=apiClient.getRetrofit().create(ChiNhanhService.class);
+        hinhAnhService=apiClient.getRetrofit().create(HinhAnhService.class);
+        btnUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openUpdateDialog(Gravity.CENTER, nhanVien);
+            }
+        });
+
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openDeleteDialog(Gravity.CENTER, nhanVien);
+            }
+        });
+
+        return convertView;
     }
 
     private void openUpdateDialog(int gravity, NhanVien nhanVien){
@@ -166,6 +174,7 @@ public class NhanVienManageAdapter extends ArrayAdapter {
         EditText edtChucVu = dialog.findViewById(R.id.edtChucVu);
         EditText edtMaNhanVien=dialog.findViewById(R.id.edtMaNhanVien);
         Spinner spChiNhanh=dialog.findViewById(R.id.spChiNhanh);
+        ImageView ivAvatar = dialog.findViewById(R.id.ivAvatar);
         
         edtMaNhanVien.setText(nhanVien.getMaNhanVien());
         edtHo.setText(nhanVien.getHo());
@@ -174,6 +183,8 @@ public class NhanVienManageAdapter extends ArrayAdapter {
         edtCCCD.setText(nhanVien.getCccd());
         edtEmail.setText(nhanVien.getEmail());
         edtSDT.setText(nhanVien.getSoDienThoai());
+        getImage(nhanVien,ivAvatar);
+
         List<String> tenChiNhanhList = new ArrayList<>(chiNhanhMap.values());
         adapterDSChiNhanh = new ArrayAdapter<>(mView.getContext(), android.R.layout.simple_list_item_1,tenChiNhanhList );
         spChiNhanh.setAdapter(adapterDSChiNhanh);
@@ -358,149 +369,41 @@ public class NhanVienManageAdapter extends ArrayAdapter {
         });
     }
 
-//    private void sendImage(String maNhanVien, String maKhachHang, String maThuCung, String maSanPham){
-//        RequestBody requestBodyMaNhanVien = RequestBody.create(MediaType.parse("multipart/form-data"), maNhanVien);
-//        RequestBody requestBodyMaKhachHang = RequestBody.create(MediaType.parse("multipart/form-data"), maKhachHang);
-//        RequestBody requestBodyMaThuCung = RequestBody.create(MediaType.parse("multipart/form-data"), maThuCung);
-//        RequestBody requestBodyMaSanPham = RequestBody.create(MediaType.parse("multipart/form-data"), maSanPham);
-//
-//        String imgRealPath = RealPathUtil.getRealPath(this.getContext(), mUri);
-//        File file = new File(imgRealPath);
-//        RequestBody requestBodyAvatar = RequestBody.create(MediaType.parse("multipart/form-data"), file);
-//        MultipartBody.Part multipartBodyAvatar = MultipartBody.Part.createFormData(Const.KEY_IMAGE, file.getName(), requestBodyAvatar);
-//
-//        hinhAnhService.saveImage(multipartBodyAvatar, requestBodyMaNhanVien, requestBodyMaKhachHang,
-//                requestBodyMaThuCung, requestBodyMaSanPham).enqueue(new Callback<ResponseBody>() {
-//            @Override
-//            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-//                try{
-//                    if(response.code() == 200){
-//                        String result = response.body().string();
-//                        Toast.makeText(mView.getContext(),result,Toast.LENGTH_SHORT).show();
-//                    }
-//                    else{
-//                        String message="Lỗi: "+String.valueOf(response.code())
-//                                +"\n"+"Chi tiết: "+ response.errorBody().string();
-//                        Log.e("ERROR","Call api fail: "+message);
-//                    }
-//                }
-//                catch (Exception e){
-//                    System.out.println(e.getMessage());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
-//                Log.e("ERROR_API","Call api fail: "+throwable.getMessage());
-//                Toast.makeText(mView.getContext(),"Call api fail: "+throwable.getMessage(),Toast.LENGTH_SHORT).show();
-//            }
-//        });
-//    }
-//
-//    private void getImage(){
-//        hinhAnhService.getImage(new long[]{13}).enqueue(new Callback<List<HinhAnh>>() {
-//            @Override
-//            public void onResponse(Call<List<HinhAnh>> call, Response<List<HinhAnh>> response) {
-//                try{
-//                    if(response.code() == 200){
-//                        List<HinhAnh> list = response.body();
-//                        String source = list.get(0).getSource();
-//                        bitmap= ImageInteract.convertStringToBitmap(source);
-////                        InputStream inputStream = response.body().byteStream();
-////                        System.out.println(inputStream);
-////                        List<Bitmap> bitmaps = new ArrayList<>();
-////                        Bitmap bitmapTemp;
-////                        while((bitmapTemp=BitmapFactory.decodeStream(inputStream))!=null){
-////                            bitmaps.add(bitmapTemp);
-////                        }
-////                        System.out.println(bitmaps.size());
-////                        bitmap=bitmaps.get(0);
-////                        System.out.println(bitmap);
-//                        if(bitmap == null){
-//                            Toast.makeText(getContext(),"Bitmap null",Toast.LENGTH_SHORT).show();
-//                            return;
-//                        }
-//                        ivAvatar.setImageBitmap(bitmap);
-//                    }
-//                    else{
-//                        String message="Lỗi: "+String.valueOf(response.code())
-//                                +"\n"+"Chi tiết: "+ response.errorBody().string();
-//                        Log.e("ERROR","Call api fail: "+message);
-//                    }
-//                }
-//                catch (Exception e){
-//                    System.out.println(e.getMessage());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<List<HinhAnh>> call, Throwable throwable) {
-//                System.out.println(throwable.getMessage());
-//            }
-//        });
-//    }
-//
-//    private void getGallery(){
-//        Intent intent = new Intent(Intent.ACTION_PICK);
-//        intent.setType("image/*");
-//        mActivityResultLancher.launch(Intent.createChooser(intent, "Select picture"));
-//    }
-//
-//    private void onClickRequestPermission(){
-//        if(Build.VERSION.SDK_INT< Build.VERSION_CODES.M){
-//            getGallery();
-//            return;
-//        }
-//        if(this.getContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED){
-//            getGallery();
-//        }
-//        else{
-//            String [] permission = {Manifest.permission.READ_EXTERNAL_STORAGE};
-//            ((Activity)context).requestPermissions(permission,MY_REQUEST_CODE);
-//        }
-//    }
-//
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        ((Activity) context).onRequestPermissionsResult(requestCode, permissions,grantResults);
-//    }
+    private void getImage(NhanVien nhanVien,ImageView ivAvatar){
+        if(nhanVien!=null && nhanVien.getHinhAnh()!=null&&nhanVien.getHinhAnh().size()!=0){
+            long idHinh = nhanVien.getHinhAnh().get(0);
+            hinhAnhService.getImage(new long[]{idHinh}).enqueue(new Callback<List<HinhAnh>>() {
+                @Override
+                public void onResponse(Call<List<HinhAnh>> call, Response<List<HinhAnh>> response) {
+                    try{
+                        if(response.code() == 200){
+                            List<HinhAnh> list = response.body();
+                            String source = list.get(0).getSource();
+                            Bitmap bitmap;
+                            bitmap= ImageInteract.convertStringToBitmap(source);
+                            if(bitmap == null){
+                                Toast.makeText(getContext(),"Bitmap null",Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            ivAvatar.setImageBitmap(bitmap);
+                        }
+                        else{
+                            String message="Lỗi: "+String.valueOf(response.code())
+                                    +"\n"+"Chi tiết: "+ response.errorBody().string();
+                            Log.e("ERROR","Call api fail: "+message);
+                        }
+                    }
+                    catch (Exception e){
+                        SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                    }
+                }
 
-    @NonNull
-    @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        convertView = LayoutInflater.from(context).inflate(resource, null);
-        this.mView=convertView;
-
-        TextView tvHoTen = convertView.findViewById(R.id.tvHoTen);
-        TextView tvMaNhanVien = convertView.findViewById(R.id.tvMaNhanVien);
-        TextView tvSDT= convertView.findViewById(R.id.tvSDT);
-        TextView tvEmail=convertView.findViewById(R.id.tvEmail);
-        Button btnUpdate = convertView.findViewById(R.id.btnUpdate);
-        Button btnDelete=convertView.findViewById(R.id.btnDelete);
-
-        NhanVien nhanVien = data.get(position);
-        tvHoTen.setText(nhanVien.getHo()+" "+nhanVien.getTen());
-        tvMaNhanVien.setText(nhanVien.getMaNhanVien());
-        tvEmail.setText(nhanVien.getEmail());
-        tvSDT.setText(nhanVien.getSoDienThoai());
-
-        ApiClient apiClient = ApiClient.getApiClient();
-        nhanVienService =apiClient.getRetrofit().create(NhanVienService.class);
-        chiNhanhService=apiClient.getRetrofit().create(ChiNhanhService.class);
-        hinhAnhService=apiClient.getRetrofit().create(HinhAnhService.class);
-        btnUpdate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openUpdateDialog(Gravity.CENTER, nhanVien);
-            }
-        });
-
-        btnDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openDeleteDialog(Gravity.CENTER, nhanVien);
-            }
-        });
-
-        return convertView;
+                @Override
+                public void onFailure(Call<List<HinhAnh>> call, Throwable throwable) {
+                    SendMessage.sendApiFail(mView.getContext(),throwable);
+                }
+            });
+        }
     }
+
 }

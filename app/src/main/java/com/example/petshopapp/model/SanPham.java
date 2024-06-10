@@ -7,6 +7,7 @@ public class SanPham {
     private long maSanPham;
     private String tenSanPham;
     private BigDecimal giaHienTai;
+    private BigDecimal giaKM;
     private LoaiSanPham loaiSanPham;
     private List<Long> hinhAnh;
     private int maChiNhanh;
@@ -15,11 +16,11 @@ public class SanPham {
     public SanPham() {
     }
 
-    public SanPham(long maSanPham, String tenSanPham, BigDecimal giaHienTai,
-                   LoaiSanPham loaiSanPham, List<Long> hinhAnh, int maChiNhanh, long soLuongTon) {
+    public SanPham(long maSanPham, String tenSanPham, BigDecimal giaHienTai, BigDecimal giaKM, LoaiSanPham loaiSanPham, List<Long> hinhAnh, int maChiNhanh, long soLuongTon) {
         this.maSanPham = maSanPham;
         this.tenSanPham = tenSanPham;
         this.giaHienTai = giaHienTai;
+        this.giaKM = giaKM;
         this.loaiSanPham = loaiSanPham;
         this.hinhAnh = hinhAnh;
         this.maChiNhanh = maChiNhanh;
@@ -48,6 +49,14 @@ public class SanPham {
 
     public void setGiaHienTai(BigDecimal giaHienTai) {
         this.giaHienTai = giaHienTai;
+    }
+
+    public BigDecimal getGiaKM() {
+        return giaKM;
+    }
+
+    public void setGiaKM(BigDecimal giaKM) {
+        this.giaKM = giaKM;
     }
 
     public LoaiSanPham getLoaiSanPham() {

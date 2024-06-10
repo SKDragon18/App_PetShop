@@ -37,6 +37,8 @@ public interface BangGiaService {
 
     @POST("center/ct-san-pham")
     Call<ResponseBody> updateSP(@Body List<BangGiaSanPhamGui> bangGiaSanPhamGuiList);
+    @POST("center/ct-san-pham/upload")
+    Call<ResponseBody> uploadSP(@Body long maBangGia);
 
     //Chi tiết thú cưng
     @GET("center/ct-thu-cung")
@@ -44,4 +46,7 @@ public interface BangGiaService {
 
     @POST("center/ct-thu-cung")
     Call<ResponseBody> updateTC(@Body List<BangGiaThuCungGui> bangGiaThuCungGuiList);
+
+    @POST("center/ct-thu-cung/upload")
+    Call<ResponseBody> uploadTC(@Body long maBangGia);
 }

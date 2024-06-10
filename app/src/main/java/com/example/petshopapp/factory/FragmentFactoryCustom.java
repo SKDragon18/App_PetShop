@@ -3,6 +3,8 @@ package com.example.petshopapp.factory;
 import androidx.fragment.app.Fragment;
 
 import com.example.petshopapp.R;
+import com.example.petshopapp.fragment.BillCheckScreen;
+import com.example.petshopapp.fragment.BillScreen;
 import com.example.petshopapp.fragment.CartScreen;
 import com.example.petshopapp.fragment.HomeScreen;
 import com.example.petshopapp.fragment.ImportProductScreen;
@@ -28,12 +30,12 @@ public class FragmentFactoryCustom {
 
     //Danh sách các thẻ bottom navigation theo role
     //Role customer
-    private static final String []TAGROLECUSTOMER= new String[]{"home","cart","user"};
-    private static final Integer []IDROLECUSTOMER=new Integer[]{R.id.home_screen,R.id.cart_screen,R.id.user_screen};
+    private static final String []TAGROLECUSTOMER= new String[]{"home","cart","bill","user"};
+    private static final Integer []IDROLECUSTOMER=new Integer[]{R.id.home_screen,R.id.cart_screen,R.id.bill_screen,R.id.user_screen};
 
     //Role employee
-    private static final String []TAGROLEEMPLOYEE= new String[]{"home","product_import","user2"};
-    private static final Integer []IDROLEEMPLOYEE=new Integer[]{R.id.home_screen,R.id.product_import,R.id.user_screen2};
+    private static final String []TAGROLEEMPLOYEE= new String[]{"home","product_import","bill_check","user2"};
+    private static final Integer []IDROLEEMPLOYEE=new Integer[]{R.id.home_screen,R.id.product_import,R.id.bill_check,R.id.user_screen2};
 
     //Role manager
     private static final String []TAGROLEMANAGER= new String[]{"home","manage","manage_employee","manage_finance","user2"};
@@ -106,6 +108,10 @@ public class FragmentFactoryCustom {
                 return new ImportProductScreen();
             case "manage_finance":
                 return new ManageFinanceScreen();
+            case "bill":
+                return new BillScreen();
+            case "bill_check":
+                return new BillCheckScreen();
             default:
                 return new Fragment();
         }

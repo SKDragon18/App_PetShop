@@ -44,8 +44,10 @@ import com.example.petshopapp.api.apiservice.NhanVienService;
 import com.example.petshopapp.api.apiservice.TaiKhoanService;
 import com.example.petshopapp.message.SendMessage;
 import com.example.petshopapp.model.ChiNhanh;
+import com.example.petshopapp.model.HinhAnh;
 import com.example.petshopapp.model.NhanVien;
 import com.example.petshopapp.model.TaiKhoan;
+import com.example.petshopapp.tools.ImageInteract;
 import com.example.petshopapp.tools.RealPathUtil;
 
 import java.io.File;
@@ -65,11 +67,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link UserScreen2#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class UserScreen2 extends Fragment {
 
     private static final String ARG_PARAM1 = "param1";
@@ -117,6 +115,7 @@ public class UserScreen2 extends Fragment {
                         try{
                             bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(),uri);
                             ivAvatar.setImageBitmap(bitmap);
+                            sendImage(username,"");
                         } catch (FileNotFoundException e) {
                             Log.e("FileNotFoundException", e.getMessage());
                             Toast.makeText(getContext(),"FileNotFoundException" + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -136,22 +135,9 @@ public class UserScreen2 extends Fragment {
     public UserScreen2() {
     }
 
-    public static UserScreen2 newInstance(String param1, String param2) {
-        UserScreen2 fragment = new UserScreen2();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -200,7 +186,7 @@ public class UserScreen2 extends Fragment {
         btnUpload=mView.findViewById(R.id.btnUpload);
         btnChangePassword=mView.findViewById(R.id.btnChangePassword);
 
-        ivAvatar = mView.findViewById(R.id.ivAvatar);
+        ivAvatar = mView.findViewById(R.id.ivAvatarNV);
 
         sharedPreferences = mView.getContext().getSharedPreferences(getString(R.string.preference_file_key),MODE_PRIVATE);
         username= sharedPreferences.getString("username","");
@@ -210,7 +196,7 @@ public class UserScreen2 extends Fragment {
         btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                onClickRequestPermission();
             }
         });
 
@@ -246,6 +232,7 @@ public class UserScreen2 extends Fragment {
         edtCCCD.setText(getString(nhanVien.getCccd()));
         edtEmail.setText(getString(nhanVien.getEmail()));
         edtSDT.setText(getString(nhanVien.getSoDienThoai()));
+        getImage();
     }
 
     private void DocDL(){
@@ -282,7 +269,6 @@ public class UserScreen2 extends Fragment {
             @Override
             public void onResponse(Call<List<ChiNhanh>> call, Response<List<ChiNhanh>> response) {
                 if (response.code() == 200) {
-                    System.out.println(response.body().size());
                     chiNhanhMap.clear();
                     for (ChiNhanh x : response.body()) {
                         chiNhanhMap.put(x.getMaChiNhanh(),x.getTenChiNhanh());
@@ -355,7 +341,7 @@ public class UserScreen2 extends Fragment {
                         Toast.makeText(mView.getContext(),result,Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                     } catch (IOException e) {
-                        System.out.println(e.getMessage());
+                        SendMessage.sendCatch(mView.getContext(),e.getMessage());
                     }
                 }
                 else{
@@ -366,7 +352,6 @@ public class UserScreen2 extends Fragment {
                         SendMessage.sendMessageFail(mView.getContext(),code,error,message);
                     } catch (Exception e) {
                         SendMessage.sendCatch(mView.getContext(),e.getMessage());
-                        return;
                     }
                 }
             }
@@ -500,5 +485,44 @@ public class UserScreen2 extends Fragment {
         }
     }
 
+    private void getImage(){
+        if(nhanVien!=null && nhanVien.getHinhAnh()!=null&&nhanVien.getHinhAnh().size()!=0){
+            long idHinh = nhanVien.getHinhAnh().get(0);
+            hinhAnhService.getImage(new long[]{idHinh}).enqueue(new Callback<List<HinhAnh>>() {
+                @Override
+                public void onResponse(Call<List<HinhAnh>> call, Response<List<HinhAnh>> response) {
+                    try{
+                        if(response.code() == 200){
+                            List<HinhAnh> list = response.body();
+                            String source = list.get(0).getSource();
+                            bitmap= ImageInteract.convertStringToBitmap(source);
+                            if(bitmap == null){
+                                Toast.makeText(getContext(),"Bitmap null",Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            ivAvatar.setImageBitmap(bitmap);
+                        }
+                        else{
+                            try {
+                                int code = response.code();
+                                String message = response.message();
+                                String error = response.errorBody().string();
+                                SendMessage.sendMessageFail(getContext(),code,error,message);
+                            } catch (Exception e) {
+                                SendMessage.sendCatch(getContext(),e.getMessage());
+                            }
+                        }
+                    }
+                    catch (Exception e){
+                        SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                    }
+                }
 
+                @Override
+                public void onFailure(Call<List<HinhAnh>> call, Throwable throwable) {
+                    SendMessage.sendApiFail(mView.getContext(),throwable);
+                }
+            });
+        }
+    }
 }

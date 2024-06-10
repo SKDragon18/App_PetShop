@@ -1,5 +1,8 @@
 package com.example.petshopapp.fragment;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -17,9 +20,13 @@ import android.widget.Toast;
 import com.example.petshopapp.R;
 import com.example.petshopapp.adapter.NhapHangAdapter;
 import com.example.petshopapp.api.ApiClient;
+import com.example.petshopapp.api.apiservice.ChiNhanhService;
+import com.example.petshopapp.api.apiservice.NhanVienService;
 import com.example.petshopapp.api.apiservice.NhapHangService;
 import com.example.petshopapp.message.SendMessage;
+import com.example.petshopapp.model.ChiNhanh;
 import com.example.petshopapp.model.DonNhapHang;
+import com.example.petshopapp.model.NhanVien;
 import com.example.petshopapp.tabView.importProduct.ChiTietNhapHangTab;
 import com.example.petshopapp.tabView.manageFinance.BangGiaChiTietTab;
 
@@ -44,10 +51,19 @@ public class ImportProductScreen extends Fragment {
     private ListView lvDonNhapHang;
     private LinearLayout llND;
 
-    NhapHangService nhapHangService;
+
 
     List<DonNhapHang> data = new ArrayList<>();
     NhapHangAdapter nhapHangAdapter;
+
+    //Api
+    NhanVienService nhanVienService;
+    ChiNhanhService chiNhanhService;
+    NhapHangService nhapHangService;
+    //Share
+    SharedPreferences sharedPreferences;
+    String maNhanVien;
+    int maChiNhanh=-1;
     public ImportProductScreen() {
         // Required empty public constructor
     }
@@ -71,7 +87,12 @@ public class ImportProductScreen extends Fragment {
 
         ApiClient apiClient = ApiClient.getApiClient();
         nhapHangService =apiClient.getRetrofit().create(NhapHangService.class);
+        nhanVienService = apiClient.getRetrofit().create(NhanVienService.class);
+        chiNhanhService = apiClient.getRetrofit().create(ChiNhanhService.class);
 
+        sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key),MODE_PRIVATE);
+        //Lấy thông tin
+        maNhanVien= sharedPreferences.getString("username","");
         setInit();
         setEvent();
         return mView;
@@ -81,39 +102,11 @@ public class ImportProductScreen extends Fragment {
     public void onResume() {
         super.onResume();
         if(isVisible()){
-            DocDL();
+            DocDLNhanVien();
         }
     }
     
-    private void DocDL(){
-        System.out.println("DocDLNhapHang");
-        nhapHangService.getAll().enqueue(new Callback<List<DonNhapHang>>() {
-            @Override
-            public void onResponse(Call<List<DonNhapHang>> call, Response<List<DonNhapHang>> response) {
-                if (response.code() == 200) {
-                    data.clear();
-                    for (DonNhapHang x : response.body()) {
-                        data.add(x);
-                    }
-                    nhapHangAdapter.notifyDataSetChanged();
-                } else {
-                    try {
-                        int code = response.code();
-                        String message = response.message();
-                        String error = response.errorBody().string();
-                        SendMessage.sendMessageFail(mView.getContext(),code,error,message);
-                    } catch (Exception e) {
-                        SendMessage.sendCatch(mView.getContext(),e.getMessage());
-                    }
-                }
-            }
 
-            @Override
-            public void onFailure(Call<List<DonNhapHang>> call, Throwable throwable) {
-                SendMessage.sendApiFail(mView.getContext(),throwable);
-            }
-        });
-    }
 
     public void setInit(){
         btnThem=mView.findViewById(R.id.btnThem);
@@ -157,4 +150,64 @@ public class ImportProductScreen extends Fragment {
     private void close(){
         llND.setVisibility(View.VISIBLE);
     }
+
+    private void DocDL(){
+        if(maChiNhanh==-1)return;
+        System.out.println("DocDLNhapHang");
+        nhapHangService.getAll().enqueue(new Callback<List<DonNhapHang>>() {
+            @Override
+            public void onResponse(Call<List<DonNhapHang>> call, Response<List<DonNhapHang>> response) {
+                if (response.code() == 200) {
+                    data.clear();
+                    for (DonNhapHang x : response.body()) {
+                        if(x.getChiNhanhDTO().getMaChiNhanh()==maChiNhanh)data.add(x);
+                    }
+                    nhapHangAdapter.notifyDataSetChanged();
+                } else {
+                    try {
+                        int code = response.code();
+                        String message = response.message();
+                        String error = response.errorBody().string();
+                        SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                    } catch (Exception e) {
+                        SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<DonNhapHang>> call, Throwable throwable) {
+                SendMessage.sendApiFail(mView.getContext(),throwable);
+            }
+        });
+    }
+
+    private void DocDLNhanVien(){
+        if(maNhanVien == null)return;
+        nhanVienService.getOneById(maNhanVien).enqueue(new Callback<NhanVien>() {
+            @Override
+            public void onResponse(Call<NhanVien> call, Response<NhanVien> response) {
+                if (response.code() == 200) {
+                    NhanVien nhanVien = response.body();
+                    maChiNhanh=nhanVien.getMaChiNhanh();
+                    DocDL();
+                } else {
+                    try {
+                        int code = response.code();
+                        String message = response.message();
+                        String error = response.errorBody().string();
+                        SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                    } catch (Exception e) {
+                        SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<NhanVien> call, Throwable throwable) {
+                SendMessage.sendApiFail(mView.getContext(),throwable);
+            }
+        });
+    }
+
 }

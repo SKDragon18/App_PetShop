@@ -1,9 +1,10 @@
 package com.example.petshopapp.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 
-public class BangGiaThuCung {
+public class BangGiaThuCung implements Serializable {
     private long maBangGia;
     private Timestamp thoiGianBatDau;
     private Timestamp thoiGianKetThuc;
@@ -16,6 +17,7 @@ public class BangGiaThuCung {
     private String tenGiong;
     private BigDecimal giaHienTai;
     private BigDecimal giaKhuyenMai;
+    private String hinhAnh;
 
     public BangGiaThuCung() {
     }
@@ -23,7 +25,7 @@ public class BangGiaThuCung {
     public BangGiaThuCung(long maBangGia, Timestamp thoiGianBatDau, Timestamp thoiGianKetThuc,
                           int maChiNhanh, String tenChiNhanh, long maThuCung,
                           String tenThuCung, String moTa, int maGiong, String tenGiong,
-                          BigDecimal giaHienTai, BigDecimal giaKhuyenMai) {
+                          BigDecimal giaHienTai, BigDecimal giaKhuyenMai, String hinhAnh) {
         this.maBangGia = maBangGia;
         this.thoiGianBatDau = thoiGianBatDau;
         this.thoiGianKetThuc = thoiGianKetThuc;
@@ -36,6 +38,7 @@ public class BangGiaThuCung {
         this.tenGiong = tenGiong;
         this.giaHienTai = giaHienTai;
         this.giaKhuyenMai = giaKhuyenMai;
+        this.hinhAnh = hinhAnh;
     }
 
     public long getMaBangGia() {
@@ -132,5 +135,13 @@ public class BangGiaThuCung {
 
     public void setGiaKhuyenMai(BigDecimal giaKhuyenMai) {
         this.giaKhuyenMai = giaKhuyenMai;
+    }
+
+    public String getHinhAnh() {
+        return hinhAnh;
+    }
+
+    public void setHinhAnh(String hinhAnh) {
+        this.hinhAnh = hinhAnh;
     }
 }

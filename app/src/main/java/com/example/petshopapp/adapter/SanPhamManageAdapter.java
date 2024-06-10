@@ -213,7 +213,7 @@ public class SanPhamManageAdapter extends ArrayAdapter {
             public void onClick(View v) {
                 sanPhamTemp.setTenSanPham(edtTenSanPham.getText().toString());
                 sanPhamTemp.setGiaHienTai(convertBigDecimal(edtGiaHienTai.getText().toString()));
-                sanPhamTemp.setSoLuongTon(Long.parseLong(edtSLTon.getText().toString()));
+                sanPhamTemp.setSoLuongTon(Integer.parseInt(edtSLTon.getText().toString()));
                 String tenChiNhanh= spChiNhanh.getSelectedItem().toString();
                 String tenLoaiSanPham = spLoaiSanPham.getSelectedItem().toString();
                 for(Map.Entry<Integer,String> x: chiNhanhMap.entrySet()){

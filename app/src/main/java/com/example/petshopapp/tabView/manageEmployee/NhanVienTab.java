@@ -78,11 +78,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link NhanVienTab#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class NhanVienTab extends Fragment {
     //Đối tượng view
     private View mView;
@@ -140,33 +135,13 @@ public class NhanVienTab extends Fragment {
     );
 
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
-
     public NhanVienTab() {
         // Required empty public constructor
-    }
-    public static NhanVienTab newInstance(String param1, String param2) {
-        NhanVienTab fragment = new NhanVienTab();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     private void openAddDialog(int gravity){
@@ -284,8 +259,7 @@ public class NhanVienTab extends Fragment {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getImage();
-//                dialog.dismiss();
+                dialog.dismiss();
             }
         });
 
@@ -311,7 +285,6 @@ public class NhanVienTab extends Fragment {
                         SendMessage.sendMessageFail(mView.getContext(),code,error,message);
                     } catch (Exception e) {
                         SendMessage.sendCatch(mView.getContext(),e.getMessage());
-                        return;
                     }
                 }
             }
@@ -341,7 +314,6 @@ public class NhanVienTab extends Fragment {
                         SendMessage.sendMessageFail(mView.getContext(),code,error,message);
                     } catch (Exception e) {
                         SendMessage.sendCatch(mView.getContext(),e.getMessage());
-                        return;
                     }
                 }
 
@@ -419,94 +391,6 @@ public class NhanVienTab extends Fragment {
         });
     }
 
-    private void getImage(){
-        hinhAnhService.getImage(new long[]{13,14}).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try{
-                    if(response.code() == 200){
-                        ResponseBody responseBody = response.body();
-                        InputStream inputStream = responseBody.byteStream();
-                        String contentType= response.headers().get("Content-Type");
-                        String boundary= contentType.substring(contentType.indexOf("boundary=")+9);
-                        System.out.println(contentType);
-                        System.out.println(boundary);
-                        List<byte[]> list = MultipartParser.parseMultipartResponse(inputStream,boundary);
-                        bitmap = ImageInteract.convertByteArrayToBitmap(list.get(0));
-
-//                        System.out.println(responseBody.string());
-//                        Toast.makeText(getContext(), responseBody.string(),Toast.LENGTH_SHORT).show();
-//                        InputStream inputStream = responseBody.byteStream();
-//                        List<Bitmap> bitmaps = new ArrayList<>();
-//                        Bitmap bitmapTemp;
-//                        while((bitmapTemp=BitmapFactory.decodeStream(inputStream))!=null){
-//                            bitmaps.add(bitmapTemp);
-//                        }
-//                        System.out.println(bitmaps.size());
-//                        bitmap=bitmaps.get(0);
-//                        System.out.println(bitmap);
-                        if(bitmap == null){
-                            Toast.makeText(getContext(),"Bitmap null",Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        ivAvatar.setImageBitmap(bitmap);
-                    }
-                    else{
-                        try {
-                            int code = response.code();
-                            String message = response.message();
-                            String error = response.errorBody().string();
-                            SendMessage.sendMessageFail(mView.getContext(),code,error,message);
-                        } catch (Exception e) {
-                            SendMessage.sendCatch(mView.getContext(),e.getMessage());
-                            return;
-                        }
-                    }
-                }
-                catch (Exception e){
-                    SendMessage.sendCatch(mView.getContext(),e.getMessage());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
-                SendMessage.sendApiFail(mView.getContext(),throwable);
-            }
-        });
-    }
-
-//    private void getImage(){
-//        hinhAnhService.getImage(new long[]{13}).enqueue(new Callback<List<HinhAnh>>() {
-//            @Override
-//            public void onResponse(Call<List<HinhAnh>> call, Response<List<HinhAnh>> response) {
-//                try{
-//                    if(response.code() == 200){
-//                        List<HinhAnh> list = response.body();
-//                        String source = list.get(0).getSource();
-//                        bitmap= ImageInteract.convertStringToBitmap(source);
-//                        if(bitmap == null){
-//                            Toast.makeText(getContext(),"Bitmap null",Toast.LENGTH_SHORT).show();
-//                            return;
-//                        }
-//                        ivAvatar.setImageBitmap(bitmap);
-//                    }
-//                    else{
-//                        String message="Lỗi: "+String.valueOf(response.code())
-//                                +"\n"+"Chi tiết: "+ response.errorBody().string();
-//                        Log.e("ERROR","Call api fail: "+message);
-//                    }
-//                }
-//                catch (Exception e){
-//                    System.out.println(e.getMessage());
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<List<HinhAnh>> call, Throwable throwable) {
-//                System.out.println(throwable.getMessage());
-//            }
-//        });
-//    }
 
     private void getGallery(){
         Intent intent = new Intent(Intent.ACTION_PICK);

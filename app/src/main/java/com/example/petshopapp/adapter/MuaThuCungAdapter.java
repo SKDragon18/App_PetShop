@@ -1,6 +1,7 @@
 package com.example.petshopapp.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,21 +9,24 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.petshopapp.R;
+import com.example.petshopapp.model.BangGiaThuCung;
 import com.example.petshopapp.model.ThuCung;
+import com.example.petshopapp.tools.ImageInteract;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-public class ThuCungAdapter extends ArrayAdapter {
+public class MuaThuCungAdapter extends ArrayAdapter {
     Context context;
     int resource;
-    List<ThuCung> data;
-    public ThuCungAdapter(@NonNull Context context, int resource, List<ThuCung> data) {
+    List<BangGiaThuCung> data;
+    public MuaThuCungAdapter(@NonNull Context context, int resource, List<BangGiaThuCung> data) {
         super(context, resource,data);
         this.context = context;
         this.resource = resource;
@@ -36,16 +40,27 @@ public class ThuCungAdapter extends ArrayAdapter {
         TextView tvTenThuCung=convertView.findViewById(R.id.tvTenThuCung);
         TextView tvGiaThuCung=convertView.findViewById(R.id.tvGiaThuCung);
 
-        ThuCung x = data.get(position);
+        BangGiaThuCung x = data.get(position);
         tvTenThuCung.setText(x.getTenThuCung());
         BigDecimal gia=x.getGiaHienTai();
-        if(gia==null){
+        BigDecimal giaKhuyenMai = x.getGiaKhuyenMai();
+        if(giaKhuyenMai!=null){
+            tvGiaThuCung.setText(String.valueOf(giaKhuyenMai)+" VND (Sale off)");
+            tvGiaThuCung.setTextColor(Color.RED);
+        }
+        else if(gia != null){
+            tvGiaThuCung.setText(String.valueOf(gia)+" VND");
+        }
+        else{
             tvGiaThuCung.setText("Liên hệ");
             tvGiaThuCung.setTextColor(Color.RED);
         }
-        else{
-            tvGiaThuCung.setText(String.valueOf(gia)+" VND");
+        if(x.getHinhAnh()!=null){
+            Bitmap bitmap= ImageInteract.convertStringToBitmap(x.getHinhAnh());
+            ivAvatarThuCung.setImageBitmap(bitmap);
         }
+
+
         return convertView;
     }
 }

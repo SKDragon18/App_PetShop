@@ -1,6 +1,7 @@
 package com.example.petshopapp.model;
 
 import java.util.Date;
+import java.util.List;
 
 public class KhachHang {
     private String maKhachHang;
@@ -12,12 +13,14 @@ public class KhachHang {
     private String email;
     private String cccd;
     private String diaChi;
+    private List<Long> hinhAnh;
 
     public KhachHang() {
     }
 
     public KhachHang(String maKhachHang, String ho, String ten, Boolean gioiTinh,
-                     Date ngaySinh, String soDienThoai, String email, String cccd, String diaChi) {
+                     Date ngaySinh, String soDienThoai, String email, String cccd,
+                     String diaChi, List<Long> hinhAnh) {
         this.maKhachHang = maKhachHang;
         this.ho = ho;
         this.ten = ten;
@@ -27,6 +30,7 @@ public class KhachHang {
         this.email = email;
         this.cccd = cccd;
         this.diaChi = diaChi;
+        this.hinhAnh = hinhAnh;
     }
 
     public String getMaKhachHang() {
@@ -99,5 +103,13 @@ public class KhachHang {
 
     public void setDiaChi(String diaChi) {
         this.diaChi = diaChi;
+    }
+
+    public List<Long> getHinhAnh() {
+        return hinhAnh;
+    }
+
+    public void setHinhAnh(List<Long> hinhAnh) {
+        this.hinhAnh = hinhAnh;
     }
 }

@@ -62,14 +62,14 @@
                     android:layout_gravity="center"
 
                     android:src="@mipmap/ic_launcher"/>
-                <Button
-                    android:id="@+id/btnUpload"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Select"
-                    android:layout_gravity="center"
-                    android:textSize="10sp"
-                    android:backgroundTint="@color/fresh_blue"/>
+<!--                <Button-->
+<!--                    android:id="@+id/btnUpload"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Select"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:textSize="10sp"-->
+<!--                    android:backgroundTint="@color/fresh_blue"/>-->
             </LinearLayout>
         </LinearLayout>
         <LinearLayout
