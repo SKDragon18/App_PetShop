@@ -20,12 +20,16 @@
             android:gravity="center"
             android:layout_marginHorizontal="20dp"
             android:orientation="vertical">
+            <SearchView
+                android:id="@+id/svSearch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Mời chọn chi nhánh" />
+                android:text="Chi nhánh" />
 
             <Spinner
                 android:id="@+id/spChiNhanh"

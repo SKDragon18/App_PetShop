@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.LinearLayout;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -31,6 +32,7 @@ import com.example.petshopapp.model.BangGiaThuCung;
 import com.example.petshopapp.model.ChiNhanh;
 import com.example.petshopapp.model.GioHangSanPhamGui;
 import com.example.petshopapp.model.GioHangThuCungGui;
+import com.example.petshopapp.model.ThuCung;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,12 +49,11 @@ public class MuaThuCungTab extends Fragment {
     private View mView;
     private GridView gvThuCung;
     private Spinner spChiNhanh;
+    private SearchView svSearch;
     private LinearLayout llND;
 
     //Api
     private BangGiaService bangGiaService;
-    private ChiNhanhService chiNhanhService;
-    private GioHangService gioHangService;
 
     //Adapter
     private MuaThuCungAdapter muaThuCungAdapter;
@@ -62,7 +63,7 @@ public class MuaThuCungTab extends Fragment {
     SharedPreferences sharedPreferences;
     private String maKhachHang;
     private List<BangGiaThuCung> data = new ArrayList<>();
-    private List<ChiNhanh> chiNhanhList = new ArrayList<>();
+    private List<BangGiaThuCung> all_data = new ArrayList<>();
     private List<String> tenChiNhanhList = new ArrayList<>();
     public MuaThuCungTab() {
         // Required empty public constructor
@@ -81,8 +82,6 @@ public class MuaThuCungTab extends Fragment {
 
         ApiClient apiClient = ApiClient.getApiClient();
         bangGiaService = apiClient.getRetrofit().create(BangGiaService.class);
-        chiNhanhService = apiClient.getRetrofit().create(ChiNhanhService.class);
-        gioHangService = apiClient.getRetrofit().create(GioHangService.class);
 
         sharedPreferences = getActivity().getSharedPreferences(getString(R.string.preference_file_key),MODE_PRIVATE);
         //Lấy thông tin
@@ -98,7 +97,7 @@ public class MuaThuCungTab extends Fragment {
     public void onResume() {
         super.onResume();
         if(isVisible()){
-            DocDLChiNhanh();
+            DocDL();
         }
     }
 
@@ -106,8 +105,7 @@ public class MuaThuCungTab extends Fragment {
         llND = mView.findViewById(R.id.llND);
         gvThuCung = mView.findViewById(R.id.gvThuCung);
         spChiNhanh = mView.findViewById(R.id.spChiNhanh);
-
-
+        svSearch = mView.findViewById(R.id.svSearch);
     }
     private void setEvent(){
         muaThuCungAdapter=new MuaThuCungAdapter(mView.getContext(),R.layout.item_muathucung,data);
@@ -118,7 +116,11 @@ public class MuaThuCungTab extends Fragment {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String tenChiNhanh = spChiNhanh.getSelectedItem().toString();
-                DocDL(tenChiNhanh);
+                data.clear();
+                for(BangGiaThuCung x: all_data){
+                    if(x.getTenChiNhanh().equals(tenChiNhanh))data.add(x);
+                }
+                muaThuCungAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -133,21 +135,56 @@ public class MuaThuCungTab extends Fragment {
                 openChiTietTab(bangGiaThuCung);
             }
         });
+        svSearch.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                String tenChiNhanh = spChiNhanh.getSelectedItem().toString();
+                if(newText.equals("")){
+                    data.clear();
+                    for(BangGiaThuCung x: all_data){
+                        if(x.getTenChiNhanh().equals(tenChiNhanh))data.add(x);
+                    }
+                }
+                else{
+                    data.clear();
+                    for(BangGiaThuCung x :all_data){
+                        if(x.getTenChiNhanh().equals(tenChiNhanh)){
+                            if(x.getTenThuCung().contains(newText)){
+                                data.add(x);
+                            }
+                        }
+                    }
+                }
+                muaThuCungAdapter.notifyDataSetChanged();
+                return false;
+            }
+        });
     }
 
-    private void DocDL(String tenChiNhanh){
+    private void DocDL(){
         bangGiaService.getAllTC().enqueue(new Callback<List<BangGiaThuCung>>() {
             @Override
             public void onResponse(Call<List<BangGiaThuCung>> call, Response<List<BangGiaThuCung>> response) {
                 if (response.code() == 200) {
                     data.clear();
+                    all_data.clear();
+                    tenChiNhanhList.clear();
                     for (BangGiaThuCung x : response.body()) {
-                        if(x.getTenChiNhanh()!=null&&x.getTenChiNhanh().equals(tenChiNhanh)){
-                            data.add(x);
-                        }
+                        data.add(x);
+                        all_data.add(x);
+                        if(!tenChiNhanhList.contains(x.getTenChiNhanh()))tenChiNhanhList.add(x.getTenChiNhanh());
                     }
                     if(muaThuCungAdapter!=null){
                         muaThuCungAdapter.notifyDataSetChanged();
+                    }
+                    if(adapterDSChiNhanh!=null){
+                        adapterDSChiNhanh.notifyDataSetChanged();
                     }
                 } else {
                     try {
@@ -163,40 +200,6 @@ public class MuaThuCungTab extends Fragment {
 
             @Override
             public void onFailure(Call<List<BangGiaThuCung>> call, Throwable throwable) {
-                SendMessage.sendApiFail(mView.getContext(),throwable);
-            }
-        });
-    }
-
-    private void DocDLChiNhanh(){
-        chiNhanhService.getAll().enqueue(new Callback<List<ChiNhanh>>() {
-            @Override
-            public void onResponse(Call<List<ChiNhanh>> call, Response<List<ChiNhanh>> response) {
-                if (response.code() == 200) {
-                    chiNhanhList.clear();
-                    tenChiNhanhList.clear();
-                    for (ChiNhanh x : response.body()) {
-                        chiNhanhList.add(x);
-                        tenChiNhanhList.add(x.getTenChiNhanh());
-                    }
-                    if(adapterDSChiNhanh!=null){
-                        adapterDSChiNhanh.notifyDataSetChanged();
-                    }
-                } else {
-                    try {
-                        int code = response.code();
-                        String message = response.message();
-                        String error = response.errorBody().string();
-                        SendMessage.sendMessageFail(mView.getContext(),code,error,message);
-                    } catch (Exception e) {
-                        SendMessage.sendCatch(mView.getContext(),e.getMessage());
-                        return;
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<ChiNhanh>> call, Throwable throwable) {
                 SendMessage.sendApiFail(mView.getContext(),throwable);
             }
         });

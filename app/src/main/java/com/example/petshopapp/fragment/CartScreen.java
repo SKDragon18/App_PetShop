@@ -348,6 +348,14 @@ public class CartScreen extends Fragment {
             public void onClick(View v) {
                 String diaChi = edtDiaChi.getText().toString();
                 String soDienThoai = edtSoDienThoai.getText().toString();
+                if(diaChi.isEmpty()){
+                    edtDiaChi.setError("Mời nhập");
+                    return;
+                }
+                if(soDienThoai.isEmpty()){
+                    edtSoDienThoai.setError("Mời nhập");
+                    return;
+                }
                 taoDonDat(diaChi,soDienThoai);
 
             }
