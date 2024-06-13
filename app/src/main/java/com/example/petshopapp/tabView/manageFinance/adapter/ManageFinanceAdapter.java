@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import com.example.petshopapp.tabView.manageFinance.BangGiaTab;
+import com.example.petshopapp.tabView.manageFinance.ThongKeTab;
 
 public class ManageFinanceAdapter extends FragmentStatePagerAdapter {
     public ManageFinanceAdapter(@NonNull FragmentManager fm, int behavior) {
@@ -18,6 +19,8 @@ public class ManageFinanceAdapter extends FragmentStatePagerAdapter {
         switch (position){
             case 0:
                 return new BangGiaTab();
+            case 1:
+                return new ThongKeTab();
             default:
                 return new Fragment();
         }
@@ -25,7 +28,7 @@ public class ManageFinanceAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 1; // trả về 1 item
+        return 2; // trả về 1 item
     }
 
     @Nullable
@@ -35,6 +38,8 @@ public class ManageFinanceAdapter extends FragmentStatePagerAdapter {
         switch (position){
             case 0:
                 return "BangGia";
+            case 1:
+                return "ThongKe";
             default:
                 return "ThuCung";
         }

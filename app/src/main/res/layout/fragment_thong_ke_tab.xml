@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".tabView.manageFinance.ThongKeTab">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:orientation="vertical">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp"
+                android:layout_marginHorizontal="80dp">
+                <EditText
+                    android:id="@+id/edtThang"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:inputType="number"
+                    android:layout_marginEnd="10dp"
+                    android:hint="Tháng" />
+                <EditText
+                    android:id="@+id/edtNam"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:inputType="number"
+                    android:hint="Năm" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginHorizontal="80dp">
+
+                <Button
+                    android:id="@+id/btnThongKe"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:background="@color/fresh_blue"
+                    android:text="Thống kê"/>
+            </LinearLayout>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="8"
+            android:orientation="vertical">
+            <EditText
+                android:id="@+id/edtTongDoanhThu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:layout_margin="10dp"
+                android:enabled="false"
+                android:hint="Doanh thu" />
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/chartThongKe"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:visibility="gone"/>
+        </LinearLayout>
+    </LinearLayout>
+</FrameLayout>

@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Date;
 
 public class TimeConvert {
@@ -24,5 +25,14 @@ public class TimeConvert {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         String dateString = dateFormat.format(localDateTime);
         return dateString;
+    }
+
+    public static int[] getDayMonthYearTimestamp(Timestamp timestamp){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timestamp.getTime());
+        return new int[]{
+                calendar.get(Calendar.DAY_OF_MONTH),
+                calendar.get(Calendar.MONTH)+1,//Do mont từ 0 - 11
+                calendar.get(Calendar.YEAR)};
     }
 }
