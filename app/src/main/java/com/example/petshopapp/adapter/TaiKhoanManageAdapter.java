@@ -65,8 +65,6 @@ public class TaiKhoanManageAdapter extends ArrayAdapter {
         this.mView=convertView;
         TaiKhoan taiKhoan = data.get(position);
 
-
-
         tvTenDangNhap = mView.findViewById(R.id.tvTenDangNhap);
         tvMatKhau=mView.findViewById(R.id.tvMatKhau);
         tvQuyen=mView.findViewById(R.id.tvQuyen);
@@ -83,7 +81,7 @@ public class TaiKhoanManageAdapter extends ArrayAdapter {
         tvMatKhau.setText("*****");
         tvQuyen.setText(taiKhoan.getQuyen());
 
-        if(taiKhoan.getTrangThai()){
+        if(taiKhoan.getTrangThai()==null||taiKhoan.getTrangThai()){
             tvTrangThai.setText("Hoạt động");
             btnClock.setBackgroundResource(R.drawable.ban);
         }

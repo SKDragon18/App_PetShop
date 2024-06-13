@@ -54,5 +54,8 @@ dependencies {
     //thư viện paypal
     implementation("com.paypal.checkout:android-sdk:1.1.0")
     implementation("commons-codec:commons-codec:1.14")
+
+    //biểu đồ
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     
 }

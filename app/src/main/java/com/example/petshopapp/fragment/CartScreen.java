@@ -148,9 +148,9 @@ public class CartScreen extends Fragment {
         btnDatHang = mView.findViewById(R.id.btnDatHang);
     }
     private void setEvent(){
-        gioHangThuCungAdapter=new GioHangThuCungAdapter(mView.getContext(),R.layout.item_thucunggiohang_manage,thuCungList, donDatThuCungGuiList);
+        gioHangThuCungAdapter=new GioHangThuCungAdapter(mView.getContext(),R.layout.item_thucunggiohang_manage,thuCungList, donDatThuCungGuiList, maKhachHang);
         lvCTThuCung.setAdapter(gioHangThuCungAdapter);
-        gioHangSanPhamAdapter=new GioHangSanPhamAdapter(mView.getContext(),R.layout.item_sanphamgiohang_manage,sanPhamList, donDatSanPhamGuiList);
+        gioHangSanPhamAdapter=new GioHangSanPhamAdapter(mView.getContext(),R.layout.item_sanphamgiohang_manage,sanPhamList, donDatSanPhamGuiList, maKhachHang);
         lvCTSanPham.setAdapter(gioHangSanPhamAdapter);
 
         adapterDSChiNhanh = new ArrayAdapter<>(mView.getContext(), android.R.layout.simple_list_item_1, tenChiNhanhList);
@@ -463,7 +463,8 @@ public class CartScreen extends Fragment {
                 try{
                     if(response.code() == 200){
                         String result = response.body().string();
-                        getThanhTien(maDonDat);
+                        xoaGioHang(maDonDat);
+
                     }
                     else{
                         try {
@@ -487,7 +488,7 @@ public class CartScreen extends Fragment {
             }
         });}
         else{
-            getThanhTien(maDonDat);
+            xoaGioHang(maDonDat);
         }
     }
     private void themSP(long maDonDat){
@@ -583,6 +584,48 @@ public class CartScreen extends Fragment {
                     if(response.code() == 200){
                         String result = response.body().string();
                         Toast.makeText(mView.getContext(),"Thanh toán thành công",Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        try {
+                            int code = response.code();
+                            String message = response.message();
+                            String error = response.errorBody().string();
+                            SendMessage.sendMessageFail(mView.getContext(),code,error,message);
+                        } catch (Exception e) {
+                            SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                        }
+                    }
+                }
+                catch (Exception e){
+                    SendMessage.sendCatch(mView.getContext(),e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
+                SendMessage.sendApiFail(mView.getContext(),throwable);
+            }
+        });
+    }
+
+    private void xoaGioHang(long maDonDat){
+        GioHangGui gioHangGui = new GioHangGui();
+        gioHangGui.setMaKhachHang(maKhachHang);
+        String tenChiNhanh = spChiNhanh.getSelectedItem().toString();
+        for(ChiNhanh x: chiNhanhList){
+            if(x.getTenChiNhanh().equals(tenChiNhanh)){
+                gioHangGui.setMaChiNhanh(x.getMaChiNhanh());
+                break;
+            }
+        }
+        gioHangService.xoaGioHang(gioHangGui).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try{
+                    if(response.code() == 200){
+                        String result = response.body().string();
+                        onResume();
+                        getThanhTien(maDonDat);
                     }
                     else{
                         try {

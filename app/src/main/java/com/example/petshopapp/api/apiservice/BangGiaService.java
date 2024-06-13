@@ -38,6 +38,9 @@ public interface BangGiaService {
     @GET("center/ct-san-pham")
     Call<List<BangGiaSanPham>> getAllSP();
 
+    @GET("center/ct-san-pham/bang-gia")
+    Call<List<BangGiaSanPham>> getAllSPQL();
+
     @POST("center/ct-san-pham")
     Call<ResponseBody> updateSP(@Body List<BangGiaSanPhamGui> bangGiaSanPhamGuiList);
     @POST("center/ct-san-pham/upload")
@@ -46,6 +49,9 @@ public interface BangGiaService {
     //Chi tiết thú cưng
     @GET("center/ct-thu-cung")
     Call<List<BangGiaThuCung>> getAllTC();
+
+    @GET("center/ct-thu-cung/bang-gia")
+    Call<List<BangGiaThuCung>> getAllTCQL();
 
     @POST("center/ct-thu-cung")
     Call<ResponseBody> updateTC(@Body List<BangGiaThuCungGui> bangGiaThuCungGuiList);

@@ -17,6 +17,7 @@ public class BangGiaThuCung implements Serializable {
     private String tenGiong;
     private BigDecimal giaHienTai;
     private BigDecimal giaKhuyenMai;
+    private int soLuongTon;
     private String hinhAnh;
 
     public BangGiaThuCung() {
@@ -25,7 +26,7 @@ public class BangGiaThuCung implements Serializable {
     public BangGiaThuCung(long maBangGia, Timestamp thoiGianBatDau, Timestamp thoiGianKetThuc,
                           int maChiNhanh, String tenChiNhanh, long maThuCung,
                           String tenThuCung, String moTa, int maGiong, String tenGiong,
-                          BigDecimal giaHienTai, BigDecimal giaKhuyenMai, String hinhAnh) {
+                          BigDecimal giaHienTai, BigDecimal giaKhuyenMai,int soLuongTon, String hinhAnh) {
         this.maBangGia = maBangGia;
         this.thoiGianBatDau = thoiGianBatDau;
         this.thoiGianKetThuc = thoiGianKetThuc;
@@ -38,6 +39,7 @@ public class BangGiaThuCung implements Serializable {
         this.tenGiong = tenGiong;
         this.giaHienTai = giaHienTai;
         this.giaKhuyenMai = giaKhuyenMai;
+        this.soLuongTon = soLuongTon;
         this.hinhAnh = hinhAnh;
     }
 
@@ -135,6 +137,14 @@ public class BangGiaThuCung implements Serializable {
 
     public void setGiaKhuyenMai(BigDecimal giaKhuyenMai) {
         this.giaKhuyenMai = giaKhuyenMai;
+    }
+
+    public int getSoLuongTon() {
+        return soLuongTon;
+    }
+
+    public void setSoLuongTon(int soLuongTon) {
+        this.soLuongTon = soLuongTon;
     }
 
     public String getHinhAnh() {

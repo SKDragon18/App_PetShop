@@ -12,6 +12,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -183,6 +184,7 @@ public class ThuCungManageAdapter extends ArrayAdapter {
         EditText edtMoTa = dialog.findViewById(R.id.edtMoTa);
         EditText edtGiaHienTai = dialog.findViewById(R.id.edtGiaHienTai);
         EditText edtSLTon = dialog.findViewById(R.id.edtSLTon);
+        CheckBox cbTrangThai = dialog.findViewById(R.id.cbTrangThai);
         Spinner spGiong = dialog.findViewById(R.id.spGiong);
         Spinner spChiNhanh = dialog.findViewById(R.id.spChiNhanh);
 
@@ -195,6 +197,12 @@ public class ThuCungManageAdapter extends ArrayAdapter {
         edtMoTa.setText(thuCung.getMoTa());
         edtGiaHienTai.setText(getString(thuCung.getGiaHienTai()));
         edtSLTon.setText(String.valueOf(thuCung.getSoLuongTon()));
+        if(thuCung.getTrangThaiBan()==1){
+            cbTrangThai.setChecked(true);
+        }
+        else{
+            cbTrangThai.setChecked(false);
+        }
 
         ArrayAdapter adapterDSGiong= new ArrayAdapter<>(mView.getContext(), android.R.layout.simple_list_item_1, tenGiongList);
         spGiong.setAdapter(adapterDSGiong);
@@ -213,6 +221,12 @@ public class ThuCungManageAdapter extends ArrayAdapter {
         btnUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(cbTrangThai.isChecked()){
+                    thuCungTemp.setTrangThaiBan(1);
+                }
+                else{
+                    thuCungTemp.setTrangThaiBan(0);
+                }
                 thuCungTemp.setTenThuCung(edtTenThuCung.getText().toString());
                 thuCungTemp.setChu(edtChu.getText().toString());
                 thuCungTemp.setMoTa(edtMoTa.getText().toString());

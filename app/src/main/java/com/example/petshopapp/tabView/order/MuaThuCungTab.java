@@ -133,14 +133,6 @@ public class MuaThuCungTab extends Fragment {
                 openChiTietTab(bangGiaThuCung);
             }
         });
-        gvThuCung.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                BangGiaThuCung bangGiaThuCung = data.get(position);
-                themVaoGio(bangGiaThuCung.getMaThuCung());
-                return false;
-            }
-        });
     }
 
     private void DocDL(String tenChiNhanh){
@@ -241,39 +233,4 @@ public class MuaThuCungTab extends Fragment {
         llND.setVisibility(View.VISIBLE);
     }
 
-    private void themVaoGio(long maThuCung){
-        GioHangThuCungGui gioHangThuCungGui = new GioHangThuCungGui();
-        gioHangThuCungGui.setMaKhachHang(maKhachHang);
-        gioHangThuCungGui.setMaThuCung(maThuCung);
-        gioHangService.themThuCung(gioHangThuCungGui).enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try{
-                    if(response.code() == 200){
-                        String result = response.body().string();
-                        Toast.makeText(mView.getContext(),result,Toast.LENGTH_SHORT).show();
-                    }
-                    else{
-                        try {
-                            int code = response.code();
-                            String message = response.message();
-                            String error = response.errorBody().string();
-                            SendMessage.sendMessageFail(mView.getContext(),code,error,message);
-                        } catch (Exception e) {
-                            SendMessage.sendCatch(mView.getContext(),e.getMessage());
-                            return;
-                        }
-                    }
-                }
-                catch (Exception e){
-                    SendMessage.sendCatch(mView.getContext(),e.getMessage());
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable throwable) {
-                SendMessage.sendApiFail(mView.getContext(),throwable);
-            }
-        });
-    }
 }

@@ -25,4 +25,13 @@ public interface GioHangService {
 
     @POST("center/gio-hang/them-san-pham")
     Call<ResponseBody> themSanPham(@Body GioHangSanPhamGui gioHangSanPhamGui);
+
+    @POST("center/gio-hang/bo-thu-cung")
+    Call<ResponseBody> boThuCung(@Body GioHangThuCungGui gioHangThuCungGui);
+
+    @POST("center/gio-hang/bo-san-pham")
+    Call<ResponseBody> boSanPham(@Body GioHangSanPhamGui gioHangSanPhamGui);
+
+    @POST("center/gio-hang/bo-tat-ca")
+    Call<ResponseBody> xoaGioHang(@Body GioHangGui gioHangGui);
 }

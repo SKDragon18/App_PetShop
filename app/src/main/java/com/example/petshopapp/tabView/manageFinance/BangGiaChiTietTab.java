@@ -250,7 +250,7 @@ public class BangGiaChiTietTab extends Fragment {
         return bangGiaThuCungGuiList;
     }
     private void DocDLCTSP(){
-        bangGiaService.getAllSP().enqueue(new Callback<List<BangGiaSanPham>>() {
+        bangGiaService.getAllSPQL().enqueue(new Callback<List<BangGiaSanPham>>() {
             @Override
             public void onResponse(Call<List<BangGiaSanPham>> call, Response<List<BangGiaSanPham>> response) {
                 if(response.code()==200){
@@ -285,7 +285,7 @@ public class BangGiaChiTietTab extends Fragment {
         });
     }
     private void DocDLCTTC(){
-        bangGiaService.getAllTC().enqueue(new Callback<List<BangGiaThuCung>>() {
+        bangGiaService.getAllTCQL().enqueue(new Callback<List<BangGiaThuCung>>() {
             @Override
             public void onResponse(Call<List<BangGiaThuCung>> call, Response<List<BangGiaThuCung>> response) {
                 if(response.code()==200){
